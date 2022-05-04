@@ -16,7 +16,7 @@ from rdflib.namespace import RDF, OWL
 from AgentUtil.ACL import ACL
 
 
-def build_message(gmess, perf, sender=None, receiver=None,  content=None, msgcnt=0):
+def build_message(gmess, perf, sender=None, receiver=None, content=None, msgcnt=0):
     """
     Construye un mensaje como una performativa FIPA acl
     Asume que en el grafo que se recibe esta ya el contenido y esta ligado al
@@ -35,7 +35,7 @@ def build_message(gmess, perf, sender=None, receiver=None,  content=None, msgcnt
     # No podemos crear directamente una instancia en el namespace ACL ya que es un ClosedNamedspace
     ms = URIRef(mssid)
     gmess.bind('acl', ACL)
-    gmess.add((ms, RDF.type, OWL.NamedIndividual)) # Declaramos la URI como instancia
+    gmess.add((ms, RDF.type, OWL.NamedIndividual))  # Declaramos la URI como instancia
     gmess.add((ms, RDF.type, ACL.FipaAclMessage))
     gmess.add((ms, ACL.performative, perf))
     gmess.add((ms, ACL.sender, sender))
@@ -43,6 +43,7 @@ def build_message(gmess, perf, sender=None, receiver=None,  content=None, msgcnt
         gmess.add((ms, ACL.receiver, receiver))
     if content is not None:
         gmess.add((ms, ACL.content, content))
+
     return gmess
 
 
@@ -56,7 +57,7 @@ def send_message(gmess, address):
 
     # Procesa la respuesta y la retorna como resultado como grafo
     gr = Graph()
-    gr.parse(data=r.text)
+    gr.parse(data=r.text, format='xml')
 
     return gr
 
@@ -73,7 +74,7 @@ def get_message_properties(msg):
              'conversation-id': ACL['conversation-id'],
              'in-reply-to': ACL['in-reply-to'], 'content': ACL.content}
 
-    msgdic = {} # Diccionario donde se guardan los elementos del mensaje
+    msgdic = {}  # Diccionario donde se guardan los elementos del mensaje
 
     # Extraemos la parte del FipaAclMessage del mensaje
     valid = msg.value(predicate=RDF.type, object=ACL.FipaAclMessage)

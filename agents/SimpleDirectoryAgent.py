@@ -11,18 +11,16 @@ Utiliza un registro simple que guarda en un grafo RDF
 El registro no es persistente y se mantiene mientras el agente funciona
 
 Las acciones que se pueden usar estan definidas en la ontología
-
 directory-service-ontology.owl
+
 
 @author: javier
 """
-
 from pathlib import Path
 import sys
 
 path_root = Path(__file__).parents[1]
 sys.path.append(str(path_root))
-
 
 from multiprocessing import Process, Queue
 import argparse
@@ -104,8 +102,10 @@ def register():
     Entry point del agente que recibe los mensajes de registro
     La respuesta es enviada al retornar la funcion,
     no hay necesidad de enviar el mensaje explicitamente
+
     Asumimos una version simplificada del protocolo FIPA-request
     en la que no enviamos el mesaje Agree cuando vamos a responder
+
     :return:
     """
 
@@ -175,7 +175,7 @@ def register():
     # Extraemos el mensaje y creamos un grafo con él
     message = request.args['content']
     gm = Graph()
-    gm.parse(data=message)
+    gm.parse(data=message, format='xml')
 
     msgdic = get_message_properties(gm)
 
@@ -214,6 +214,7 @@ def register():
                                    sender=DirectoryAgent.uri,
                                    msgcnt=mss_cnt)
     mss_cnt += 1
+
     return gr.serialize(format='xml')
 
 
@@ -241,6 +242,7 @@ def stop():
 def tidyup():
     """
     Acciones previas a parar el agente
+
     """
     global cola1
     cola1.put(0)

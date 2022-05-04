@@ -8,7 +8,6 @@ Agente que se registra como agente de hoteles y espera peticiones
 
 @author: javier
 """
-
 from pathlib import Path
 import sys
 
@@ -188,7 +187,7 @@ def comunicacion():
     # Extraemos el mensaje y creamos un grafo con el
     message = request.args['content']
     gm = Graph()
-    gm.parse(data=message)
+    gm.parse(data=message, format='xml')
 
     msgdic = get_message_properties(gm)
 
