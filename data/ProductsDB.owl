@@ -1,0 +1,11 @@
+@prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+default:Producto0 a default:Product ;
+    default:Categoria "a"^^xsd:string ;
+    default:Externo false ;
+    default:Marca "as"^^xsd:string ;
+    default:Nombre "nom"^^xsd:string ;
+    default:Peso 1e+00 ;
+    default:Precio 5e+00 .
+
