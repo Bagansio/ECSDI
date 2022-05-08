@@ -1,0 +1,27 @@
+@prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+default:Producto020a4499-faf8-44d9-9049-e5bea26ca1bb a default:Product ;
+    default:Categoria "5"^^xsd:string ;
+    default:Externo false ;
+    default:Marca "5"^^xsd:string ;
+    default:Nombre "a"^^xsd:string ;
+    default:Peso "12.0"^^xsd:float ;
+    default:Precio "51.0"^^xsd:float .
+
+default:Producto74857abf-a4d2-4e3f-a178-d12bc815c7fd a default:Product ;
+    default:Categoria "3"^^xsd:string ;
+    default:Externo false ;
+    default:Marca "2"^^xsd:string ;
+    default:Nombre "12"^^xsd:string ;
+    default:Peso "11.0"^^xsd:float ;
+    default:Precio "2.0"^^xsd:float .
+
+default:Productob8122747-ca9c-4662-b573-c81954a1a829 a default:Product ;
+    default:Categoria "22"^^xsd:string ;
+    default:Externo false ;
+    default:Marca "ww"^^xsd:string ;
+    default:Nombre "asdfas"^^xsd:string ;
+    default:Peso "11.0"^^xsd:float ;
+    default:Precio "16.0"^^xsd:float .
+
