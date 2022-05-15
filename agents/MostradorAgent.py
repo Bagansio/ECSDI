@@ -35,6 +35,9 @@ from AgentUtil.Logging import config_logger
 from AgentUtil.DSO import DSO
 from AgentUtil.Util import gethostname
 import socket
+from threading import Thread
+
+
 
 __author__ = 'Artur, Cristian'
 
@@ -115,8 +118,9 @@ cola1 = Queue()
 
 
 def buscarproductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre = None, marca = None, categoria = None):
-    logger.info("Aplicando filtros de búsqueda")
-
+    
+    logger.info("Obteniendo la lista de los productos")
+    
     """
     ontologyFile = open(db.DBProductos)
     graph = Graph()
@@ -124,24 +128,31 @@ def buscarproductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre = 
     """
 
     #comunicacion agentes
+    try:
+        item = ECSDI['PeticionAgregarProducto'+ str(uuid.uuid4())]
+        graph_message = Graph()
+        graph_message.add((item, RDF.type, ECSDI.PeticionProductos))
 
-    item = ECSDI['PeticionAgregarProducto'+ str(uuid.uuid4())]
-    graph_message = Graph()
-    graph_message.add((item, RDF.type, ECSDI.PeticionProductos))
+        if GestorProductosAgent is None:
+            GestorProductosAgent = agents.get_agent(DSO.GestorProductosAgent, MostradorAgent, DirectoryAgent, mss_cnt)
 
-    global GestorProductosAgent
+        graph = send_message(build_message(graph_message,
+                                                            perf=ACL.request, sender=MostradorAgent.uri,
+                                                            receiver=GestorProductosAgent.uri,
+                                                            msgcnt=mss_cnt, content=item), GestorProductosAgent.address)
+        mss_cnt += 1
 
-    #falta codigo
+    except Exception as e:
+        print(e)
+        logger.info("No ha sido posible obtener los productos")
+        return Graph()
 
-    if GestorProductosAgent is None:
-        GestorProductosAgent = agents.get_agent(DSO.GestorProductosAgent, MostradorAgent, DirectoryAgent, mss_cnt)
-
-
-
-    mss_cnt += 1
-
+    
+    
 
 #Consulta base de datos
+    logger.info("Aplicando filtros de búsqueda")
+
     query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
     PREFIX default: <http://www.owl-ontologies.com/ECSDIstore#>
@@ -153,7 +164,7 @@ def buscarproductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre = 
         ?Producto default:Nombre ?Nombre .
         ?Producto default:Precio ?Precio .
         ?Producto default:Marca ?Marca .
-        ?Producto default:id ?Id .
+        ?Producto default:Id ?Id .
         ?Producto default:Peso ?Peso .
         FILTER("""
 
@@ -212,7 +223,23 @@ def buscarproductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre = 
         products_graph.add((sujetoRespuesta, ECSDI.Muestra, URIRef(sujetoProducto)))
 
         sujetoFiltro = ECSDI['ProductoFiltrado' + str(uuid.uuid4())]
+        products_filter.add((sujetoFiltro, RDF.type, ECSDI.Producto))
+        products_filter.add((sujetoFiltro, ECSDI.Nombre, Literal(product_nombre, datatype=XSD.string)))
+        products_filter.add((sujetoFiltro, ECSDI.Descripcion, Literal(product_categoria, datatype=XSD.string)))
+        products_filter.add((sujetoFiltro, ECSDI.Descripcion, Literal(product_marca, datatype=XSD.string)))
+        products_filter.add((sujetoFiltro, ECSDI.Precio, Literal(product_precio, datatype=XSD.float)))
+
+    thread = Thread(target=almacenarHistorial, args=(products_filter,))
+
+
     
+def almacenarHistorial(products_filter):
+    logger.info("Almacenando busqueda")
+
+    #CREAR DB
+
+
+
 
 
 
