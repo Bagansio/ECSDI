@@ -134,7 +134,7 @@ def agregarDBProducto(data):
         graph.add((item, ECSDI.Categoria, Literal(data['Categoria'], datatype=XSD.string)))
         graph.add((item, ECSDI.Peso, Literal(data['Peso'], datatype=XSD.float)))
         graph.add((item, ECSDI.Marca, Literal(data['Marca'], datatype=XSD.string)))
-        graph.add((item, ECSDI.Externo, Literal(data['Externo'], datatype=XSD.boolean)))
+        graph.add((item, ECSDI.Externo, Literal(True, datatype=XSD.boolean)))
 
 
         graph.serialize(destination=db.DBProductos, format='turtle')
@@ -219,7 +219,7 @@ def register_message():
     gmess.add((reg_obj, DSO.Uri, GestorProductosAgent.uri))
     gmess.add((reg_obj, FOAF.name, Literal(GestorProductosAgent.name)))
     gmess.add((reg_obj, DSO.Address, Literal(GestorProductosAgent.address)))
-    gmess.add((reg_obj, DSO.AgentType, DSO.HotelsAgent))
+    gmess.add((reg_obj, DSO.AgentType, DSO.GestorProductosAgent))
 
     # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
     gr = send_message(

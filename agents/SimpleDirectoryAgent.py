@@ -148,9 +148,15 @@ def register():
         logger.info('Peticion de busqueda')
 
         agn_type = gm.value(subject=content, predicate=DSO.AgentType)
-        rsearch = dsgraph.triples((None, DSO.AgentType, agn_type))
-        if rsearch is not None:
-            agn_uri = next(rsearch)[0]
+
+        rsearch = dsgraph.triples(
+                                (None,
+                                 DSO.AgentType,
+                                 agn_type))
+
+        try:
+
+            agn_uri = list(rsearch)[0][0]
             agn_add = dsgraph.value(subject=agn_uri, predicate=DSO.Address)
             gr = Graph()
             gr.bind('dso', DSO)
@@ -163,7 +169,8 @@ def register():
                                  msgcnt=mss_cnt,
                                  receiver=agn_uri,
                                  content=rsp_obj)
-        else:
+        except Exception as e:
+            logger.info("No Hay ningun agente de ese tipo registrado")
             # Si no encontramos nada retornamos un inform sin contenido
             return build_message(Graph(),
                                  ACL.inform,

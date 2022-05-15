@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-filename: GestorServicioExternoAgent
+filename: PersonalAgent
 
 Antes de ejecutar hay que añadir la raiz del proyecto a la variable PYTHONPATH
 
-Agente que se registra como agente de hoteles y espera peticiones
+Agente que se registra como agente personal, envia y espera peticiones
 
 @author: Bagansio, Cristian Mesa, Artur Farriols
 """
@@ -58,7 +58,7 @@ args = parser.parse_args()
 
 # Configuration stuff
 if args.port is None:
-    port = agents.agent_ports['GestorServicioExternoAgent']
+    port = agents.agent_ports['PersonalAgent']
 else:
     port = args.port
 
@@ -93,20 +93,16 @@ agn = Namespace("http://www.agentes.org#")
 mss_cnt = 0
 
 # Datos del Agente
-GestorServicioExternoAgent = Agent('GestorServicioExternoAgent',
-                                   agn.GestorServicioExternoAgent,
-                                   'http://%s:%d/comm' % (hostaddr, port),
-                                   'http://%s:%d/Stop' % (hostaddr, port))
+PersonalAgent = Agent('PersonalAgent',
+                       agn.PersonalAgent,
+                       'http://%s:%d/comm' % (hostaddr, port),
+                       'http://%s:%d/Stop' % (hostaddr, port))
 
 # Directory agent address
 DirectoryAgent = Agent('DirectoryAgent',
                        agn.Directory,
                        'http://%s:%d/Register' % (dhostname, dport),
                        'http://%s:%d/Stop' % (dhostname, dport))
-
-
-GestorProductosAgent = None
-
 
 # Global dsgraph triplestore
 dsgraph = Graph()
@@ -121,7 +117,6 @@ cola1 = Queue()
 
 def agregarDBProducto(data):
     try:
-
         logger.info("Registrando producto: [" + data['Nombre'] + " " + data['Marca'] +
                     "] de " + data['Peso'] + "kg por " + data['Precio'] + "€")
         # añadir el producto
@@ -130,75 +125,107 @@ def agregarDBProducto(data):
         graph = Graph()
         graph.parse(ontologyFile, format='turtle')
         graph.bind("default", ECSDI)
-        item = ECSDI['PeticionAgregarProducto'+ str(uuid.uuid4())]
+        id = 'Producto' + str(uuid.uuid4())
+        item = ECSDI[id]
 
-        graph.add((item, RDF.type, ECSDI.PeticionAgregarProducto))
+        graph.add((item, RDF.type, ECSDI.Product))
         graph.add((item, ECSDI.Nombre, Literal(data['Nombre'], datatype=XSD.string)))
         graph.add((item, ECSDI.Precio, Literal(data['Precio'], datatype=XSD.float)))
         graph.add((item, ECSDI.Categoria, Literal(data['Categoria'], datatype=XSD.string)))
         graph.add((item, ECSDI.Peso, Literal(data['Peso'], datatype=XSD.float)))
         graph.add((item, ECSDI.Marca, Literal(data['Marca'], datatype=XSD.string)))
-        graph.add((item, ECSDI.Externo, Literal(True, datatype=XSD.boolean)))
+        graph.add((item, ECSDI.Externo, Literal(data['Externo'], datatype=XSD.boolean)))
 
-        global GestorProductosAgent
 
-        if GestorProductosAgent is None:
-            GestorProductosAgent = agents.get_agent(DSO.GestorProductosAgent, GestorServicioExternoAgent, DirectoryAgent, mss_cnt)
-
-        resultadoComunicacion = send_message(build_message(graph,
-                                                           perf=ACL.request, sender=GestorServicioExternoAgent.uri,
-                                                           receiver=GestorProductosAgent.uri,
-                                                           msgcnt=mss_cnt, content=item), GestorProductosAgent.address)
-
-        mss_cnt += 1
+        graph.serialize(destination=db.DBProductos, format='turtle')
         logger.info("Registro de nuevo producto finalizado")
-        return resultadoComunicacion
 
     except Exception as e:
         print(e)
         logger.info("Registro de nuevo producto fallido")
-    return Graph()
 
-def procesarProductoExterno(graph):
+
+def procesarProducto(graph, content):
     data = {
         'Categoria': None,
         'Marca': None,
         'Nombre': None,
         'Peso': None,
         'Precio': None,
+        'Externo': None
     }
 
     for a,b,c in graph:
-        if b == ECSDI.Categoria:
+
+        if 'Peticion' in a and b == ECSDI.Categoria:
             data['Categoria'] = c
 
-        elif b == ECSDI.Marca:
+        elif 'Peticion' in a and b == ECSDI.Marca:
             data['Marca'] = c
 
-        elif b == ECSDI.Nombre:
+        elif 'Peticion' in a and  b == ECSDI.Nombre:
             data['Nombre'] = c
 
-        elif b == ECSDI.Peso:
+        elif 'Peticion' in a and b == ECSDI.Peso:
             data['Peso'] = c
 
-        elif b == ECSDI.Precio:
+        elif 'Peticion' in a and b == ECSDI.Precio:
             data['Precio'] = c
 
+        elif 'Peticion' in a and b == ECSDI.Externo:
+            data['Externo'] = c
 
-    return agregarDBProducto(data)
+
+    agregarDBProducto(data)
 
 # Agrega un Producto Externo a la BD
 def agregarproducto(content, gm):
     logger.info("Recibida peticion de añadir productos")
     for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+        print(item)
         gm.remove((item, None, None))
 
-    thread = threading.Thread(target=procesarProductoExterno, args=(gm,))
+    thread = threading.Thread(target=procesarProducto, args=(gm, content))
     thread.start()
 
     resultadoComunicacion = Graph()
 
     return resultadoComunicacion
+
+
+def search_agent(agent_name):
+    """
+    Envia un mensaje de registro al servicio de registro
+    usando una performativa Request y una accion Register del
+    servicio de directorio
+
+    :param gmess:
+    :return:
+    """
+
+    logger.info('Buscamos a ' + agent_name)
+
+    global mss_cnt
+
+    gmess = Graph()
+
+    # Construimos el mensaje de registro
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    reg_obj = agn[agent_name + '-Search']
+    gmess.add((reg_obj, RDF.type, DSO.Search))
+
+    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+    gr = send_message(
+        build_message(gmess, perf=ACL.request,
+                      sender=PersonalAgent.uri,
+                      receiver=DirectoryAgent.uri,
+                      content=reg_obj,
+                      msgcnt=mss_cnt),
+        DirectoryAgent.address)
+    mss_cnt += 1
+
+    return gr
 
 
 # Agent functions
@@ -222,17 +249,17 @@ def register_message():
     # Construimos el mensaje de registro
     gmess.bind('foaf', FOAF)
     gmess.bind('dso', DSO)
-    reg_obj = agn[GestorServicioExternoAgent.name + '-Register']
+    reg_obj = agn[PersonalAgent.name + '-Register']
     gmess.add((reg_obj, RDF.type, DSO.Register))
-    gmess.add((reg_obj, DSO.Uri, GestorServicioExternoAgent.uri))
-    gmess.add((reg_obj, FOAF.name, Literal(GestorServicioExternoAgent.name)))
-    gmess.add((reg_obj, DSO.Address, Literal(GestorServicioExternoAgent.address)))
-    gmess.add((reg_obj, DSO.AgentType, DSO.GestorServicioExternoAgent))
+    gmess.add((reg_obj, DSO.Uri, PersonalAgent.uri))
+    gmess.add((reg_obj, FOAF.name, Literal(PersonalAgent.name)))
+    gmess.add((reg_obj, DSO.Address, Literal(PersonalAgent.address)))
+    gmess.add((reg_obj, DSO.AgentType, DSO.PersonalAgent))
 
     # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
     gr = send_message(
         build_message(gmess, perf=ACL.request,
-                      sender=GestorServicioExternoAgent.uri,
+                      sender=PersonalAgent.uri,
                       receiver=DirectoryAgent.uri,
                       content=reg_obj,
                       msgcnt=mss_cnt),
@@ -248,16 +275,14 @@ def browser_iface():
     Permite la comunicacion con el agente via un navegador
     via un formulario
     """
-    form = request.form
-    if 'message' in form:
-        if form['Nombre'] != '' and form['Marca'] != '' and form['Precio'] != '' and\
-           form['Categoria'] != '' and form['Peso'] != '':
+    global mss_cnt
+    mss_cnt += 1
 
-            agregarDBProducto(request.form)
-
-        else:
-            logger.info('Error añadiendo el producto externo, formulario incorrecto')
-
+    logger.info('Buscando al agente Gestor Productos')
+    agent = agents.get_agent(DSO.GestorProductosAgent, PersonalAgent, DirectoryAgent, mss_cnt)
+    print(agent.name)
+    print(agent.uri)
+    print(agent.address)
 
     return render_template('agregarproducto.html')
 
@@ -302,7 +327,7 @@ def comunicacion():
     if msgdic is None:
         # Si no es, respondemos que no hemos entendido el mensaje
         gr = build_message(
-            Graph(), ACL['not-understood'], sender=GestorServicioExternoAgent.uri, msgcnt=mss_cnt)
+            Graph(), ACL['not-understood'], sender=PersonalAgent.uri, msgcnt=mss_cnt)
     else:
         # Obtenemos la performativa
         perf = msgdic['performative']
@@ -310,7 +335,7 @@ def comunicacion():
         if perf != ACL.request:
             # Si no es un request, respondemos que no hemos entendido el mensaje
             gr = build_message(
-                Graph(), ACL['not-understood'], sender=GestorServicioExternoAgent.uri, msgcnt=mss_cnt)
+                Graph(), ACL['not-understood'], sender=PersonalAgent.uri, msgcnt=mss_cnt)
         else:
             # Extraemos el objeto del contenido que ha de ser una accion de la ontologia de acciones del agente
             # de registro
@@ -320,11 +345,13 @@ def comunicacion():
                 content = msgdic['content']
                 accion = gm.value(subject=content, predicate=RDF.type)
 
+                if accion == ECSDI.PeticionAgregarProducto:
+                    gr = agregarproducto(content, gm)
             # Aqui realizariamos lo que pide la accion
             # Por ahora simplemente retornamos un Inform-done
             gr = build_message(Graph(),
                                ACL['inform'],
-                               sender=GestorServicioExternoAgent.uri,
+                               sender=PersonalAgent.uri,
                                msgcnt=mss_cnt,
                                receiver=msgdic['sender'], )
     mss_cnt += 1

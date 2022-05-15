@@ -1,6 +1,14 @@
 @prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+default:Producto0f75f3f6-a458-4323-b3f0-d9029eba4ebe a default:Product ;
+    default:Categoria "2"^^xsd:string ;
+    default:Externo true ;
+    default:Marca "1"^^xsd:string ;
+    default:Nombre "5"^^xsd:string ;
+    default:Peso "1.0"^^xsd:float ;
+    default:Precio "5.0"^^xsd:float .
+
 default:Producto5613af12-e059-4beb-a6d0-0fd023344661 a default:Product ;
     default:Categoria "2"^^xsd:string ;
     default:Externo true ;
@@ -9,11 +17,27 @@ default:Producto5613af12-e059-4beb-a6d0-0fd023344661 a default:Product ;
     default:Peso "2.0"^^xsd:float ;
     default:Precio "2.0"^^xsd:float .
 
+default:Producto7525fcda-2a63-40af-853c-70e2bd6ebc1c a default:Product ;
+    default:Categoria "2"^^xsd:string ;
+    default:Externo true ;
+    default:Marca "1"^^xsd:string ;
+    default:Nombre "5"^^xsd:string ;
+    default:Peso "1.0"^^xsd:float ;
+    default:Precio "5.0"^^xsd:float .
+
 default:Producto809ea095-e32f-46e2-8f7a-a9490c173876 a default:Product ;
     default:Categoria "1"^^xsd:string ;
     default:Externo true ;
     default:Marca "1"^^xsd:string ;
     default:Nombre "1"^^xsd:string ;
+    default:Peso "1.0"^^xsd:float ;
+    default:Precio "1.0"^^xsd:float .
+
+default:Productob069d6e5-4f4e-4e5b-86f1-c59d7dc7ab29 a default:Product ;
+    default:Categoria "1"^^xsd:string ;
+    default:Externo true ;
+    default:Marca "wwwww"^^xsd:string ;
+    default:Nombre "lopas"^^xsd:string ;
     default:Peso "1.0"^^xsd:float ;
     default:Precio "1.0"^^xsd:float .
 
