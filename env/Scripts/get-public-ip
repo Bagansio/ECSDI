@@ -1,0 +1,6 @@
+#!C:\Users\farri\OneDrive\Escriptori\UPC\Quadrimestre 6\ECSDI\Proyecto\ECSDI\env\Scripts\python.exe
+
+from pif.commands.get_public_ip import main
+
+if __name__ == "__main__":
+    main()

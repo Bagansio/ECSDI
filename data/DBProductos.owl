@@ -17,6 +17,14 @@ default:Producto809ea095-e32f-46e2-8f7a-a9490c173876 a default:Product ;
     default:Peso "1.0"^^xsd:float ;
     default:Precio "1.0"^^xsd:float .
 
+default:Producto898acdf7-86d0-489b-9582-4dc1eaf8efd8 a default:Product ;
+    default:Categoria "Clothes"^^xsd:string ;
+    default:Externo true ;
+    default:Marca "Pull"^^xsd:string ;
+    default:Nombre "productExample"^^xsd:string ;
+    default:Peso "1.0"^^xsd:float ;
+    default:Precio "10.0"^^xsd:float .
+
 default:Productoec0bf336-3eca-444c-b3d8-0acdc98b4c2d a default:Product ;
     default:Categoria "4"^^xsd:string ;
     default:Externo true ;
