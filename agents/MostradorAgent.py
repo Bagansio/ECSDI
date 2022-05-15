@@ -36,7 +36,7 @@ from AgentUtil.DSO import DSO
 from AgentUtil.Util import gethostname
 import socket
 
-__author__ = 'Artur'
+__author__ = 'Artur, Cristian'
 
 # Definimos los parametros de la linea de comandos
 parser = argparse.ArgumentParser()
@@ -103,12 +103,6 @@ DirectoryAgent = Agent('DirectoryAgent',
                        agn.Directory,
                        'http://%s:%d/Register' % (dhostname, dport),
                        'http://%s:%d/Stop' % (dhostname, dport))
-
-# Mostrador agent adress
-MostradorAgent = Agent('MostradorAgent',
-                       agn.MostradorAgent,
-                       'http://%s:%d/comm' % (dhostname, agents.agent_ports['MostradorAgent']),
-                       'http://%s:%d/Stop' % (dhostname, agents.agent_ports['MostradorAgent']))
 
 GestorProductosAgent = None
 
