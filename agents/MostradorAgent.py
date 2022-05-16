@@ -116,8 +116,37 @@ dsgraph = Graph()
 # Cola de comunicacion entre procesos
 cola1 = Queue()
 
+def buscarProductos(content, grafoEntrada):
+    logger.info("Petición de busqueda recibida")
+    parametros = grafoEntrada.objects(content, ECSDI.RestringidaPor)
 
-def buscarproductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre = None, marca = None, categoria = None):
+    filtros = {}
+    for p in parametros:
+            if grafoEntrada.value(subject=p, predicate=RDF.type) == ECSDI.RestriccionNombre:
+                Nombre = grafoEntrada.value(subject=p, predicate=ECSDI.Nombre)
+                filtros['nombre'] = Nombre
+            elif grafoEntrada.value(subject=p, predicate=RDF.type) == ECSDI.RestriccionPrecio:
+                PrecioMaximo = grafoEntrada.value(subject=p, predicate=ECSDI.PrecioMaximo)
+                PrecioMinimo = grafoEntrada.value(subject=p, predicate=ECSDI.PrecioMinimo)
+                filtros['precio_max'] = PrecioMaximo
+                filtros['precio_min'] = PrecioMinimo
+            elif grafoEntrada.value(subject=p, predicate=RDF.type) == ECSDI.RestriccionCategoria:
+                Categoria = grafoEntrada.value(subject=p, predicate=ECSDI.Categoria)
+                filtros['categoria'] = Categoria
+            elif grafoEntrada.value(subject=p, predicate=RDF.type) == ECSDI.RestriccionMarca:
+                Marca = grafoEntrada.value(subject=p, predicate=ECSDI.Marca)
+                filtros['marca'] = Marca
+            elif grafoEntrada.value(subject=p, predicate=RDF.type) == ECSDI.RestriccionValoracion:
+                Valoracion = grafoEntrada.value(subject=p, predicate=ECSDI.Valoracion)
+                filtros['valoracion'] = Valoracion
+
+    resultado = filtrarProductos(**parametros)
+    return resultado
+
+
+
+
+def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre = None, marca = None, categoria = None, valoracion = None):
     
     logger.info("Obteniendo la lista de los productos")
     
@@ -166,9 +195,10 @@ def buscarproductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre = 
         ?Producto default:Marca ?Marca .
         ?Producto default:Id ?Id .
         ?Producto default:Peso ?Peso .
+        ?Producto default:Valoracion ?Valoracion .
         FILTER("""
 
-    next = (precio_min != 0.0 or precio_max != sys.float_info.max or nombre is not None or marca is not None or categoria is not None)
+    next = (precio_min != 0.0 or precio_max != sys.float_info.max or nombre is not None or marca is not None or categoria is not None or valoracion is not None)
 
 #parametros aplicados
     if nombre is not None:
@@ -196,6 +226,12 @@ def buscarproductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre = 
             query += """ && """
         query += """?Precio <= """ + str(precio_max) + """'"""
 
+    if valoracion is not None:
+        if next:
+            query += """ && """
+        query += """?Valoracion <= """ + str(valoracion) + """'"""
+
+
     query += """)}"""
     
     graph_query = graph.query(query)
@@ -212,6 +248,7 @@ def buscarproductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre = 
         product_categoria = product.Categoria
         product_peso = product.Peso
         product_precio = product.Precio
+        product_valoracion = product.Valoracion
         sujetoProducto = product.Producto
 
         products_graph.add((sujetoProducto, RDF.type, ECSDI.Producto))
@@ -220,7 +257,10 @@ def buscarproductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre = 
         products_graph.add((sujetoProducto, ECSDI.Descripcion, Literal(product_categoria, datatype=XSD.string)))
         products_graph.add((sujetoProducto, ECSDI.Peso, Literal(product_peso, datatype=XSD.float)))
         products_graph.add((sujetoProducto, ECSDI.Precio, Literal(product_precio, datatype=XSD.float)))
+        products_graph.add((sujetoRespuesta, ECSDI.Valoracion, URIRef(product_valoracion)))
         products_graph.add((sujetoRespuesta, ECSDI.Muestra, URIRef(sujetoProducto)))
+        
+
 
         sujetoFiltro = ECSDI['ProductoFiltrado' + str(uuid.uuid4())]
         products_filter.add((sujetoFiltro, RDF.type, ECSDI.Producto))
@@ -230,16 +270,28 @@ def buscarproductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre = 
         products_filter.add((sujetoFiltro, ECSDI.Precio, Literal(product_precio, datatype=XSD.float)))
 
     thread = Thread(target=almacenarHistorial, args=(products_filter,))
+    thread.start()
+
+    logger.info('Resultado petición de busqueda obtenido')
+    return products_graph
 
 
     
 def almacenarHistorial(products_filter):
-    logger.info("Almacenando busqueda")
+    try:
+        logger.info("Almacenando busqueda")
 
-    #CREAR DB
+        ontologyFile = open(db.DBHistorial)
+        graphHistorial = Graph()
+        graphHistorial.parse(ontologyFile, format='turtle')
+        graphHistorial.bind("default", ECSDI)
+        graphHistorial += products_filter
 
-
-
+        graphHistorial.serialize(destination=db.DBHistorial, format='turtle')
+        logger.info('Almacenamiento de historial finalizado')
+    except Exception as e:
+        print(e)
+        logger.info("No ha sido posible guardar el historial")
 
 
 
@@ -281,10 +333,6 @@ def register_message():
     mss_cnt += 1
 
     return gr
-
-
-
-
 
 
 
