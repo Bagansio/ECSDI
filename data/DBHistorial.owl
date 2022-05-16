@@ -1,0 +1,4 @@
+@prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+
