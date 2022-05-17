@@ -19,7 +19,7 @@ directory-service-ontology.owl
 from pathlib import Path
 import sys
 
-path_root = Path(__file__).parents[1]
+path_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(path_root))
 
 from multiprocessing import Process, Queue

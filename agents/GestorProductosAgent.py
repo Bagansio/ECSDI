@@ -12,7 +12,7 @@ Agente que se registra como agente de hoteles y espera peticiones
 from pathlib import Path
 import sys
 
-path_root = Path(__file__).parents[1]
+path_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(path_root))
 
 from multiprocessing import Process, Queue
@@ -134,7 +134,7 @@ def agregarDBProducto(data):
         graph.add((item, ECSDI.Categoria, Literal(data['Categoria'], datatype=XSD.string)))
         graph.add((item, ECSDI.Peso, Literal(data['Peso'], datatype=XSD.float)))
         graph.add((item, ECSDI.Marca, Literal(data['Marca'], datatype=XSD.string)))
-        graph.add((item, ECSDI.Externo, Literal(data['Externo'], datatype=XSD.boolean)))
+        graph.add((item, ECSDI.Externo, Literal(True, datatype=XSD.boolean)))
 
 
         graph.serialize(destination=db.DBProductos, format='turtle')
@@ -192,18 +192,6 @@ def agregarproducto(content, gm):
 
     return resultadoComunicacion
 
-def retornarproducto(gm):
-    logger.info("Recibida peticion de enviar productos")
-    for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
-        print(item)
-        gm.remove((item, None, None))
-
-    ontologyFile = open(db.DBProductos)
-    resultado = Graph()
-    resultado.parse(ontologyFile, format='turtle')
-    return resultado
-
-
 
 # Agent functions
 
@@ -231,7 +219,7 @@ def register_message():
     gmess.add((reg_obj, DSO.Uri, GestorProductosAgent.uri))
     gmess.add((reg_obj, FOAF.name, Literal(GestorProductosAgent.name)))
     gmess.add((reg_obj, DSO.Address, Literal(GestorProductosAgent.address)))
-    gmess.add((reg_obj, DSO.AgentType, DSO.HotelsAgent))
+    gmess.add((reg_obj, DSO.AgentType, DSO.GestorProductosAgent))
 
     # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
     gr = send_message(
@@ -326,8 +314,6 @@ def comunicacion():
 
                 if accion == ECSDI.PeticionAgregarProducto:
                     gr = agregarproducto(content, gm)
-                elif accion == ECSDI.PeticionProductos:
-                    gr = retornarproducto(gm)
             # Aqui realizariamos lo que pide la accion
             # Por ahora simplemente retornamos un Inform-done
             gr = build_message(Graph(),
