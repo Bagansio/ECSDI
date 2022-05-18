@@ -47,3 +47,10 @@ def get_agent(agn_type, sender, reciever, mss_cnt):
     name = gr.value(subject=content, predicate=FOAF.name)
 
     return Agent(name, url, address, None)
+
+def print_graph(graph):
+    for a,b,c in graph:
+        print(a)
+        print(b)
+        print(c)
+        print("-------------------------------------------------------------------------")

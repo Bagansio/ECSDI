@@ -140,7 +140,7 @@ def buscarProductos(content, grafoEntrada):
                 Valoracion = grafoEntrada.value(subject=p, predicate=ECSDI.Valoracion)
                 filtros['valoracion'] = Valoracion
 
-    resultado = filtrarProductos(**parametros)
+    resultado = filtrarProductos(**filtros)
     return resultado
 
 
@@ -149,7 +149,8 @@ def buscarProductos(content, grafoEntrada):
 def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre = None, marca = None, categoria = None, valoracion = None):
     
     logger.info("Obteniendo la lista de los productos")
-    
+    global GestorProductosAgent
+    global mss_cnt
     """
     ontologyFile = open(db.DBProductos)
     graph = Graph()
@@ -158,17 +159,27 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
 
     #comunicacion agentes
     try:
-        item = ECSDI['PeticionAgregarProducto'+ str(uuid.uuid4())]
-        graph_message = Graph()
-        graph_message.add((item, RDF.type, ECSDI.PeticionProductos))
 
         if GestorProductosAgent is None:
             GestorProductosAgent = agents.get_agent(DSO.GestorProductosAgent, MostradorAgent, DirectoryAgent, mss_cnt)
 
-        graph = send_message(build_message(graph_message,
-                                                            perf=ACL.request, sender=MostradorAgent.uri,
-                                                            receiver=GestorProductosAgent.uri,
-                                                            msgcnt=mss_cnt, content=item), GestorProductosAgent.address)
+
+        graph_message = Graph()
+        graph_message.bind('foaf', FOAF)
+        graph_message.bind('dso', DSO)
+        graph_message.bind("default", ECSDI)
+        reg_obj = ECSDI['PeticionProductos' + str(mss_cnt)]
+        graph_message.add((reg_obj, RDF.type, ECSDI.PeticionProductos))
+
+        # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+        graph = send_message(
+            build_message(graph_message, perf=ACL.request,
+                          sender=MostradorAgent.uri,
+                          receiver=GestorProductosAgent.uri,
+                          content=reg_obj,
+                          msgcnt=mss_cnt),
+            GestorProductosAgent.address)
+
         mss_cnt += 1
 
     except Exception as e:
@@ -182,64 +193,68 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
 #Consulta base de datos
     logger.info("Aplicando filtros de búsqueda")
 
-    query = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX owl: <http://www.w3.org/2002/07/owl#>
-    PREFIX default: <http://www.owl-ontologies.com/ECSDIstore#>
-    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    SELECT DISTINCT ?Producto ?Nombre ?Precio ?Marca ?Id ?Peso
+
+
+    query = """
+    prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+    prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+    prefix owl:<http://www.w3.org/2002/07/owl#>
+    SELECT ?producto ?nombre ?precio ?marca ?peso 
         where {
-        ?Producto rdf:type default:Producto .
-        ?Producto default:Nombre ?Nombre .
-        ?Producto default:Precio ?Precio .
-        ?Producto default:Marca ?Marca .
-        ?Producto default:Id ?Id .
-        ?Producto default:Peso ?Peso .
-        ?Producto default:Valoracion ?Valoracion .
+        {?producto rdf:type default:Producto } .
+        ?producto default:Nombre ?nombre .
+        ?producto default:Precio ?precio .
+        ?producto default:Marca ?marca .
+        ?producto default:Peso ?peso .
         FILTER("""
 
-    next = (precio_min != 0.0 or precio_max != sys.float_info.max or nombre is not None or marca is not None or categoria is not None or valoracion is not None)
+    next = False
+    #next = (precio_min != 0.0 or precio_max != sys.float_info.max or nombre is not None or marca is not None or categoria is not None or valoracion is not None)
 
 #parametros aplicados
     if nombre is not None:
-        query += """?Nombre = """ + nombre + """'"""
+        query += """?nombre = '""" + nombre + """'"""
+        next = True
 
     if marca is not None:
         if next:
             query += """ && """
-        query += """?Marca = """ + marca + """'"""
+        query += """?marca = '""" + marca + """'"""
+        next = True
 
     if categoria is not None:
         if next:
             query += """ && """
-        query += """?Categoria = """ + categoria + """'"""
+        query += """?categoria = '""" + categoria + """'"""
+        next = True
 
     #¿modificable?
     if precio_min is not None:
         if next:
             query += """ && """
-        query += """?Precio >= """ + str(precio_min) + """'"""
+        query += """?precio >= """ + str(precio_min)
+        next = True
 
     #¿modificable?
     if precio_max is not None:
         if next:
             query += """ && """
-        query += """?Precio <= """ + str(precio_max) + """'"""
-
-    if valoracion is not None:
-        if next:
-            query += """ && """
-        query += """?Valoracion <= """ + str(valoracion) + """'"""
+        query += """?precio <= """ + str(precio_max)
+        next = True
 
 
     query += """)}"""
-    
+
     graph_query = graph.query(query)
+
+
+
     products_graph = Graph()
     graph.bind("ECSDI", ECSDI) #posible cambio
     sujetoRespuesta = ECSDI['RespuestaDeBusqueda' + str(uuid.uuid4())]
     #mss_cnt += 1
-    products_graph.add(sujetoRespuesta, RDF.type, ECSDI.RespuestaDeBusqueda)
+    products_graph.add((sujetoRespuesta, RDF.type, ECSDI.RespuestaDeBusqueda))
     products_filter = Graph()
 
     for product in graph_query:
@@ -320,7 +335,7 @@ def register_message():
     gmess.add((reg_obj, DSO.Uri, MostradorAgent.uri))
     gmess.add((reg_obj, FOAF.name, Literal(MostradorAgent.name)))
     gmess.add((reg_obj, DSO.Address, Literal(MostradorAgent.address)))
-    gmess.add((reg_obj, DSO.AgentType, DSO.HotelsAgent))
+    gmess.add((reg_obj, DSO.AgentType, DSO.MostradorAgent))
 
     # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
     gr = send_message(
@@ -387,17 +402,21 @@ def comunicacion():
         else:
             # Extraemos el objeto del contenido que ha de ser una accion de la ontologia de acciones del agente
             # de registro
-
+            result_productos = Graph()
             # Averiguamos el tipo de la accion
             if 'content' in msgdic:
+
                 content = msgdic['content']
                 accion = gm.value(subject=content, predicate=RDF.type)
 
+                for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                    gm.remove((item, None, None))
+
                 if accion == ECSDI.BuscarProductos:
-                    gr = buscarProductos(content, gm)
+                    result_productos = buscarProductos(content, gm)
             # Aqui realizariamos lo que pide la accion
             # Por ahora simplemente retornamos un Inform-done
-            gr = build_message(Graph(),
+            gr = build_message(result_productos,
                                ACL['inform'],
                                sender=MostradorAgent.uri,
                                msgcnt=mss_cnt,

@@ -136,8 +136,8 @@ def agregarDBProducto(data):
         graph.add((item, ECSDI.Marca, Literal(data['Marca'], datatype=XSD.string)))
         graph.add((item, ECSDI.Externo, Literal(data['Externo'], datatype=XSD.boolean)))
 
-
         graph.serialize(destination=db.DBProductos, format='turtle')
+
         logger.info("Registro de nuevo producto finalizado")
 
     except Exception as e:
@@ -182,7 +182,6 @@ def procesarProducto(graph, content):
 def agregarproducto(content, gm):
     logger.info("Recibida peticion de añadir productos")
     for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
-        print(item)
         gm.remove((item, None, None))
 
     thread = threading.Thread(target=procesarProducto, args=(gm, content))
@@ -195,12 +194,12 @@ def agregarproducto(content, gm):
 def retornarproducto(gm):
     logger.info("Recibida peticion de enviar productos")
     for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
-        print(item)
         gm.remove((item, None, None))
 
     ontologyFile = open(db.DBProductos)
     resultado = Graph()
     resultado.parse(ontologyFile, format='turtle')
+
     return resultado
 
 
@@ -231,7 +230,7 @@ def register_message():
     gmess.add((reg_obj, DSO.Uri, GestorProductosAgent.uri))
     gmess.add((reg_obj, FOAF.name, Literal(GestorProductosAgent.name)))
     gmess.add((reg_obj, DSO.Address, Literal(GestorProductosAgent.address)))
-    gmess.add((reg_obj, DSO.AgentType, DSO.HotelsAgent))
+    gmess.add((reg_obj, DSO.AgentType, DSO.GestorProductosAgent))
 
     # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
     gr = send_message(
@@ -323,14 +322,14 @@ def comunicacion():
             if 'content' in msgdic:
                 content = msgdic['content']
                 accion = gm.value(subject=content, predicate=RDF.type)
-
+                result = Graph()
                 if accion == ECSDI.PeticionAgregarProducto:
-                    gr = agregarproducto(content, gm)
+                    result = agregarproducto(content, gm)
                 elif accion == ECSDI.PeticionProductos:
-                    gr = retornarproducto(gm)
+                    result = retornarproducto(gm)
             # Aqui realizariamos lo que pide la accion
             # Por ahora simplemente retornamos un Inform-done
-            gr = build_message(Graph(),
+            gr = build_message(result,
                                ACL['inform'],
                                sender=GestorProductosAgent.uri,
                                msgcnt=mss_cnt,
