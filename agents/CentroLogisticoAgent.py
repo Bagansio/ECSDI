@@ -266,8 +266,6 @@ def info():
     agn_add = dsgraph.value(subject=agn_uri, predicate=DSO.Address)
 
     print(agn_uri + "    :    " + agn_add)
-    graph = Graph()
-    graph.bind("default", ECSDI)
     id = 'Lote'
     item = ECSDI[id]
 
@@ -277,8 +275,8 @@ def info():
     # Construimos el mensaje de registro
     gmess.bind('foaf', FOAF)
     gmess.bind('dso', DSO)
-    graph.bind("default", ECSDI)
-    reg_obj = agn[CentroLogisticoAgent.name]
+    gmess.bind("default", ECSDI)
+    reg_obj = agn['PedirOfertas' + mss_cnt]
     gmess.add((reg_obj, RDF.type,  ECSDI.PedirOfertas))
     gmess.add((reg_obj, DSO.Uri, CentroLogisticoAgent.uri))
     gmess.add((reg_obj, FOAF.name, Literal(CentroLogisticoAgent.name)))

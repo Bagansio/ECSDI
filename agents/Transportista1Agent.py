@@ -118,11 +118,6 @@ def prepararOferta(content, grafo_entrada):
 
     global mss_cnt
 
-    for a,b,c in grafo_entrada:
-        print(a)
-        print(b)
-        print(c)
-        print('......')
 
     logger.info("Recibida petición oferta")
 
