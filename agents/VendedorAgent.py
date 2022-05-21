@@ -111,10 +111,106 @@ dsgraph = Graph()
 # Cola de comunicacion entre procesos
 cola1 = Queue()
 
-def vender(grafoEntrada, content):
-    logger.info('Petición de compra recibida')
+def RegistrarVenta(gm):
+    logger.info('Registrando la venta')
+    ontologyFile = open(db.DBCompras)
+
+    grafoVentas = Graph()
+    grafoVentas.bind('default', ECSDI)
+    grafoVentas.parse(ontologyFile, format='turtle')
+    grafoVentas += gm
+
+    grafoVentas.serialize(destination=db.DBCompras, format='turtle')
+    logger.info("Registro de venta finalizado")
+
+
+def getMessageCount():
+    global mss_cnt
+    mss_cnt += 1
+    return mss_cnt
+
+
+def enviarVenta(content, gm):
+    logger.info('Haciendo petición de envio TODAVIA NO IMPLEMENTADA!!')
+    gm.remove((content, RDF.type, ECSDI.PeticionCompra))
+    sujeto = ECSDI['PeticionEnvio' + str(getMessageCount())]
+    gm.add((sujeto, RDF.type, ECSDI.PeticionEnvio)) #No se si esta peticionenvio
+
+
+    for a,b,c in gm:
+        if a == content:
+            gm.remove((a, b, c))
+            gm.add((sujeto, b, c))
+
+    logger.info("Petición de envio enviada")
+    #                                >No se si se llamara asi XD<
+    EnviadorAgent = agents.get_agent(DSO.EnviadorAgent, VendedorAgent, DirectoryAgent, mss_cnt)
+    
+    #Acabar esto cuando este el agente enviador
+    """
+    rc = send_message(build_message(gm,
+                                    perf=ACL.request, sender=VendedorAgent.uri,
+                                    receiver=enviador.uri,
+                                    msgcnt=getMessageCount(), content=sujeto), enviador.address)
+    """
+
 
     
+
+def vender(content, gm):
+    logger.info('Petición de compra recibida')
+    thread = threading.Thread(target=RegistrarVenta, args=(gm,))
+    thread.start()
+
+    tarjetaCredito = gm.value(subject=content, predicate=ECSDI.Tarjeta) #AÑADIR TARJETA A LA ONTOLOGIA
+
+    #Creamos la factura  
+    grafoFactura = Graph()
+    grafoFactura.bind('default', ECSDI)
+    logger.info("Creando la factura")
+    sujeto = ECSDI['Factura' + str(getMessageCount())]
+    grafoFactura.add((sujeto, RDF.type, ECSDI.Factura))#NO SE SI HAY FACTURA EN LA ONTO
+    grafoFactura.add((sujeto, ECSDI.Tarjeta, Literal(tarjetaCredito, datatype=XSD.int)))
+
+    compra = gm.value(subject=content, predicate=ECSDI.De) #ESTO EXISTE EL ECSDI.De??? XDDD
+
+    precio = 0
+    for producto in gm.objects(subject=compra, predicate=ECSDI.Contiene):
+        #añadimos producto
+        grafoFactura.add((producto, RDF.type, ECSDI.Producto)) 
+
+        #añadimos nombre producto
+        NProducto = gm.value(subject=producto, predicate=ECSDI.Nombre)
+        grafoFactura.add((producto, ECSDI.Nombre, Literal(NProducto, datatype=XSD.string)))
+
+        #añadimos precio producto
+        p = gm.value(subject=producto, predicate=ECSDI.Precio)
+        grafoFactura.add((producto, ECSDI.Precio, Literal(float(p), datatype=XSD.float)))
+
+        #sumamos a precio total
+        precio += float(p)
+
+        grafoFactura.add((sujeto, ECSDI.FormadaPor, URIRef(producto)))
+
+    grafoFactura.add((sujeto, ECSDI.PrecioTotal, Literal(precio, datatype=XSD.float))) #Revisar si hay preciototal en la onto
+    s = gm.value(predicate=RDF.type, object=ECSDI.PeticionCompra)
+
+    gm.add((s, ECSDI.PrecioTotal, Literal(precio, datatype=XSD.float)))
+
+    #IMPLEMENTAR ENVIAR VENTA (FALTAN LOS AGENTES ENVIADORES)
+    thread = Thread(target=enviarVenta, args=(content, gm))
+    thread.start()
+
+    logger.info("Retornando la factura")
+    return grafoFactura
+
+
+
+
+
+
+
+
 
 
 
@@ -168,23 +264,7 @@ def stop():
     shutdown_server()
     return "Parando Servidor"
 
-@app.route("/iface", methods=['GET', 'POST'])
-def browser_iface():
-    """
-    Permite la comunicacion con el agente via un navegador
-    via un formulario
-    """
-    form = request.form
-    if 'message' in form:
-        if True:
 
-            return None
-
-        else:
-            logger.info('Error añadiendo el producto externo, formulario incorrecto')
-
-
-    return render_template('agregarproducto.html')
 
 #comm AQUI
 @app.route("/comm")
@@ -233,13 +313,13 @@ def comunicacion():
                 content = msgdic['content']
                 accion = gm.value(subject=content, predicate=RDF.type)
 
-            # Aqui realizariamos lo que pide la accion
-            # Por ahora simplemente retornamos un Inform-done
-            gr = build_message(Graph(),
-                               ACL['inform'],
-                               sender=VendedorAgent.uri,
-                               msgcnt=mss_cnt,
-                               receiver=msgdic['sender'], )
+            if accion == ECSDI.PeticionCompra: #AÑADIR EN LA ONTOLOGIA
+
+                # Eliminar los ACLMessage
+                for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                    gm.remove((item, None, None))
+
+                gr =  vender(gm, content) #retornamos la factura
     mss_cnt += 1
 
     logger.info('Respondemos a la peticion')
