@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 filename: MostradorAgent
-
 Antes de ejecutar hay que añadir la raiz del proyecto a la variable PYTHONPATH
-
 Agente que se registra como agente de busquedas
-
 @author: Bagansio, Cristian Mesa, Artur Farriols
 """
 
@@ -316,7 +313,6 @@ def register_message():
     Envia un mensaje de registro al servicio de registro
     usando una performativa Request y una accion Register del
     servicio de directorio
-
     :param gmess:
     :return:
     """
@@ -355,7 +351,6 @@ def register_message():
 def stop():
     """
     Entrypoint que para el agente
-
     :return:
     """
     tidyup()
@@ -368,7 +363,6 @@ def comunicacion():
     Entrypoint de comunicacion del agente
     Simplemente retorna un objeto fijo que representa una
     respuesta a una busqueda de hotel
-
     Asumimos que se reciben siempre acciones que se refieren a lo que puede hacer
     el agente (buscar con ciertas restricciones, reservar)
     Las acciones se mandan siempre con un Request
@@ -430,7 +424,6 @@ def comunicacion():
 def tidyup():
     """
     Acciones previas a parar el agente
-
     """
     global cola1
     cola1.put(0)
@@ -438,7 +431,6 @@ def tidyup():
 def agentbehavior1(cola):
     """
     Un comportamiento del agente
-
     :return:
     """
     # Registramos el agente
