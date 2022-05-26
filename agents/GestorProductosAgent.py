@@ -12,7 +12,7 @@ Agente que se registra como agente de hoteles y espera peticiones
 from pathlib import Path
 import sys
 
-path_root = Path(__file__).parents[1]
+path_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(path_root))
 
 from multiprocessing import Process, Queue
@@ -252,11 +252,13 @@ def browser_iface():
     via un formulario
     """
     form = request.form
+    data = dict(form)
+    data['Externo'] = False
+
     if 'message' in form:
         if form['Nombre'] != '' and form['Marca'] != '' and form['Precio'] != '' and\
            form['Categoria'] != '' and form['Peso'] != '':
-
-            agregarDBProducto(request.form)
+           agregarDBProducto(data)
 
         else:
             logger.info('Error añadiendo el producto externo, formulario incorrecto')

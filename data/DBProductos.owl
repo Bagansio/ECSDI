@@ -1,14 +1,27 @@
 @prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
 
-
-default:Producto0f75f3f6-a458-4323-b3f0-d9029eba4ebe a default:Product ;
-    default:Categoria "2"^^xsd:string ;
-    default:Externo true ;
+default:Producto4dcd86e3-e860-47c5-80cf-70bf5a760fb6 a default:Product ;
+    default:Categoria "1"^^xsd:string ;
+    default:Externo false ;
     default:Marca "1"^^xsd:string ;
-    default:Nombre "5"^^xsd:string ;
+    default:Nombre "1"^^xsd:string ;
     default:Peso "1.0"^^xsd:float ;
-    default:Precio "5.0"^^xsd:float .
+    default:Precio "1.0"^^xsd:float .
+
+default:Producto9c640211-b1af-4e46-af9e-7445a72e0979 a default:Product ;
+    default:Categoria "2"^^xsd:string ;
+    default:Externo false ;
+    default:Marca "2"^^xsd:string ;
+    default:Nombre "2"^^xsd:string ;
+    default:Peso "2.0"^^xsd:float ;
+    default:Precio "2.0"^^xsd:float .
+
+default:Productoe0f06ae5-f248-4e13-9530-b0c1d5557fb5 a default:Product ;
+    default:Categoria "3"^^xsd:string ;
+    default:Externo false ;
+    default:Marca "3"^^xsd:string ;
+    default:Nombre "3"^^xsd:string ;
+    default:Peso "3.0"^^xsd:float ;
+    default:Precio "3.0"^^xsd:float .
+

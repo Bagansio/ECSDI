@@ -9,7 +9,7 @@ Agente que se registra como agente de busquedas
 from pathlib import Path
 import sys
 
-path_root = Path(__file__).parents[1]
+path_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(path_root))
 
 from multiprocessing import Process, Queue
@@ -199,7 +199,7 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
     prefix owl:<http://www.w3.org/2002/07/owl#>
     SELECT ?producto ?nombre ?precio ?marca ?peso 
         where {
-        {?producto rdf:type default:Producto } .
+        {?producto rdf:type default:Product } .
         ?producto default:Nombre ?nombre .
         ?producto default:Precio ?precio .
         ?producto default:Marca ?marca .
@@ -242,10 +242,13 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
 
 
     query += """)}"""
+    
+    logger.info("AAAAA")
 
     graph_query = graph.query(query)
+    
 
-
+    logger.info("BBBBB")
 
     products_graph = Graph()
     graph.bind("ECSDI", ECSDI) #posible cambio
@@ -253,7 +256,7 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
     #mss_cnt += 1
     products_graph.add((sujetoRespuesta, RDF.type, ECSDI.RespuestaDeBusqueda))
     products_filter = Graph()
-
+    
     for product in graph_query:
         product_nombre = product.Nombre
         product_marca = product.Marca
