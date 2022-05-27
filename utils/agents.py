@@ -19,13 +19,14 @@ agn = Namespace("http://www.agentes.org#")
 agent_ports = {'GestorProductosAgent': 9001,
                'GestorServicioExternoAgent': 9002,
                'PersonalAgent': 9003,
-
+               'MostradorAgent': 9004,
                'CentroLogisticoAgent': 9005,
-
+               
+               'VendedorAgent': 9005,
+               
                'Transportista1Agent': 9015,
                'Transportista2Agent': 9016,
                }
-
 
 def get_agent(agn_type, sender, reciever, mss_cnt):
 
@@ -55,3 +56,10 @@ def get_agent(agn_type, sender, reciever, mss_cnt):
     name = gr.value(subject=content, predicate=FOAF.name)
 
     return Agent(name, url, address, None)
+
+def print_graph(graph):
+    for a,b,c in graph:
+        print(a)
+        print(b)
+        print(c)
+        print("-------------------------------------------------------------------------")
