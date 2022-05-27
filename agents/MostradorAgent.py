@@ -199,7 +199,7 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
     prefix owl:<http://www.w3.org/2002/07/owl#>
     SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria
         where {
-        {?producto rdf:type default:Product } .
+        {?producto rdf:type default:Producto } .
         ?producto default:Nombre ?nombre .
         ?producto default:Precio ?precio .
         ?producto default:Marca ?marca .
@@ -244,13 +244,10 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
 
 
     query += """)}"""
-    
-    logger.info("AAAAA")
+
 
     graph_query = graph.query(query)
-    
 
-    logger.info("BBBBB")
     
     products_graph = Graph()
     graph.bind("ECSDI", ECSDI) #posible cambio

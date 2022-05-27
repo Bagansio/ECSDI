@@ -21,7 +21,7 @@ import argparse
 import threading
 import uuid
 
-from flask import Flask, request,render_template
+from flask import Flask, request,render_template, session, redirect
 from rdflib import Graph, Namespace, Literal, URIRef, XSD
 from rdflib.namespace import FOAF, RDF
 from utils import db,agents
@@ -82,6 +82,8 @@ else:
 
 # Flask stuff
 app = Flask(__name__)
+app.secret_key = 'secret'
+app.debug = True
 if not args.verbose:
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
@@ -116,119 +118,73 @@ cola1 = Queue()
 
 # Agent Utils
 
+def query_usuario(form, login):
+    query = """
+                        prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                        prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+                        prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+                        prefix owl:<http://www.w3.org/2002/07/owl#>
+                        SELECT ?usuario ?id ?nombre ?password 
+                            where {
+                            {?usuario rdf:type default:Usuario } .
+                            ?usuario default:Id ?id .
+                            ?usuario default:Nombre ?nombre .
+                            ?usuario default:Password ?password .
 
-def agregarDBProducto(data):
-    try:
-        logger.info("Registrando producto: [" + data['Nombre'] + " " + data['Marca'] +
-                    "] de " + data['Peso'] + "kg por " + data['Precio'] + "€")
-        # añadir el producto
-        global mss_cnt
-        ontologyFile = open(db.DBProductos)
-        graph = Graph()
-        graph.parse(ontologyFile, format='turtle')
-        graph.bind("default", ECSDI)
-        id = 'Producto' + str(uuid.uuid4())
-        item = ECSDI[id]
+                            FILTER(?nombre ='""" + form['username'] + """'"""
 
-        graph.add((item, RDF.type, ECSDI.Product))
-        graph.add((item, ECSDI.Nombre, Literal(data['Nombre'], datatype=XSD.string)))
-        graph.add((item, ECSDI.Precio, Literal(data['Precio'], datatype=XSD.float)))
-        graph.add((item, ECSDI.Categoria, Literal(data['Categoria'], datatype=XSD.string)))
-        graph.add((item, ECSDI.Peso, Literal(data['Peso'], datatype=XSD.float)))
-        graph.add((item, ECSDI.Marca, Literal(data['Marca'], datatype=XSD.string)))
-        graph.add((item, ECSDI.Externo, Literal(data['Externo'], datatype=XSD.boolean)))
+    if login:
+        query += """ && ?password = '""" + form['password'] + """'"""
 
+    query += """)}"""
 
-        graph.serialize(destination=db.DBProductos, format='turtle')
-        logger.info("Registro de nuevo producto finalizado")
+    return query
 
-    except Exception as e:
-        print(e)
-        logger.info("Registro de nuevo producto fallido")
+def login(form):
+    error = ""
+    logger.info(f"Logeando usuario: {form['username']}")
+    ontologyFile = open(db.DBUsuarios)
+    graph = Graph()
+    graph.parse(ontologyFile, format='turtle')
+    graph.bind("default", ECSDI)
+    graph_query = graph.query(query_usuario(form, True))
 
+    if len(graph_query) > 0:
 
-def procesarProducto(graph, content):
-    data = {
-        'Categoria': None,
-        'Marca': None,
-        'Nombre': None,
-        'Peso': None,
-        'Precio': None,
-        'Externo': None
-    }
+        for element in graph_query:
+            session['usuario'] = element['id']
 
-    for a,b,c in graph:
+        logger.info("Usuario logeado")
 
-        if 'Peticion' in a and b == ECSDI.Categoria:
-            data['Categoria'] = c
+    else:
+        error = "Usuario no existente o contraseña erronea"
+        logger.info(error)
 
-        elif 'Peticion' in a and b == ECSDI.Marca:
-            data['Marca'] = c
+    return error
 
-        elif 'Peticion' in a and  b == ECSDI.Nombre:
-            data['Nombre'] = c
+def registrar_usuario(form):
+    error = ""
+    logger.info(f"Registrando usuario: {form['username']}")
+    ontologyFile = open(db.DBUsuarios)
+    graph = Graph()
+    graph.parse(ontologyFile, format='turtle')
+    graph.bind("default", ECSDI)
+    graph_query = graph.query(query_usuario(form, False))
 
-        elif 'Peticion' in a and b == ECSDI.Peso:
-            data['Peso'] = c
-
-        elif 'Peticion' in a and b == ECSDI.Precio:
-            data['Precio'] = c
-
-        elif 'Peticion' in a and b == ECSDI.Externo:
-            data['Externo'] = c
-
-
-    agregarDBProducto(data)
-
-# Agrega un Producto Externo a la BD
-def agregarproducto(content, gm):
-    logger.info("Recibida peticion de añadir productos")
-    for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
-        print(item)
-        gm.remove((item, None, None))
-
-    thread = threading.Thread(target=procesarProducto, args=(gm, content))
-    thread.start()
-
-    resultadoComunicacion = Graph()
-
-    return resultadoComunicacion
-
-
-def search_agent(agent_name):
-    """
-    Envia un mensaje de registro al servicio de registro
-    usando una performativa Request y una accion Register del
-    servicio de directorio
-
-    :param gmess:
-    :return:
-    """
-
-    logger.info('Buscamos a ' + agent_name)
-
-    global mss_cnt
-
-    gmess = Graph()
-
-    # Construimos el mensaje de registro
-    gmess.bind('foaf', FOAF)
-    gmess.bind('dso', DSO)
-    reg_obj = agn[agent_name + '-Search']
-    gmess.add((reg_obj, RDF.type, DSO.Search))
-
-    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
-    gr = send_message(
-        build_message(gmess, perf=ACL.request,
-                      sender=PersonalAgent.uri,
-                      receiver=DirectoryAgent.uri,
-                      content=reg_obj,
-                      msgcnt=mss_cnt),
-        DirectoryAgent.address)
-    mss_cnt += 1
-
-    return gr
-
+    if len(graph_query) > 0:
+        error = "Usuario ya existente"
+        logger.info("Registro del usuario fallido (Ya existe el usuario)")
+    else:
+        id = str(uuid.uuid4())
+        item = ECSDI['Usuario' + id]
+        graph.add((item, RDF.type, ECSDI.Usuario))
+        graph.add((item, ECSDI.Id, Literal(id, datatype=XSD.string)))
+        graph.add((item, ECSDI.Nombre, Literal(form['username'], datatype=XSD.string)))
+        graph.add((item, ECSDI.Password, Literal(form['password'], datatype=XSD.string)))
+        graph.serialize(destination=db.DBUsuarios, format='turtle')
+        session['usuario'] = id
+        logger.info("Registro de nuevo usuario finalizado")
+    return error
 
 # Agent functions
 
@@ -298,6 +254,7 @@ def browser_iface():
     gmess.add((reg_obj, DSO.Address, Literal(PersonalAgent.address)))
     gmess.add((reg_obj, DSO.AgentType, DSO.PersonalAgent))
     # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+    '''
     gr = send_message(
         build_message(gmess, perf=ACL.request,
                       sender=PersonalAgent.uri,
@@ -306,15 +263,45 @@ def browser_iface():
                       msgcnt=mss_cnt),
         MostradorAgent.address)
     mss_cnt += 1
-
+    
 
     for a,b,c in gr:
         print(a)
         print(b)
         print(c)
+    '''
+    return render_template('main.html')
 
-    return render_template('agregarproducto.html')
 
+@app.route("/login", methods=['GET', 'POST'])
+def login_iface():
+    form = request.form
+    error = ""
+    if 'login' in form:
+        if form['username'] != '' and form['password'] != '':
+            error = login(form)
+
+            if error == "":
+                return redirect("/iface")
+    return render_template('login.html', error=error)
+
+@app.route("/register", methods=['GET', 'POST'])
+def register_iface():
+    form = request.form
+    error = ""
+    if 'register' in form:
+        if form['username'] != '' and form['password'] != '':
+            error = registrar_usuario(form)
+
+            if error == "":
+                return redirect("/iface")
+    return render_template('register.html', error=error)
+
+@app.route("/logout", methods=['GET', 'POST'])
+def logout_iface():
+    session.pop('usuario', None)
+    logger.info('Usuario deslogeado')
+    return redirect('/iface')
 
 @app.route("/stop")
 def stop():
@@ -374,8 +361,6 @@ def comunicacion():
                 content = msgdic['content']
                 accion = gm.value(subject=content, predicate=RDF.type)
 
-                if accion == ECSDI.PeticionAgregarProducto:
-                    gr = agregarproducto(content, gm)
             # Aqui realizariamos lo que pide la accion
             # Por ahora simplemente retornamos un Inform-done
             gr = build_message(Graph(),

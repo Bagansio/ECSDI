@@ -128,7 +128,7 @@ def agregarDBProducto(data):
         id = 'Producto' + str(uuid.uuid4())
         item = ECSDI[id]
 
-        graph.add((item, RDF.type, ECSDI.Product))
+        graph.add((item, RDF.type, ECSDI.Producto))
         graph.add((item, ECSDI.Nombre, Literal(data['Nombre'], datatype=XSD.string)))
         graph.add((item, ECSDI.Precio, Literal(data['Precio'], datatype=XSD.float)))
         graph.add((item, ECSDI.Categoria, Literal(data['Categoria'], datatype=XSD.string)))
@@ -252,13 +252,14 @@ def browser_iface():
     via un formulario
     """
     form = request.form
-    data = dict(form)
-    data['Externo'] = False
 
     if 'message' in form:
         if form['Nombre'] != '' and form['Marca'] != '' and form['Precio'] != '' and\
            form['Categoria'] != '' and form['Peso'] != '':
-           agregarDBProducto(data)
+            data = dict(form)
+            data['Externo'] = False
+
+            agregarDBProducto(data)
 
         else:
             logger.info('Error añadiendo el producto externo, formulario incorrecto')

@@ -1,0 +1,13 @@
+@prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+default:Usuario05b399ef-1f1a-4bcd-8bd8-c9c1b6b6009a a default:Usuario ;
+    default:Id "05b399ef-1f1a-4bcd-8bd8-c9c1b6b6009a"^^xsd:string ;
+    default:Nombre "f"^^xsd:string ;
+    default:Password "f"^^xsd:string .
+
+default:Usuario19ab600c-64a0-43d0-bf0e-d7e30a46f02e a default:Usuario ;
+    default:Id "19ab600c-64a0-43d0-bf0e-d7e30a46f02e"^^xsd:string ;
+    default:Nombre "B"^^xsd:string ;
+    default:Password "a"^^xsd:string .
+

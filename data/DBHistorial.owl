@@ -1,33 +1,59 @@
 @prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-default:ProductoFiltrado455c36ba-c303-4d5f-a453-344ea6cfdadf a default:Producto ;
-    default:Descripcion "3"^^xsd:string ;
-    default:Nombre "3"^^xsd:string ;
-    default:Precio "3.0"^^xsd:float .
+default:ProductoFiltrado2576a5d6-f110-4bd7-bafe-fe9b2602a234 a default:Producto ;
+    default:Usuario "Bagansio" default:Usuario,
+    default:Productos 1 default:Producto,  2 default:Producto, ...
+    default:Descripcion "2"^^xsd:string,
+        "PB"^^xsd:string ;
+    default:Nombre "ttt"^^xsd:string ;
+    default:Precio "5.0"^^xsd:float .
 
-default:ProductoFiltrado678c19fd-7df5-4c8e-a1cc-cd63d4484b16 a default:Producto ;
-    default:Descripcion "2"^^xsd:string ;
-    default:Nombre "2"^^xsd:string ;
+default:ProductoFiltrado74b16630-9862-4e06-ae46-2c9d0252647a a default:Producto ;
+    default:Descripcion "Bolo"^^xsd:string,
+        "Top"^^xsd:string ;
+    default:Nombre "Redbul"^^xsd:string ;
+    default:Precio "1.9"^^xsd:float .
+
+default:ProductoFiltrado9a8c3d10-9670-4e40-a8d2-32bd0083d7a8 a default:Producto ;
+    default:Descripcion "Bolo"^^xsd:string,
+        "Top"^^xsd:string ;
+    default:Nombre "Redbul"^^xsd:string ;
+    default:Precio "1.9"^^xsd:float .
+
+default:ProductoFiltradoa9e8258a-6acd-491a-bf95-a3cd22cec3eb a default:Producto ;
+    default:Descripcion "5"^^xsd:string,
+        "f"^^xsd:string ;
+    default:Nombre "Hola"^^xsd:string ;
     default:Precio "2.0"^^xsd:float .
 
-default:ProductoFiltrado7d3837e6-6079-464d-a15b-cf69a0d44ce6 a default:Producto ;
-    default:Descripcion "1"^^xsd:string ;
-    default:Nombre "1"^^xsd:string ;
-    default:Precio "1.0"^^xsd:float .
-
-default:ProductoFiltradoc2c148c2-2e5b-455b-9c4e-df1fa0fa6e7d a default:Producto ;
-    default:Descripcion "2"^^xsd:string ;
-    default:Nombre "2"^^xsd:string ;
+default:ProductoFiltradob7e88d0b-881f-45d9-a9ce-1f5c14a40140 a default:Producto ;
+    default:Descripcion "5"^^xsd:string,
+        "f"^^xsd:string ;
+    default:Nombre "Hola"^^xsd:string ;
     default:Precio "2.0"^^xsd:float .
 
-default:ProductoFiltradoe244fded-745e-47b7-ae7e-53d9740d9802 a default:Producto ;
-    default:Descripcion "1"^^xsd:string ;
-    default:Nombre "1"^^xsd:string ;
-    default:Precio "1.0"^^xsd:float .
+default:ProductoFiltradob8a8df5f-490d-4225-92a0-fb8c936e5ce7 a default:Producto ;
+    default:Descripcion "2"^^xsd:string,
+        "PB"^^xsd:string ;
+    default:Nombre "ttt"^^xsd:string ;
+    default:Precio "5.0"^^xsd:float .
 
-default:ProductoFiltradoec021579-2e18-4624-aae9-81ce72dd7082 a default:Producto ;
-    default:Descripcion "3"^^xsd:string ;
-    default:Nombre "3"^^xsd:string ;
-    default:Precio "3.0"^^xsd:float .
+default:ProductoFiltradobee90675-a9dc-4bfe-98ef-ef83342e2efa a default:Producto ;
+    default:Descripcion "5"^^xsd:string,
+        "f"^^xsd:string ;
+    default:Nombre "Hola"^^xsd:string ;
+    default:Precio "2.0"^^xsd:float .
+
+default:ProductoFiltradoc29a9464-9f48-4d64-a055-5f05a4666d26 a default:Producto ;
+    default:Descripcion "2"^^xsd:string,
+        "PB"^^xsd:string ;
+    default:Nombre "ttt"^^xsd:string ;
+    default:Precio "5.0"^^xsd:float .
+
+default:ProductoFiltradodf93fc74-6059-4ea6-a44b-7023e8562c6e a default:Producto ;
+    default:Descripcion "Bolo"^^xsd:string,
+        "Top"^^xsd:string ;
+    default:Nombre "Redbul"^^xsd:string ;
+    default:Precio "1.9"^^xsd:float .
 

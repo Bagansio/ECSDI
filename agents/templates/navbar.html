@@ -1,0 +1,11 @@
+    <ul>
+      <li><a href="/iface">Home</a></li>
+      <li><a href="#news">News</a></li>
+      <li><a href="#contact">Contact</a></li>
+        {% if 'usuario' in session %}
+            <li style="float:right"><a class="active" href="/logout">Logout</a></li>
+        {% else %}
+            <li style="float:right"><a class="active" href="/login">Login</a></li>
+        {% endif %}
+    </ul>
+    <br/>
