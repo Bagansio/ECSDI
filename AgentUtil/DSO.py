@@ -33,10 +33,10 @@ DSO =  ClosedNamespace(
         'Address',
         
         # Named Individuals
-        'FlightsAgent',
+        'TransportistaAgent',
         'GestorProductosAgent',
         'GestorServicioExternoAgent',
-        'TravelServiceAgent',
+        'CentroLogisticoAgent',
         'PersonalAgent',
         'GestorProductosAgent',
         'MostradorAgent'

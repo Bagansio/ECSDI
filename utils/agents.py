@@ -16,8 +16,17 @@ from AgentUtil.Util import gethostname
 
 agn = Namespace("http://www.agentes.org#")
 
-agent_ports = {'GestorProductosAgent': 9001, 'GestorServicioExternoAgent': 9002, 'PersonalAgent': 9003, 'MostradorAgent': 9004, 'VendedorAgent': 9005}
-
+agent_ports = {'GestorProductosAgent': 9001,
+               'GestorServicioExternoAgent': 9002,
+               'PersonalAgent': 9003,
+               'MostradorAgent': 9004,
+               'CentroLogisticoAgent': 9005,
+               
+               'VendedorAgent': 9005,
+               
+               'Transportista1Agent': 9015,
+               'Transportista2Agent': 9016,
+               }
 
 def get_agent(agn_type, sender, reciever, mss_cnt):
 

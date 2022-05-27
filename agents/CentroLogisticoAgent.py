@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-filename: SimpleDirectoryAgent
+filename: CentroLogisticoAgent
 
 Antes de ejecutar hay que añadir la raiz del proyecto a la variable PYTHONPATH
 
@@ -19,24 +19,28 @@ directory-service-ontology.owl
 from pathlib import Path
 import sys
 
-path_root = Path(__file__).resolve().parents[1]
+
+
+path_root = Path(__file__).parents[1]
 sys.path.append(str(path_root))
 
 from multiprocessing import Process, Queue
 import argparse
 import logging
 
+from utils import agents
 from flask import Flask, request, render_template
-from rdflib import Graph, RDF, Namespace, RDFS, Literal
+from rdflib import Graph, RDF, Namespace, RDFS, Literal, XSD
 from rdflib.namespace import FOAF
 
 from AgentUtil.ACL import ACL
 from AgentUtil.FlaskServer import shutdown_server
 from AgentUtil.Agent import Agent
-from AgentUtil.ACLMessages import build_message, get_message_properties
+from AgentUtil.ACLMessages import build_message, get_message_properties, send_message
 from AgentUtil.Logging import config_logger
 from AgentUtil.DSO import DSO
 from AgentUtil.Util import gethostname
+from AgentUtil.OntoNamespaces import ECSDI
 import socket
 
 __author__ = 'Bagansio'
@@ -49,6 +53,10 @@ parser.add_argument('--verbose', help="Genera un log de la comunicacion del serv
                     default=False)
 parser.add_argument('--port', type=int,
                     help="Puerto de comunicacion del agente")
+parser.add_argument('--dhost', help="Host del agente de directorio")
+parser.add_argument('--dport', type=int,
+                    help="Puerto de comunicacion del agente de directorio")
+
 
 # Logging
 logger = config_logger(level=1)
@@ -58,7 +66,7 @@ args = parser.parse_args()
 
 # Configuration stuff
 if args.port is None:
-    port = 9000
+    port = agents.agent_ports['CentroLogisticoAgent']
 else:
     port = args.port
 
@@ -69,6 +77,16 @@ else:
     hostaddr = hostname = socket.gethostname()
 
 print('DS Hostname =', hostaddr)
+
+if args.dport is None:
+    dport = 9000
+else:
+    dport = args.dport
+
+if args.dhost is None:
+    dhostname = socket.gethostname()
+else:
+    dhostname = args.dhost
 
 # Directory Service Graph
 dsgraph = Graph()
@@ -81,10 +99,19 @@ dsgraph.bind('foaf', FOAF)
 dsgraph.bind('dso', DSO)
 
 agn = Namespace("http://www.agentes.org#")
+
+# Datos del Agente
+CentroLogisticoAgent = Agent('CentroLogisticoAgent',
+                       agn.CentroLogisticoAgent,
+                       'http://%s:%d/comm' % (hostaddr, port),
+                       'http://%s:%d/Stop' % (hostaddr, port))
+
+# Directory agent address
 DirectoryAgent = Agent('DirectoryAgent',
                        agn.Directory,
-                       'http://%s:%d/Register' % (hostaddr, port),
-                       'http://%s:%d/Stop' % (hostaddr, port))
+                       'http://%s:%d/Register' % (dhostname, dport),
+                       'http://%s:%d/Stop' % (dhostname, dport))
+
 app = Flask(__name__)
 
 if not args.verbose:
@@ -234,6 +261,49 @@ def info():
     global dsgraph
     global mss_cnt
 
+    rsearch = dsgraph.triples((None, DSO.AgentType, DSO.TransportistaAgent))
+    agn_uri = list(rsearch)[0][0]
+    agn_add = dsgraph.value(subject=agn_uri, predicate=DSO.Address)
+
+    print(agn_uri + "    :    " + agn_add)
+    id = 'Lote'
+    item = ECSDI[id]
+
+
+
+    gmess = Graph()
+    # Construimos el mensaje de registro
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    gmess.bind("default", ECSDI)
+    reg_obj = agn['PedirOfertas' + mss_cnt]
+    gmess.add((reg_obj, RDF.type,  ECSDI.PedirOfertas))
+    gmess.add((reg_obj, DSO.Uri, CentroLogisticoAgent.uri))
+    gmess.add((reg_obj, FOAF.name, Literal(CentroLogisticoAgent.name)))
+    gmess.add((reg_obj, DSO.Address, Literal(CentroLogisticoAgent.address)))
+    gmess.add((reg_obj, DSO.AgentType, DSO.CentroLogisticoAgent))
+    gmess.add((reg_obj, ECSDI.LoteEnvio, item))
+    gmess.add((item, RDF.type, ECSDI.Lote))
+    gmess.add((item, ECSDI.Peso, Literal(50, datatype=XSD.float)))
+    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+    gr = send_message(
+        build_message(gmess, perf=ACL.request,
+                      sender=CentroLogisticoAgent.uri,
+                      receiver=agn_uri,
+                      content=reg_obj,
+                      msgcnt=mss_cnt),
+        agn_add)
+    mss_cnt += 1
+
+
+    for a,b,c in gr:
+        print(a)
+        print(b)
+        print(c)
+    msg_dic = get_message_properties(gr)
+
+    print(msg_dic)
+
     return render_template('info.html', nmess=mss_cnt, graph=dsgraph.serialize(format='turtle'))
 
 
@@ -261,6 +331,10 @@ def agentbehavior1(cola):
     Behaviour que simplemente espera mensajes de una cola y los imprime
     hasta que llega un 0 a la cola
     """
+
+    # Registramos el agente
+    gr = register_message()
+
     fin = False
     while not fin:
         while cola.empty():
@@ -272,6 +346,44 @@ def agentbehavior1(cola):
         else:
             print(v)
 
+
+def register_message():
+    """
+    Envia un mensaje de registro al servicio de registro
+    usando una performativa Request y una accion Register del
+    servicio de directorio
+
+    :param gmess:
+    :return:
+    """
+
+    logger.info('Nos registramos')
+
+    global mss_cnt
+
+    gmess = Graph()
+
+    # Construimos el mensaje de registro
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    reg_obj = agn[CentroLogisticoAgent.name + '-Register']
+    gmess.add((reg_obj, RDF.type, DSO.Register))
+    gmess.add((reg_obj, DSO.Uri, CentroLogisticoAgent.uri))
+    gmess.add((reg_obj, FOAF.name, Literal(CentroLogisticoAgent.name)))
+    gmess.add((reg_obj, DSO.Address, Literal(CentroLogisticoAgent.address)))
+    gmess.add((reg_obj, DSO.AgentType, DSO.CentroLogisticoAgent))
+
+    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+    gr = send_message(
+        build_message(gmess, perf=ACL.request,
+                      sender=CentroLogisticoAgent.uri,
+                      receiver=DirectoryAgent.uri,
+                      content=reg_obj,
+                      msgcnt=mss_cnt),
+        DirectoryAgent.address)
+    mss_cnt += 1
+
+    return gr
 
 if __name__ == '__main__':
     # Ponemos en marcha los behaviours como procesos
