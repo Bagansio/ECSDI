@@ -1,1 +1,18 @@
+@prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+default:ProductoFiltrado455c36ba-c303-4d5f-a453-344ea6cfdadf a default:Producto ;
+    default:Descripcion "3"^^xsd:string ;
+    default:Nombre "3"^^xsd:string ;
+    default:Precio "3.0"^^xsd:float .
+
+default:ProductoFiltrado678c19fd-7df5-4c8e-a1cc-cd63d4484b16 a default:Producto ;
+    default:Descripcion "2"^^xsd:string ;
+    default:Nombre "2"^^xsd:string ;
+    default:Precio "2.0"^^xsd:float .
+
+default:ProductoFiltradoe244fded-745e-47b7-ae7e-53d9740d9802 a default:Producto ;
+    default:Descripcion "1"^^xsd:string ;
+    default:Nombre "1"^^xsd:string ;
+    default:Precio "1.0"^^xsd:float .
 

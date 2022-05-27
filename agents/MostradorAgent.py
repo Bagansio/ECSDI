@@ -197,13 +197,15 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
     prefix xsd:<http://www.w3.org/2001/XMLSchema#>
     prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
     prefix owl:<http://www.w3.org/2002/07/owl#>
-    SELECT ?producto ?nombre ?precio ?marca ?peso 
+    SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria
         where {
         {?producto rdf:type default:Product } .
         ?producto default:Nombre ?nombre .
         ?producto default:Precio ?precio .
         ?producto default:Marca ?marca .
         ?producto default:Peso ?peso .
+        ?producto default:Categoria ?categoria .
+
         FILTER("""
 
     next = False
@@ -249,7 +251,7 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
     
 
     logger.info("BBBBB")
-
+    
     products_graph = Graph()
     graph.bind("ECSDI", ECSDI) #posible cambio
     sujetoRespuesta = ECSDI['RespuestaDeBusqueda' + str(uuid.uuid4())]
@@ -258,13 +260,12 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
     products_filter = Graph()
     
     for product in graph_query:
-        product_nombre = product.Nombre
-        product_marca = product.Marca
-        product_categoria = product.Categoria
-        product_peso = product.Peso
-        product_precio = product.Precio
-        product_valoracion = product.Valoracion
-        sujetoProducto = product.Producto
+        product_nombre = product['nombre']
+        product_marca = product['marca']
+        product_categoria = product['categoria']
+        product_peso = product['peso']
+        product_precio = product['precio']
+        sujetoProducto = product['producto']
 
         products_graph.add((sujetoProducto, RDF.type, ECSDI.Producto))
         products_graph.add((sujetoProducto, ECSDI.Nombre, Literal(product_nombre, datatype=XSD.string)))
@@ -272,7 +273,7 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
         products_graph.add((sujetoProducto, ECSDI.Descripcion, Literal(product_categoria, datatype=XSD.string)))
         products_graph.add((sujetoProducto, ECSDI.Peso, Literal(product_peso, datatype=XSD.float)))
         products_graph.add((sujetoProducto, ECSDI.Precio, Literal(product_precio, datatype=XSD.float)))
-        products_graph.add((sujetoRespuesta, ECSDI.Valoracion, URIRef(product_valoracion)))
+     #  products_graph.add((sujetoRespuesta, ECSDI.Valoracion, URIRef(product_valoracion)))
         products_graph.add((sujetoRespuesta, ECSDI.Muestra, URIRef(sujetoProducto)))
         
 
