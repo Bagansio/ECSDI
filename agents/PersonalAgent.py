@@ -12,7 +12,7 @@ Agente que se registra como agente personal, envia y espera peticiones
 from pathlib import Path
 import sys
 
-path_root = Path(__file__).parents[1]
+path_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(path_root))
 
 from multiprocessing import Process, Queue
@@ -103,6 +103,8 @@ DirectoryAgent = Agent('DirectoryAgent',
                        agn.Directory,
                        'http://%s:%d/Register' % (dhostname, dport),
                        'http://%s:%d/Stop' % (dhostname, dport))
+
+MostradorAgent = None
 
 # Global dsgraph triplestore
 dsgraph = Graph()
@@ -276,13 +278,40 @@ def browser_iface():
     via un formulario
     """
     global mss_cnt
-    mss_cnt += 1
+    global MostradorAgent
 
     logger.info('Buscando al agente Gestor Productos')
-    agent = agents.get_agent(DSO.GestorProductosAgent, PersonalAgent, DirectoryAgent, mss_cnt)
-    print(agent.name)
-    print(agent.uri)
-    print(agent.address)
+    if MostradorAgent is None:
+        MostradorAgent = agents.get_agent(DSO.MostradorAgent, PersonalAgent, DirectoryAgent, mss_cnt)
+
+        mss_cnt += 1
+
+    gmess = Graph()
+    # Construimos el mensaje de registro
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    gmess.bind("default", ECSDI)
+    reg_obj = agn['BuscarProductos' + str(mss_cnt)]
+    gmess.add((reg_obj, RDF.type,  ECSDI.BuscarProductos))
+    gmess.add((reg_obj, DSO.Uri, PersonalAgent.uri))
+    gmess.add((reg_obj, FOAF.name, Literal(PersonalAgent.name)))
+    gmess.add((reg_obj, DSO.Address, Literal(PersonalAgent.address)))
+    gmess.add((reg_obj, DSO.AgentType, DSO.PersonalAgent))
+    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+    gr = send_message(
+        build_message(gmess, perf=ACL.request,
+                      sender=PersonalAgent.uri,
+                      receiver=MostradorAgent.uri,
+                      content=reg_obj,
+                      msgcnt=mss_cnt),
+        MostradorAgent.address)
+    mss_cnt += 1
+
+
+    for a,b,c in gr:
+        print(a)
+        print(b)
+        print(c)
 
     return render_template('agregarproducto.html')
 

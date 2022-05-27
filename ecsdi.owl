@@ -1,0 +1,908 @@
+<?xml version="1.0"?>
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.owl-ontologies.com/ECSDIPractica"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     ontologyIRI="http://www.owl-ontologies.com/ECSDIPractica">
+    <Prefix name="" IRI="http://www.owl-ontologies.com/ECSDIPractica"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="xml" IRI="http://www.w3.org/XML/1998/namespace"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Declaration>
+        <Class IRI="#RestriccionPrecio"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Stock"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Accion"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ActualizarHistorial"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#AñadirProductoExterno"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#BuscarProductos"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#CentroLogistico"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Compra"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#DevolverProducto"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#EnviarEnvio"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#EnviarFactura"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Factura"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#FinalizarDevolucion"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#InformarEnvio"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Lote"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PagarVendedorExterno"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PedirContraofertas"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PedirOfertas"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarCobro"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarEnvio"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarPedido"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RecomendarProducto"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Respuesta"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RespuestaBusqueda"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RestriccionCategoria"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RestriccionMarca"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RestriccionNombre"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RestriccionValoracion"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Restricciones"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Transportista"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Usuario"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ValorarProducto"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#VendedorExterno"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#CompraDevolucion"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#CompraFactura"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Contiene"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Devolucion"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Envia"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#FacturaEnviada"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#HechaPor"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#HistorialDe"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#LoteEnvio"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Ofrece"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PagoVendedorExterno"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductoDevolucion"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductoExternoEnviado"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductoRecomendado"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductosComprados"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductosHistorial"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductosPedido"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RestringidaPor"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ValoracionProducto"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#Cantidad"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#Externo"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#PrecioMaximo"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#PrecioMinimo"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Categoria"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Coste"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Fecha"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Id"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Marca"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#MotivoDevolucion"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Nombre"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#NumeroProductos"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Peso"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Poblacion"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Precio"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PrecioKg"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PrecioKm"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PrecioTransporte"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PrioridadEntrega"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Tarjeta"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Valoracion"/>
+    </Declaration>
+    <SubClassOf>
+        <Class IRI="#RestriccionPrecio"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Restricciones"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ActualizarHistorial"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Accion"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#AñadirProductoExterno"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Accion"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#BuscarProductos"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Accion"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#DevolverProducto"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Accion"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#EnviarEnvio"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarEnvio"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#EnviarFactura"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Respuesta"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#FinalizarDevolucion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#DevolverProducto"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#InformarEnvio"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Respuesta"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PagarVendedorExterno"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarCobro"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PedirContraofertas"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarEnvio"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PedirOfertas"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarEnvio"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarCobro"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Accion"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarEnvio"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Accion"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarPedido"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Accion"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RecomendarProducto"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Accion"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RespuestaBusqueda"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Respuesta"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RestriccionCategoria"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Restricciones"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RestriccionMarca"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Restricciones"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RestriccionNombre"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Restricciones"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RestriccionValoracion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Restricciones"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ValorarProducto"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Accion"/>
+    </SubClassOf>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#CompraDevolucion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#DevolverProducto"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#CompraDevolucion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#FinalizarDevolucion"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#CompraFactura"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Factura"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Contiene"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Lote"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Envia"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarEnvio"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#FacturaEnviada"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#EnviarFactura"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#HechaPor"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Compra"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#HistorialDe"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ActualizarHistorial"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#LoteEnvio"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PedirContraofertas"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#LoteEnvio"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PedirOfertas"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Ofrece"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#VendedorExterno"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PagoVendedorExterno"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PagarVendedorExterno"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductoDevolucion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#DevolverProducto"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductoDevolucion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#FinalizarDevolucion"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductoExternoEnviado"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#InformarEnvio"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductoRecomendado"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RecomendarProducto"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductosComprados"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Compra"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductosHistorial"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ActualizarHistorial"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductosPedido"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarPedido"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RestringidaPor"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#BuscarProductos"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ValoracionProducto"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ValorarProducto"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#CompraDevolucion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Compra"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#CompraFactura"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Compra"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Contiene"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Devolucion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Compra"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Envia"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Compra"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#FacturaEnviada"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Factura"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#HechaPor"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Usuario"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#HistorialDe"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Usuario"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#LoteEnvio"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Lote"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Ofrece"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PagoVendedorExterno"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#VendedorExterno"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductoDevolucion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductoExternoEnviado"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductoRecomendado"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductosComprados"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductosHistorial"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ProductosPedido"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RestringidaPor"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Restricciones"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ValoracionProducto"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </ObjectPropertyRange>
+    <DataPropertyDomain>
+        <DataProperty IRI="#Cantidad"/>
+        <Class IRI="#Stock"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#Externo"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#AñadirProductoExterno"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#Externo"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#PrecioMaximo"/>
+        <Class IRI="#RestriccionPrecio"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#PrecioMinimo"/>
+        <Class IRI="#RestriccionPrecio"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Categoria"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#AñadirProductoExterno"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Categoria"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Categoria"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RestriccionCategoria"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Coste"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Compra"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Fecha"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Compra"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Id"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#CentroLogistico"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Id"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Compra"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Id"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#EnviarEnvio"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Id"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Factura"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Id"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Lote"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Id"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Transportista"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Id"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Usuario"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Id"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#VendedorExterno"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Marca"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#AñadirProductoExterno"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Marca"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Marca"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RestriccionMarca"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#MotivoDevolucion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#DevolverProducto"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Nombre"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#AñadirProductoExterno"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Nombre"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Compra"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Nombre"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Lote"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Nombre"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Nombre"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RestriccionNombre"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Nombre"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Transportista"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Nombre"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#VendedorExterno"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#NumeroProductos"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Factura"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Peso"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#AñadirProductoExterno"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Peso"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Lote"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Peso"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Poblacion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#CentroLogistico"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Poblacion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Compra"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Poblacion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Lote"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Poblacion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarPedido"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Precio"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#AñadirProductoExterno"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Precio"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PrecioKg"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Transportista"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PrecioKm"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Transportista"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PrecioTransporte"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PedirContraofertas"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PrioridadEntrega"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Compra"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PrioridadEntrega"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Lote"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PrioridadEntrega"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarPedido"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Tarjeta"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Compra"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Tarjeta"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarPedido"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Tarjeta"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#VendedorExterno"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Valoracion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Valoracion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RestriccionValoracion"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Valoracion"/>
+        <Class IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ValorarProducto"/>
+    </DataPropertyDomain>
+    <DataPropertyRange>
+        <DataProperty IRI="#Cantidad"/>
+        <Datatype abbreviatedIRI="xsd:positiveInteger"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#Externo"/>
+        <Datatype abbreviatedIRI="xsd:boolean"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#PrecioMaximo"/>
+        <Datatype abbreviatedIRI="xsd:double"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#PrecioMinimo"/>
+        <Datatype abbreviatedIRI="xsd:double"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Categoria"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Coste"/>
+        <Datatype abbreviatedIRI="xsd:double"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Fecha"/>
+        <Datatype abbreviatedIRI="xsd:dateTime"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Id"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Marca"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#MotivoDevolucion"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Nombre"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#NumeroProductos"/>
+        <Datatype abbreviatedIRI="xsd:int"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Peso"/>
+        <Datatype abbreviatedIRI="xsd:double"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Poblacion"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Precio"/>
+        <Datatype abbreviatedIRI="xsd:double"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PrecioKg"/>
+        <Datatype abbreviatedIRI="xsd:double"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PrecioKm"/>
+        <Datatype abbreviatedIRI="xsd:double"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PrecioTransporte"/>
+        <Datatype abbreviatedIRI="xsd:double"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PrioridadEntrega"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Tarjeta"/>
+        <Datatype abbreviatedIRI="xsd:int"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Valoracion"/>
+        <Datatype abbreviatedIRI="xsd:double"/>
+    </DataPropertyRange>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Accion</IRI>
+        <Literal>Esta clase representa el conjunto de acciones llevados a cabo por los distintos agentes del sistema</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ActualizarHistorial</IRI>
+        <Literal>Esta clase representa la acción de actualizar el historial</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#AñadirProductoExterno</IRI>
+        <Literal>Esta clase representa la accion de añadir un nuevo producto externo</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#BuscarProductos</IRI>
+        <Literal>Esta clase representa la accion de buscar productos</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#CentroLogistico</IRI>
+        <Literal>Esta clase representa un almacen de productos</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Compra</IRI>
+        <Literal>Esta clase representa la compra de un conjunto de productos realizada por un usuario</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#DevolverProducto</IRI>
+        <Literal>Esta clase representa la accion de devolver un producto comprado</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#EnviarEnvio</IRI>
+        <Literal>Esta clase representa la accion de enviar un pedido</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Factura</IRI>
+        <Literal>Esta clase representa la factura asociada a una compra</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#FinalizarDevolucion</IRI>
+        <Literal>Esta clase representa la accion de finalizar una devolucion</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#InformarEnvio</IRI>
+        <Literal>Esta clase representa la respuesta de informar el estado del envio de un producto al vendedor externo</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Lote</IRI>
+        <Literal>Esta clase representa un conjunto de productos comprados que se encuentran en un mismo CentroLogistico</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PagarVendedorExterno</IRI>
+        <Literal>Esta clase representa la accion de pagar a un vendedor externo</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PedirContraofertas</IRI>
+        <Literal>Esta clase representa la accion de pedir una contraoferta de un envio</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#PedirOfertas</IRI>
+        <Literal>Esta clase representa la accion de pedir ofertas de un envio</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Producto</IRI>
+        <Literal>Esta clase representa un bien material ofrecido en la plataforma</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarCobro</IRI>
+        <Literal>Esta clase representa la accion de realizar un cobro de una compra</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarEnvio</IRI>
+        <Literal>Esta clase representa la accion de realizar un envio</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RealizarPedido</IRI>
+        <Literal>Esta clase representa la accion de realizar un pedido.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#RecomendarProducto</IRI>
+        <Literal>Esta clase representa la accion de recomendar productos</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Respuesta</IRI>
+        <Literal>Esta clase representa el conjunto de respuestas llevadas a cabo por los distintos agentes del sistema</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Restricciones</IRI>
+        <Literal>Esta clase contiene el conjunto de datos por los que podemos filtrar</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Transportista</IRI>
+        <Literal>Esta clase representa el encargado de entregar al usuario los productos comprados</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#Usuario</IRI>
+        <Literal>Esta clase representa al cliente de la plataforma</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#ValorarProducto</IRI>
+        <Literal>Esta clase representa la acción de valorar un producto.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>http://www.semanticweb.org/alexm/ontologies/2022/4/ECSDI#VendedorExterno</IRI>
+        <Literal>Esta clase representa al vendedor externo</Literal>
+    </AnnotationAssertion>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
