@@ -22,7 +22,7 @@ agent_ports = {'GestorProductosAgent': 9001,
                'MostradorAgent': 9004,
                'CentroLogisticoAgent': 9005,
                
-               'VendedorAgent': 9005,
+               'VendedorAgent':9010,
                
                'Transportista1Agent': 9015,
                'Transportista2Agent': 9016,

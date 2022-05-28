@@ -2,7 +2,18 @@
 """
 filename: MostradorAgent
 Antes de ejecutar hay que añadir la raiz del proyecto a la variable PYTHONPATH
-Agente que se registra como agente de busquedas
+
+A este agente hay que pasarle un grafo con:
+    numTarjeta 
+    prioridad 
+    direccion 
+    codigoPostal 
+    idCompra
+    Productos
+
+Y guarda en DBCompras la factura.
+
+
 @author: Bagansio, Cristian Mesa, Artur Farriols
 """
 
@@ -104,6 +115,8 @@ DirectoryAgent = Agent('DirectoryAgent',
                        'http://%s:%d/Register' % (dhostname, dport),
                        'http://%s:%d/Stop' % (dhostname, dport))
 
+GestorProductosAgent = None
+
 
 # Global dsgraph triplestore
 dsgraph = Graph()
@@ -144,7 +157,7 @@ def enviarVenta(content, gm):
 
     logger.info("Petición de envio enviada")
     #                                >No se si se llamara asi XD<
-    EnviadorAgent = agents.get_agent(DSO.EnviadorAgent, VendedorAgent, DirectoryAgent, mss_cnt)
+    #EnviadorAgent = agents.get_agent(DSO.EnviadorAgent, VendedorAgent, DirectoryAgent, mss_cnt)
     
     #Acabar esto cuando este el agente enviador
     """
@@ -159,8 +172,7 @@ def enviarVenta(content, gm):
 
 def vender(content, gm):
     logger.info('Petición de compra recibida')
-    thread = threading.Thread(target=RegistrarVenta, args=(gm,))
-    thread.start()
+    
 
     tarjetaCredito = gm.value(subject=content, predicate=ECSDI.Tarjeta) #AÑADIR TARJETA A LA ONTOLOGIA
 
@@ -173,9 +185,9 @@ def vender(content, gm):
     grafoFactura.add((sujeto, ECSDI.Tarjeta, Literal(tarjetaCredito, datatype=XSD.int)))
 
     compra = gm.value(subject=content, predicate=ECSDI.De) #ESTO EXISTE EL ECSDI.De??? XDDD
-
+    print(compra)
     precio = 0
-    for producto in gm.objects(subject=compra, predicate=ECSDI.Contiene):
+    for producto in gm.objects(subject=compra, predicate=ECSDI.Muestra):
         #añadimos producto
         grafoFactura.add((producto, RDF.type, ECSDI.Producto)) 
 
@@ -185,6 +197,8 @@ def vender(content, gm):
 
         #añadimos precio producto
         p = gm.value(subject=producto, predicate=ECSDI.Precio)
+        logger.info(str(p))
+        logger.info(str(precio))
         grafoFactura.add((producto, ECSDI.Precio, Literal(float(p), datatype=XSD.float)))
 
         #sumamos a precio total
@@ -197,6 +211,9 @@ def vender(content, gm):
 
     gm.add((s, ECSDI.PrecioTotal, Literal(precio, datatype=XSD.float)))
 
+    thread = threading.Thread(target=RegistrarVenta, args=(gm,))
+    thread.start()
+    
     #IMPLEMENTAR ENVIAR VENTA (FALTAN LOS AGENTES ENVIADORES)
     thread = Thread(target=enviarVenta, args=(content, gm))
     thread.start()
@@ -205,16 +222,100 @@ def vender(content, gm):
     return grafoFactura
 
 
+def pruebaVendedorAgent():
+    global GestorProductosAgent
+    global mss_cnt
+
+    if GestorProductosAgent is None:
+            GestorProductosAgent = agents.get_agent(DSO.GestorProductosAgent, VendedorAgent, DirectoryAgent, mss_cnt)
+    
+    graph_message = Graph()
+    graph_message.bind('foaf', FOAF)
+    graph_message.bind('dso', DSO)
+    graph_message.bind("default", ECSDI)
+    reg_obj = ECSDI['PeticionProductos' + str(mss_cnt)]
+    graph_message.add((reg_obj, RDF.type, ECSDI.PeticionProductos))
+
+    graph = send_message(
+            build_message(graph_message, perf=ACL.request,
+                          sender=VendedorAgent.uri,
+                          receiver=GestorProductosAgent.uri,
+                          content=reg_obj,
+                          msgcnt=mss_cnt),
+            GestorProductosAgent.address)
+
+    mss_cnt += 1
+    
+    query = """
+                prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+                prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+                prefix owl:<http://www.w3.org/2002/07/owl#>
+                SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria ?descripcion ?id ?externo
+                    where {
+                    {?producto rdf:type default:Producto } .
+                    ?producto default:Nombre ?nombre .
+                    ?producto default:Precio ?precio .
+                    ?producto default:Marca ?marca .
+                    ?producto default:Peso ?peso .
+                    ?producto default:Categoria ?categoria .
+                    ?producto default:Descripcion ?descripcion .
+                    ?producto default:Id ?id .
+                    ?producto default:Externo ?externo .
+                    }"""
+
+    numTarjeta = 123456789
+    prioridad = 10
+    direccion = "Barcelona"
+    codigoPostal = 696969
+    idCompra = 1
+
+    graph_query = graph.query(query)
+    grafoCompra = Graph()
+    content = ECSDI['PeticionCompra' + str(idCompra)]
+    
+    grafoCompra.add((content,RDF.type,ECSDI.PeticionCompra))
+    grafoCompra.add((content,ECSDI.Prioridad,Literal(prioridad, datatype=XSD.int)))
+    grafoCompra.add((content,ECSDI.Tarjeta,Literal(numTarjeta, datatype=XSD.int)))
+
+    sujetoDireccion = ECSDI['Direccion'+ str(idCompra)]
+    grafoCompra.add((sujetoDireccion,RDF.type,ECSDI.Direccion))
+    grafoCompra.add((sujetoDireccion,ECSDI.Direccion,Literal(direccion,datatype=XSD.string)))
+    grafoCompra.add((sujetoDireccion,ECSDI.CodigoPostal,Literal(codigoPostal,datatype=XSD.int)))
+
+    sujetoCompra = ECSDI['Compra'+str(idCompra)]
+    grafoCompra.add((sujetoCompra, RDF.type, ECSDI.Compra))
+    grafoCompra.add((sujetoCompra, ECSDI.Destino, URIRef(sujetoDireccion)))
+
+    for product in graph_query:
+        product_nombre = product['nombre']
+        #product_marca = product['marca']
+        #product_categoria = product['categoria']
+        #product_peso = product['peso']
+        product_precio = product['precio']
+        product_suj = product['producto']
+        #product_desc = product['descripcion']
+        product_id = product['id']
+        #product_ext = product['externo']
 
 
+        grafoCompra.add((product_suj, RDF.type, ECSDI.Producto))
+        grafoCompra.add((product_suj, ECSDI.Nombre, Literal(product_nombre, datatype=XSD.string)))
+        grafoCompra.add((product_suj, ECSDI.Id, Literal(product_id, datatype=XSD.string)))
+        #grafoCompra.add((product_suj, ECSDI.Marca, Literal(product_marca, datatype=XSD.string)))
+        #grafoCompra.add((product_suj, ECSDI.Categoria, Literal(product_categoria, datatype=XSD.string)))
+        #grafoCompra.add((product_suj, ECSDI.Peso, Literal(product_peso, datatype=XSD.float)))
+        grafoCompra.add((product_suj, ECSDI.Precio, Literal(product_precio, datatype=XSD.float)))
+        #grafoCompra.add((product_suj, ECSDI.Descripcion, Literal(product_desc, datatype=XSD.string)))
+        #grafoCompra.add((product_suj, ECSDI.Externo, Literal(product_ext, datatype=XSD.boolean)))
+        #grafoCompra.add((sujetoRespuesta, ECSDI.Valoracion, URIRef(product_valoracion)))
+        grafoCompra.add((sujetoCompra, ECSDI.Muestra, URIRef(product_suj)))
+    
+    grafoCompra.add((content, ECSDI.De, URIRef(sujetoCompra)))
 
+    vender(content,grafoCompra)
 
-
-
-
-
-
-
+    return True
 
 
 def register_message():
@@ -254,6 +355,16 @@ def register_message():
 
     return gr
 
+
+@app.route("/iface", methods=['GET', 'POST'])
+def browser_iface():
+    """
+    Simplemente es para probar que funciona
+    """
+
+    return pruebaVendedorAgent()
+    
+
 @app.route("/stop")
 def stop():
     """
@@ -263,8 +374,6 @@ def stop():
     tidyup()
     shutdown_server()
     return "Parando Servidor"
-
-
 
 #comm AQUI
 @app.route("/comm")
@@ -325,7 +434,6 @@ def comunicacion():
     logger.info('Respondemos a la peticion')
 
     return gr.serialize(format='xml')
-
 
 def tidyup():
     """
