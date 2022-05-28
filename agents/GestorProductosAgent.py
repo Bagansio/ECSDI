@@ -125,16 +125,19 @@ def agregarDBProducto(data):
         graph = Graph()
         graph.parse(ontologyFile, format='turtle')
         graph.bind("default", ECSDI)
-        id = 'Producto' + str(uuid.uuid4())
-        item = ECSDI[id]
+        id = str(uuid.uuid4())
+        item = ECSDI['Producto'+id]
 
         graph.add((item, RDF.type, ECSDI.Producto))
+        graph.add((item, ECSDI.Id, Literal(id, datatype=XSD.string)))
         graph.add((item, ECSDI.Nombre, Literal(data['Nombre'], datatype=XSD.string)))
         graph.add((item, ECSDI.Precio, Literal(data['Precio'], datatype=XSD.float)))
         graph.add((item, ECSDI.Categoria, Literal(data['Categoria'], datatype=XSD.string)))
         graph.add((item, ECSDI.Peso, Literal(data['Peso'], datatype=XSD.float)))
         graph.add((item, ECSDI.Marca, Literal(data['Marca'], datatype=XSD.string)))
+        graph.add((item, ECSDI.Descripcion, Literal(data['Descripcion'], datatype=XSD.string)))
         graph.add((item, ECSDI.Externo, Literal(data['Externo'], datatype=XSD.boolean)))
+        graph.add((item, ECSDI.Disponible, Literal(True, datatype=XSD.boolean)))
 
         graph.serialize(destination=db.DBProductos, format='turtle')
 
@@ -255,7 +258,7 @@ def browser_iface():
 
     if 'message' in form:
         if form['Nombre'] != '' and form['Marca'] != '' and form['Precio'] != '' and\
-           form['Categoria'] != '' and form['Peso'] != '':
+           form['Categoria'] != '' and form['Peso'] != '' and form['Descripcion'] != '':
             data = dict(form)
             data['Externo'] = False
 

@@ -251,7 +251,7 @@ def browser_iface():
     form = request.form
     if 'message' in form:
         if form['Nombre'] != '' and form['Marca'] != '' and form['Precio'] != '' and\
-           form['Categoria'] != '' and form['Peso'] != '':
+           form['Categoria'] != '' and form['Peso'] != ''  and form['Descripcion'] != '':
 
             agregarDBProducto(request.form)
 

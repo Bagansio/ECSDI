@@ -116,8 +116,9 @@ cola1 = Queue()
 def buscarProductos(content, grafoEntrada):
     logger.info("Petición de busqueda recibida")
     parametros = grafoEntrada.objects(content, ECSDI.RestringidaPor)
-
     filtros = {}
+
+    filtros['usuario'] =  grafoEntrada.value(subject=content, predicate=ECSDI.Id)
     for p in parametros:
             if grafoEntrada.value(subject=p, predicate=RDF.type) == ECSDI.RestriccionNombre:
                 Nombre = grafoEntrada.value(subject=p, predicate=ECSDI.Nombre)
@@ -137,13 +138,14 @@ def buscarProductos(content, grafoEntrada):
                 Valoracion = grafoEntrada.value(subject=p, predicate=ECSDI.Valoracion)
                 filtros['valoracion'] = Valoracion
 
+
     resultado = filtrarProductos(**filtros)
     return resultado
 
 
 
 
-def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre = None, marca = None, categoria = None, valoracion = None):
+def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre = None, marca = None, categoria = None, valoracion = None, usuario = None):
     
     logger.info("Obteniendo la lista de los productos")
     global GestorProductosAgent
@@ -197,7 +199,7 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
     prefix xsd:<http://www.w3.org/2001/XMLSchema#>
     prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
     prefix owl:<http://www.w3.org/2002/07/owl#>
-    SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria
+    SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria ?descripcion ?id ?externo
         where {
         {?producto rdf:type default:Producto } .
         ?producto default:Nombre ?nombre .
@@ -205,6 +207,9 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
         ?producto default:Marca ?marca .
         ?producto default:Peso ?peso .
         ?producto default:Categoria ?categoria .
+        ?producto default:Descripcion ?descripcion .
+        ?producto default:Id ?id .
+        ?producto default:Externo ?externo .
 
         FILTER("""
 
@@ -252,9 +257,17 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
     products_graph = Graph()
     graph.bind("ECSDI", ECSDI) #posible cambio
     sujetoRespuesta = ECSDI['RespuestaDeBusqueda' + str(uuid.uuid4())]
+
+    idHistorial = str(uuid.uuid4())
+    sujetoHistorial = ECSDI['Busqueda' + idHistorial]
     #mss_cnt += 1
     products_graph.add((sujetoRespuesta, RDF.type, ECSDI.RespuestaDeBusqueda))
     products_filter = Graph()
+    products_filter.bind("ECSDI",ECSDI)
+    products_filter.add((sujetoHistorial, RDF.type, ECSDI.Busqueda))
+    products_filter.add((sujetoHistorial, ECSDI.Id , Literal(idHistorial, datatype=XSD.string)))
+    products_filter.add((sujetoHistorial, ECSDI.Usuario, Literal(usuario, datatype=XSD.string)))
+
     
     for product in graph_query:
         product_nombre = product['nombre']
@@ -262,25 +275,26 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
         product_categoria = product['categoria']
         product_peso = product['peso']
         product_precio = product['precio']
-        sujetoProducto = product['producto']
+        product_suj = product['producto']
+        product_desc = product['descripcion']
+        product_id = product['id']
+        product_ext = product['externo']
 
-        products_graph.add((sujetoProducto, RDF.type, ECSDI.Producto))
-        products_graph.add((sujetoProducto, ECSDI.Nombre, Literal(product_nombre, datatype=XSD.string)))
-        products_graph.add((sujetoProducto, ECSDI.Descripcion, Literal(product_marca, datatype=XSD.string)))
-        products_graph.add((sujetoProducto, ECSDI.Descripcion, Literal(product_categoria, datatype=XSD.string)))
-        products_graph.add((sujetoProducto, ECSDI.Peso, Literal(product_peso, datatype=XSD.float)))
-        products_graph.add((sujetoProducto, ECSDI.Precio, Literal(product_precio, datatype=XSD.float)))
+
+        products_graph.add((product_suj, RDF.type, ECSDI.Producto))
+        products_graph.add((product_suj, ECSDI.Nombre, Literal(product_nombre, datatype=XSD.string)))
+        products_graph.add((product_suj, ECSDI.Id, Literal(product_id, datatype=XSD.string)))
+        products_graph.add((product_suj, ECSDI.Marca, Literal(product_marca, datatype=XSD.string)))
+        products_graph.add((product_suj, ECSDI.Categoria, Literal(product_categoria, datatype=XSD.string)))
+        products_graph.add((product_suj, ECSDI.Peso, Literal(product_peso, datatype=XSD.float)))
+        products_graph.add((product_suj, ECSDI.Precio, Literal(product_precio, datatype=XSD.float)))
+        products_graph.add((product_suj, ECSDI.Descripcion, Literal(product_desc, datatype=XSD.string)))
+        products_graph.add((product_suj, ECSDI.Externo, Literal(product_ext, datatype=XSD.boolean)))
      #  products_graph.add((sujetoRespuesta, ECSDI.Valoracion, URIRef(product_valoracion)))
-        products_graph.add((sujetoRespuesta, ECSDI.Muestra, URIRef(sujetoProducto)))
-        
+        products_graph.add((sujetoRespuesta, ECSDI.Muestra, URIRef(product_suj)))
 
 
-        sujetoFiltro = ECSDI['ProductoFiltrado' + str(uuid.uuid4())]
-        products_filter.add((sujetoFiltro, RDF.type, ECSDI.Producto))
-        products_filter.add((sujetoFiltro, ECSDI.Nombre, Literal(product_nombre, datatype=XSD.string)))
-        products_filter.add((sujetoFiltro, ECSDI.Descripcion, Literal(product_categoria, datatype=XSD.string)))
-        products_filter.add((sujetoFiltro, ECSDI.Descripcion, Literal(product_marca, datatype=XSD.string)))
-        products_filter.add((sujetoFiltro, ECSDI.Precio, Literal(product_precio, datatype=XSD.float)))
+        products_filter.add((sujetoHistorial, ECSDI.Producto, Literal(product_id, datatype=XSD.string)))
 
     thread = Thread(target=almacenarHistorial, args=(products_filter,))
     thread.start()

@@ -1,20 +1,36 @@
 @prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-default:Producto3763cec0-62c1-4b7c-a7f7-cc14082ef24c a default:Producto ;
+default:Producto3c50422a-569f-4733-9f5a-a96c9d18f8be a default:Producto ;
     default:Categoria "Top"^^xsd:string ;
+    default:Descripcion "asdasdasdsadas"^^xsd:string ;
+    default:Disponible true ;
     default:Externo false ;
-    default:Marca "Bolo"^^xsd:string ;
-    default:Nombre "Redbul"^^xsd:string ;
+    default:Id "3c50422a-569f-4733-9f5a-a96c9d18f8be"^^xsd:string ;
+    default:Marca "a"^^xsd:string ;
+    default:Nombre "T"^^xsd:string ;
     default:Peso "2.0"^^xsd:float ;
-    default:Precio "1.9"^^xsd:float .
-
-default:Producto61512101-88cb-4480-8c34-f062aaf1288b a default:Producto ;
-    default:Categoria "2"^^xsd:string ;
-    default:Externo false ;
-    default:Marca "PB"^^xsd:string ;
-    default:Nombre "ttt"^^xsd:string ;
-    default:Peso "1.0"^^xsd:float ;
     default:Precio "5.0"^^xsd:float .
 
+default:Producto6054ea0f-f95f-494e-9e45-b5b87e61115c a default:Producto ;
+    default:Categoria "Normie"^^xsd:string ;
+    default:Descripcion "Muy ricaa"^^xsd:string ;
+    default:Disponible true ;
+    default:Externo false ;
+    default:Id "6054ea0f-f95f-494e-9e45-b5b87e61115c"^^xsd:string ;
+    default:Marca "FontBella"^^xsd:string ;
+    default:Nombre "Agua"^^xsd:string ;
+    default:Peso "1.0"^^xsd:float ;
+    default:Precio "1.0"^^xsd:float .
+
+default:Productoe1f505f0-9a8c-436e-9f1e-e10a2f6a55a0 a default:Producto ;
+    default:Categoria "S"^^xsd:string ;
+    default:Descripcion "Se quieren mucho"^^xsd:string ;
+    default:Disponible true ;
+    default:Externo false ;
+    default:Id "e1f505f0-9a8c-436e-9f1e-e10a2f6a55a0"^^xsd:string ;
+    default:Marca "Cris"^^xsd:string ;
+    default:Nombre "Artur"^^xsd:string ;
+    default:Peso "2.0"^^xsd:float ;
+    default:Precio "999.0"^^xsd:float .
 

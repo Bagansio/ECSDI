@@ -6,8 +6,24 @@
 </head>
 <body>
     {% include 'navbar.html' %}
-    <b> yepa</b>
-
+    <table id="products">
+        <tr>
+            <th>Nombre</th>
+            <th>Marca</th>
+            <th>Categoria</th>
+            <th>Descripcion</th>
+            <th>Precio</th>
+        </tr>
+    {% for product in query %}
+        <tr>
+            <td>{{ product['nombre'] }}</td>
+            <td>{{ product['marca'] }}</td>
+            <td>{{ product['categoria'] }}</td>
+            <td>{{ product['descripcion'] }}</td>
+            <td>{{ product['precio'] }}€</td>
+        </tr>
+    {% endfor %}
+    </table>
     <br/>
 
 </body>

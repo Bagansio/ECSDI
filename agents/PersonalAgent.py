@@ -253,8 +253,14 @@ def browser_iface():
     gmess.add((reg_obj, FOAF.name, Literal(PersonalAgent.name)))
     gmess.add((reg_obj, DSO.Address, Literal(PersonalAgent.address)))
     gmess.add((reg_obj, DSO.AgentType, DSO.PersonalAgent))
+
+    us = None
+    if 'usuario' in session:
+        us = session['usuario']
+
+    gmess.add((reg_obj, ECSDI.Id, Literal(us, datatype=XSD.string)))
     # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
-    '''
+
     gr = send_message(
         build_message(gmess, perf=ACL.request,
                       sender=PersonalAgent.uri,
@@ -263,14 +269,28 @@ def browser_iface():
                       msgcnt=mss_cnt),
         MostradorAgent.address)
     mss_cnt += 1
-    
 
-    for a,b,c in gr:
-        print(a)
-        print(b)
-        print(c)
-    '''
-    return render_template('main.html')
+    query = """
+                prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+                prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+                prefix owl:<http://www.w3.org/2002/07/owl#>
+                SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria ?descripcion ?id ?externo
+                    where {
+                    {?producto rdf:type default:Producto } .
+                    ?producto default:Nombre ?nombre .
+                    ?producto default:Precio ?precio .
+                    ?producto default:Marca ?marca .
+                    ?producto default:Peso ?peso .
+                    ?producto default:Categoria ?categoria .
+                    ?producto default:Descripcion ?descripcion .
+                    ?producto default:Id ?id .
+                    ?producto default:Externo ?externo .
+                    }"""
+
+    graph_query = gr.query(query)
+
+    return render_template('main.html', query=graph_query)
 
 
 @app.route("/login", methods=['GET', 'POST'])

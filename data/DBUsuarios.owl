@@ -11,3 +11,8 @@ default:Usuario19ab600c-64a0-43d0-bf0e-d7e30a46f02e a default:Usuario ;
     default:Nombre "B"^^xsd:string ;
     default:Password "a"^^xsd:string .
 
+default:Usuariod711d572-9ef5-439b-9329-bc9b6c8e5690 a default:Usuario ;
+    default:Id "d711d572-9ef5-439b-9329-bc9b6c8e5690"^^xsd:string ;
+    default:Nombre "L"^^xsd:string ;
+    default:Password "a"^^xsd:string .
+
