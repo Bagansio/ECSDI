@@ -173,45 +173,47 @@ def enviarVenta(content, gm):
 def vender(content, gm):
     logger.info('Petición de compra recibida')
     
-
+    # Obtenemos tarjeta de credito
     tarjetaCredito = gm.value(subject=content, predicate=ECSDI.Tarjeta) #AÑADIR TARJETA A LA ONTOLOGIA
 
-    #Creamos la factura  
+    # Creamos la factura 
     grafoFactura = Graph()
     grafoFactura.bind('default', ECSDI)
     logger.info("Creando la factura")
     sujeto = ECSDI['Factura' + str(getMessageCount())]
     grafoFactura.add((sujeto, RDF.type, ECSDI.Factura))#NO SE SI HAY FACTURA EN LA ONTO
+
+    # Añadimos la tarjeta de credito al grafoFactura
     grafoFactura.add((sujeto, ECSDI.Tarjeta, Literal(tarjetaCredito, datatype=XSD.int)))
 
     compra = gm.value(subject=content, predicate=ECSDI.De) #ESTO EXISTE EL ECSDI.De??? XDDD
-    print(compra)
+    
+    # Obtenemos la dirección y el codigo postal
+    sujetoDireccion = gm.value(subject=content, predicate=ECSDI.Di)
+    direccion = gm.value(subject=sujetoDireccion, predicate=ECSDI.Direccion)
+    codigoPostal = gm.value(subject=sujetoDireccion, predicate=ECSDI.CodigoPostal)
+    grafoFactura.add((sujeto,ECSDI.Direccion,Literal(direccion,datatype=XSD.string)))
+    grafoFactura.add((sujeto,ECSDI.CodigoPostal,Literal(codigoPostal,datatype=XSD.int)))
+    
+    # Obtenemos los productos y calculamos el precio total
     precio = 0
     for producto in gm.objects(subject=compra, predicate=ECSDI.Muestra):
-        #añadimos producto
-        grafoFactura.add((producto, RDF.type, ECSDI.Producto)) 
-
-        #añadimos nombre producto
-        NProducto = gm.value(subject=producto, predicate=ECSDI.Nombre)
-        grafoFactura.add((producto, ECSDI.Nombre, Literal(NProducto, datatype=XSD.string)))
-
-        #añadimos precio producto
+        # Obtenemos precio producto
         p = gm.value(subject=producto, predicate=ECSDI.Precio)
         logger.info(str(p))
         logger.info(str(precio))
-        grafoFactura.add((producto, ECSDI.Precio, Literal(float(p), datatype=XSD.float)))
 
         #sumamos a precio total
         precio += float(p)
 
+        #Añadimos el producto al grafoFactura
         grafoFactura.add((sujeto, ECSDI.FormadaPor, URIRef(producto)))
 
+    # Añadimos el precio total
     grafoFactura.add((sujeto, ECSDI.PrecioTotal, Literal(precio, datatype=XSD.float))) #Revisar si hay preciototal en la onto
-    s = gm.value(predicate=RDF.type, object=ECSDI.PeticionCompra)
 
-    gm.add((s, ECSDI.PrecioTotal, Literal(precio, datatype=XSD.float)))
-
-    thread = threading.Thread(target=RegistrarVenta, args=(gm,))
+    # Llamamos a registrarVenda
+    thread = threading.Thread(target=RegistrarVenta, args=(grafoFactura,))
     thread.start()
     
     #IMPLEMENTAR ENVIAR VENTA (FALTAN LOS AGENTES ENVIADORES)
@@ -312,7 +314,7 @@ def pruebaVendedorAgent():
         grafoCompra.add((sujetoCompra, ECSDI.Muestra, URIRef(product_suj)))
     
     grafoCompra.add((content, ECSDI.De, URIRef(sujetoCompra)))
-
+    grafoCompra.add((content, ECSDI.Di, URIRef(sujetoDireccion)))
     vender(content,grafoCompra)
 
     return True
