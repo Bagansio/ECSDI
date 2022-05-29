@@ -183,8 +183,13 @@ def vender(content, gm):
     sujeto = ECSDI['Factura' + str(getMessageCount())]
     grafoFactura.add((sujeto, RDF.type, ECSDI.Factura))#NO SE SI HAY FACTURA EN LA ONTO
 
+    # Obtenemos Usuario
+    Usuario = gm.value(subject=content, predicate=ECSDI.Usuario)
+    grafoFactura.add((sujeto, ECSDI.Usuario, Literal(Usuario, datatype=XSD.string)))
+
     # Añadimos la tarjeta de credito al grafoFactura
     grafoFactura.add((sujeto, ECSDI.Tarjeta, Literal(tarjetaCredito, datatype=XSD.int)))
+    grafoFactura.add((sujeto, ECSDI.Prioridad, Literal(tarjetaCredito, datatype=XSD.int)))
 
     compra = gm.value(subject=content, predicate=ECSDI.De) #ESTO EXISTE EL ECSDI.De??? XDDD
     
@@ -262,7 +267,6 @@ def pruebaVendedorAgent():
                     ?producto default:Peso ?peso .
                     ?producto default:Categoria ?categoria .
                     ?producto default:Descripcion ?descripcion .
-                    ?producto default:Id ?id .
                     ?producto default:Externo ?externo .
                     }"""
 
@@ -271,11 +275,14 @@ def pruebaVendedorAgent():
     direccion = "Barcelona"
     codigoPostal = 696969
     idCompra = 1
+    usuario = "Alberto"
 
     graph_query = graph.query(query)
     grafoCompra = Graph()
     content = ECSDI['PeticionCompra' + str(idCompra)]
-    
+
+    grafoCompra.add((content, ECSDI.Usuario, Literal(usuario, datatype=XSD.string)))
+
     grafoCompra.add((content,RDF.type,ECSDI.PeticionCompra))
     grafoCompra.add((content,ECSDI.Prioridad,Literal(prioridad, datatype=XSD.int)))
     grafoCompra.add((content,ECSDI.Tarjeta,Literal(numTarjeta, datatype=XSD.int)))
