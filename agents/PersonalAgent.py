@@ -83,7 +83,7 @@ else:
 # Flask stuff
 app = Flask(__name__)
 app.secret_key = 'secret'
-app.debug = True
+#app.debug = True
 if not args.verbose:
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
@@ -118,16 +118,40 @@ cola1 = Queue()
 
 # Agent Utils
 
+def buscar_productos(graph, form, suj):
+
+    if form['nombre'] != '':
+        graph.add((suj, ECSDI.RestringidaPor, ECSDI.RestriccionNombre))
+        graph.add((ECSDI.RestriccionNombre, ECSDI.Nombre, Literal(form['nombre'], datatype=XSD.string)))
+
+    if form['categoria'] != '':
+        graph.add((suj, ECSDI.RestringidaPor, ECSDI.RestriccionCategoria))
+        graph.add((ECSDI.RestriccionCategoria, ECSDI.Categoria, Literal(form['categoria'], datatype=XSD.string)))
+
+    if form['marca'] != '':
+        graph.add((suj, ECSDI.RestringidaPor, ECSDI.RestriccionMarca))
+        graph.add((ECSDI.RestriccionMarca, ECSDI.Marca, Literal(form['marca'], datatype=XSD.string)))
+
+    if form['precioMinimo'] != '' or form['precioMaximo'] != '':
+        graph.add((suj, ECSDI.RestringidaPor, ECSDI.RestriccionPrecio))
+
+        if form['precioMinimo'] != '':
+            graph.add((ECSDI.RestriccionPrecio, ECSDI.PrecioMinimo, Literal(float(form['precioMinimo']), datatype=XSD.float)))
+
+        if form['precioMaximo'] != '':
+            graph.add((ECSDI.RestriccionPrecio, ECSDI.PrecioMaximo, Literal(float(form['precioMaximo']), datatype=XSD.float)))
+
+
+
 def query_usuario(form, login):
     query = """
                         prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
                         prefix xsd:<http://www.w3.org/2001/XMLSchema#>
                         prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
                         prefix owl:<http://www.w3.org/2002/07/owl#>
-                        SELECT ?usuario ?id ?nombre ?password 
+                        SELECT ?usuario ?nombre ?password 
                             where {
                             {?usuario rdf:type default:Usuario } .
-                            ?usuario default:Id ?id .
                             ?usuario default:Nombre ?nombre .
                             ?usuario default:Password ?password .
 
@@ -150,9 +174,8 @@ def login(form):
     graph_query = graph.query(query_usuario(form, True))
 
     if len(graph_query) > 0:
-
         for element in graph_query:
-            session['usuario'] = element['id']
+            session['usuario'] = element['usuario']
 
         logger.info("Usuario logeado")
 
@@ -178,11 +201,10 @@ def registrar_usuario(form):
         id = str(uuid.uuid4())
         item = ECSDI['Usuario' + id]
         graph.add((item, RDF.type, ECSDI.Usuario))
-        graph.add((item, ECSDI.Id, Literal(id, datatype=XSD.string)))
         graph.add((item, ECSDI.Nombre, Literal(form['username'], datatype=XSD.string)))
         graph.add((item, ECSDI.Password, Literal(form['password'], datatype=XSD.string)))
         graph.serialize(destination=db.DBUsuarios, format='turtle')
-        session['usuario'] = id
+        session['usuario'] = item
         logger.info("Registro de nuevo usuario finalizado")
     return error
 
@@ -236,8 +258,13 @@ def browser_iface():
     global mss_cnt
     global MostradorAgent
 
-    logger.info('Buscando al agente Gestor Productos')
+    form = request.form
+
+
+
+
     if MostradorAgent is None:
+        logger.info('Buscando al agente Gestor Productos')
         MostradorAgent = agents.get_agent(DSO.MostradorAgent, PersonalAgent, DirectoryAgent, mss_cnt)
 
         mss_cnt += 1
@@ -259,6 +286,11 @@ def browser_iface():
         us = session['usuario']
 
     gmess.add((reg_obj, ECSDI.Id, Literal(us, datatype=XSD.string)))
+
+    if 'search' in form:
+        print(form)
+        buscar_productos(gmess, form,reg_obj)
+
     # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
 
     gr = send_message(
@@ -275,7 +307,7 @@ def browser_iface():
                 prefix xsd:<http://www.w3.org/2001/XMLSchema#>
                 prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
                 prefix owl:<http://www.w3.org/2002/07/owl#>
-                SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria ?descripcion ?id ?externo
+                SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria ?descripcion ?externo
                     where {
                     {?producto rdf:type default:Producto } .
                     ?producto default:Nombre ?nombre .
@@ -284,7 +316,6 @@ def browser_iface():
                     ?producto default:Peso ?peso .
                     ?producto default:Categoria ?categoria .
                     ?producto default:Descripcion ?descripcion .
-                    ?producto default:Id ?id .
                     ?producto default:Externo ?externo .
                     }"""
 
@@ -295,6 +326,8 @@ def browser_iface():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login_iface():
+    if 'usuario' in session:
+        return redirect('/iface')
     form = request.form
     error = ""
     if 'login' in form:

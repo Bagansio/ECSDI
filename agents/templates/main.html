@@ -6,6 +6,29 @@
 </head>
 <body>
     {% include 'navbar.html' %}
+    <form action="/iface" method="post">
+    <table>
+        <tr>
+            <th>Nombre</th>
+            <th>Marca</th>
+            <th>Categoria</th>
+            <th>Precio Maximo</th>
+            <th>Precio Minimo</th>
+        </tr>
+
+        <tr>
+            <td><input type="text" name="nombre" placeholder="Nombre..."/></td>
+            <td> <input type="text" name="marca" placeholder="Marca..."/></td>
+            <td><input type="text" name="categoria" placeholder="Categoria..."/></td>
+            <td><input type="number" step="0.01" min="0" name="precioMaximo" placeholder="PrecioMax..."/></td>
+            <td><input type="number" step="0.01" min="0" name="precioMinimo" placeholder="PrecioMin..."/></td>
+            <td><input type="submit" name="search" value="Buscar"></td>
+        </tr>
+    </table>
+
+    </form>
+
+
     <table id="products">
         <tr>
             <th>Nombre</th>
