@@ -20,6 +20,7 @@ Y guarda en DBCompras la factura.
 from pathlib import Path
 import sys
 
+
 path_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(path_root))
 
@@ -116,6 +117,7 @@ DirectoryAgent = Agent('DirectoryAgent',
                        'http://%s:%d/Stop' % (dhostname, dport))
 
 GestorProductosAgent = None
+GestorEnviosAgent = None
 
 
 # Global dsgraph triplestore
@@ -144,28 +146,34 @@ def getMessageCount():
 
 
 def enviarVenta(content, gm):
+    global GestorEnviosAgent
+
     logger.info('Haciendo petición de envio TODAVIA NO IMPLEMENTADA!!')
     gm.remove((content, RDF.type, ECSDI.PeticionCompra))
     sujeto = ECSDI['PeticionEnvio' + str(getMessageCount())]
     gm.add((sujeto, RDF.type, ECSDI.PeticionEnvio)) #No se si esta peticionenvio
 
+    try:
+        if GestorEnviosAgent is None:
+            GestorEnviosAgent = agents.get_agent(DSO.GestorEnviosAgent, VendedorAgent, DirectoryAgent, mss_cnt)
 
-    for a,b,c in gm:
-        if a == content:
-            gm.remove((a, b, c))
-            gm.add((sujeto, b, c))
 
-    logger.info("Petición de envio enviada")
-    #                                >No se si se llamara asi XD<
-    #EnviadorAgent = agents.get_agent(DSO.EnviadorAgent, VendedorAgent, DirectoryAgent, mss_cnt)
-    
-    #Acabar esto cuando este el agente enviador
-    """
-    rc = send_message(build_message(gm,
+        # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+        graph = send_message(build_message(gm,
                                     perf=ACL.request, sender=VendedorAgent.uri,
-                                    receiver=enviador.uri,
-                                    msgcnt=getMessageCount(), content=sujeto), enviador.address)
-    """
+                                    receiver=GestorEnviosAgent.uri,
+                                    msgcnt=getMessageCount(), content=sujeto), GestorEnviosAgent.address)
+
+        mss_cnt += 1
+        logger.info("Petición de envio enviada")
+        return graph
+
+
+    except Exception as e:
+        print(e)
+        logger.info("No ha sido posible enviar la petición de envio")
+        return Graph()
+    
 
 
     
