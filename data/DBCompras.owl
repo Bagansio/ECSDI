@@ -1,14 +1,13 @@
 @prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-default:Factura2 a default:Factura ;
-    default:CodigoPostal "696969"^^xsd:int ;
-    default:Direccion "Barcelona"^^xsd:string ;
+default:Factura31b0d91e-b7b7-4536-ad4b-7f883f7f93e8 a default:Factura ;
+    default:CodigoPostal "1"^^xsd:int ;
+    default:Direccion "1"^^xsd:string ;
     default:FormadaPor default:Producto4dc1e17f-04d0-4057-80a1-74646bb94296,
         default:Producto87b8f67e-8533-43d8-96d0-7cf5563cd625,
         default:Productoe0a37b71-3075-4b82-8201-83b41215170b ;
     default:PrecioTotal "11.2"^^xsd:float ;
-    default:Prioridad "123456789"^^xsd:int ;
-    default:Tarjeta "123456789"^^xsd:int ;
-    default:Usuario "Alberto"^^xsd:string .
-
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ECSDI - Comprar</title>
+    <link rel="stylesheet"  type= "text/css" href= "{{ url_for('static',filename='styles.css') }}" />
+    <script src= "{{ url_for('static',filename='main.js') }}" ></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <form action="/comprar" method="post">
+    <table>
+        <tr>
+            <th>Numero Tarjeta</th>
+            <th>Prioridad</th>
+            <th>Direccion</th>
+            <th>Codigo Postal</th>
+        </tr>
+
+        <tr>
+            <td><input type="number" step="1" min="0" name="numTarjeta" /></td>
+            <td><select name="prioridad">
+                <option value="0">Normal</option>
+                <option value="1">Urgente</option>
+                <option value="2">Muy Urgente</option>
+            </select></td>
+            <td><input type="text" name="direccion" /></td>
+            <td><input name="zip" type="text" pattern="[0-9]*"></td>
+
+            <td><input type="submit" name="comprar" value="Comprar"></td>
+        </tr>
+    </table>
+    </form>
+
+    <table id="products">
+            <tr>
+                <th>Nombre</th>
+                <th>Marca</th>
+                <th>Categoria</th>
+                <th>Descripcion</th>
+                <th>Precio</th>
+            </tr>
+        {% for product in query %}
+            <tr>
+                <td>{{ product['nombre'] }}</td>
+                <td>{{ product['marca'] }}</td>
+                <td>{{ product['categoria'] }}</td>
+                <td>{{ product['descripcion'] }}</td>
+                <td>{{ product['precio'] }}€</td>
+                <td><img id={{ product['producto'] }} class="remove" src="{{ url_for('static',filename='icons/remove.png') }}" alt="comprar"/></td>
+            </tr>
+        {% endfor %}
+        </table>
+
+</body>
+</html>

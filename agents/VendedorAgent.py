@@ -124,29 +124,29 @@ dsgraph = Graph()
 # Cola de comunicacion entre procesos
 cola1 = Queue()
 
-def RegistrarVenta(gm):
+def RegistrarVenta(grafoFactura):
+
     logger.info('Registrando la venta')
     ontologyFile = open(db.DBCompras)
 
     grafoVentas = Graph()
     grafoVentas.bind('default', ECSDI)
     grafoVentas.parse(ontologyFile, format='turtle')
-    grafoVentas += gm
+
+    grafoVentas += grafoFactura
+
+    for item in grafoVentas.subjects(RDF.type, ACL.FipaAclMessage):
+        grafoVentas.remove((item, None, None))
 
     grafoVentas.serialize(destination=db.DBCompras, format='turtle')
     logger.info("Registro de venta finalizado")
 
 
-def getMessageCount():
-    global mss_cnt
-    mss_cnt += 1
-    return mss_cnt
-
 
 def enviarVenta(content, gm):
     logger.info('Haciendo petición de envio TODAVIA NO IMPLEMENTADA!!')
     gm.remove((content, RDF.type, ECSDI.PeticionCompra))
-    sujeto = ECSDI['PeticionEnvio' + str(getMessageCount())]
+    sujeto = ECSDI['PeticionEnvio' + str(uuid.uuid4())]
     gm.add((sujeto, RDF.type, ECSDI.PeticionEnvio)) #No se si esta peticionenvio
 
 
@@ -168,45 +168,44 @@ def enviarVenta(content, gm):
     """
 
 
-    
 
 def vender(content, gm):
     logger.info('Petición de compra recibida')
-    
+
     # Obtenemos tarjeta de credito
     tarjetaCredito = gm.value(subject=content, predicate=ECSDI.Tarjeta) #AÑADIR TARJETA A LA ONTOLOGIA
+    prioridad = gm.value(subject=content, predicate=ECSDI.Prioridad) #AÑADIR prioridad A LA ONTOLOGIA
 
     # Creamos la factura 
     grafoFactura = Graph()
     grafoFactura.bind('default', ECSDI)
     logger.info("Creando la factura")
-    sujeto = ECSDI['Factura' + str(getMessageCount())]
+    sujeto = ECSDI['Factura' + str(uuid.uuid4())]
     grafoFactura.add((sujeto, RDF.type, ECSDI.Factura))#NO SE SI HAY FACTURA EN LA ONTO
 
     # Obtenemos Usuario
     Usuario = gm.value(subject=content, predicate=ECSDI.Usuario)
-    grafoFactura.add((sujeto, ECSDI.Usuario, Literal(Usuario, datatype=XSD.string)))
+    grafoFactura.add((sujeto, ECSDI.Usuario, URIRef(Usuario)))
 
     # Añadimos la tarjeta de credito al grafoFactura
     grafoFactura.add((sujeto, ECSDI.Tarjeta, Literal(tarjetaCredito, datatype=XSD.int)))
-    grafoFactura.add((sujeto, ECSDI.Prioridad, Literal(tarjetaCredito, datatype=XSD.int)))
+    grafoFactura.add((sujeto, ECSDI.Prioridad, Literal(prioridad, datatype=XSD.int)))
 
     compra = gm.value(subject=content, predicate=ECSDI.De) #ESTO EXISTE EL ECSDI.De??? XDDD
     
     # Obtenemos la dirección y el codigo postal
-    sujetoDireccion = gm.value(subject=content, predicate=ECSDI.Di)
-    direccion = gm.value(subject=sujetoDireccion, predicate=ECSDI.Direccion)
-    codigoPostal = gm.value(subject=sujetoDireccion, predicate=ECSDI.CodigoPostal)
+    direccion = gm.value(subject=content, predicate=ECSDI.Direccion)
+    codigoPostal = gm.value(subject=content, predicate=ECSDI.CodigoPostal)
+
     grafoFactura.add((sujeto,ECSDI.Direccion,Literal(direccion,datatype=XSD.string)))
     grafoFactura.add((sujeto,ECSDI.CodigoPostal,Literal(codigoPostal,datatype=XSD.int)))
-    
+
     # Obtenemos los productos y calculamos el precio total
     precio = 0
     for producto in gm.objects(subject=compra, predicate=ECSDI.Muestra):
         # Obtenemos precio producto
         p = gm.value(subject=producto, predicate=ECSDI.Precio)
-        logger.info(str(p))
-        logger.info(str(precio))
+
 
         #sumamos a precio total
         precio += float(p)
@@ -216,6 +215,8 @@ def vender(content, gm):
 
     # Añadimos el precio total
     grafoFactura.add((sujeto, ECSDI.PrecioTotal, Literal(precio, datatype=XSD.float))) #Revisar si hay preciototal en la onto
+
+
 
     # Llamamos a registrarVenda
     thread = threading.Thread(target=RegistrarVenta, args=(grafoFactura,))
@@ -229,102 +230,6 @@ def vender(content, gm):
     return grafoFactura
 
 
-def pruebaVendedorAgent():
-    global GestorProductosAgent
-    global mss_cnt
-
-    if GestorProductosAgent is None:
-            GestorProductosAgent = agents.get_agent(DSO.GestorProductosAgent, VendedorAgent, DirectoryAgent, mss_cnt)
-    
-    graph_message = Graph()
-    graph_message.bind('foaf', FOAF)
-    graph_message.bind('dso', DSO)
-    graph_message.bind("default", ECSDI)
-    reg_obj = ECSDI['PeticionProductos' + str(mss_cnt)]
-    graph_message.add((reg_obj, RDF.type, ECSDI.PeticionProductos))
-
-    graph = send_message(
-            build_message(graph_message, perf=ACL.request,
-                          sender=VendedorAgent.uri,
-                          receiver=GestorProductosAgent.uri,
-                          content=reg_obj,
-                          msgcnt=mss_cnt),
-            GestorProductosAgent.address)
-
-    mss_cnt += 1
-    
-    query = """
-                prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                prefix xsd:<http://www.w3.org/2001/XMLSchema#>
-                prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
-                prefix owl:<http://www.w3.org/2002/07/owl#>
-                SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria ?descripcion ?id ?externo
-                    where {
-                    {?producto rdf:type default:Producto } .
-                    ?producto default:Nombre ?nombre .
-                    ?producto default:Precio ?precio .
-                    ?producto default:Marca ?marca .
-                    ?producto default:Peso ?peso .
-                    ?producto default:Categoria ?categoria .
-                    ?producto default:Descripcion ?descripcion .
-                    ?producto default:Externo ?externo .
-                    }"""
-
-    numTarjeta = 123456789
-    prioridad = 10
-    direccion = "Barcelona"
-    codigoPostal = 696969
-    idCompra = 1
-    usuario = "Alberto"
-
-    graph_query = graph.query(query)
-    grafoCompra = Graph()
-    content = ECSDI['PeticionCompra' + str(idCompra)]
-
-    grafoCompra.add((content, ECSDI.Usuario, Literal(usuario, datatype=XSD.string)))
-
-    grafoCompra.add((content,RDF.type,ECSDI.PeticionCompra))
-    grafoCompra.add((content,ECSDI.Prioridad,Literal(prioridad, datatype=XSD.int)))
-    grafoCompra.add((content,ECSDI.Tarjeta,Literal(numTarjeta, datatype=XSD.int)))
-
-    sujetoDireccion = ECSDI['Direccion'+ str(idCompra)]
-    grafoCompra.add((sujetoDireccion,RDF.type,ECSDI.Direccion))
-    grafoCompra.add((sujetoDireccion,ECSDI.Direccion,Literal(direccion,datatype=XSD.string)))
-    grafoCompra.add((sujetoDireccion,ECSDI.CodigoPostal,Literal(codigoPostal,datatype=XSD.int)))
-
-    sujetoCompra = ECSDI['Compra'+str(idCompra)]
-    grafoCompra.add((sujetoCompra, RDF.type, ECSDI.Compra))
-    grafoCompra.add((sujetoCompra, ECSDI.Destino, URIRef(sujetoDireccion)))
-
-    for product in graph_query:
-        product_nombre = product['nombre']
-        #product_marca = product['marca']
-        #product_categoria = product['categoria']
-        #product_peso = product['peso']
-        product_precio = product['precio']
-        product_suj = product['producto']
-        #product_desc = product['descripcion']
-        product_id = product['id']
-        #product_ext = product['externo']
-
-
-        grafoCompra.add((product_suj, RDF.type, ECSDI.Producto))
-        grafoCompra.add((product_suj, ECSDI.Nombre, Literal(product_nombre, datatype=XSD.string)))
-        grafoCompra.add((product_suj, ECSDI.Id, Literal(product_id, datatype=XSD.string)))
-        #grafoCompra.add((product_suj, ECSDI.Marca, Literal(product_marca, datatype=XSD.string)))
-        #grafoCompra.add((product_suj, ECSDI.Categoria, Literal(product_categoria, datatype=XSD.string)))
-        #grafoCompra.add((product_suj, ECSDI.Peso, Literal(product_peso, datatype=XSD.float)))
-        grafoCompra.add((product_suj, ECSDI.Precio, Literal(product_precio, datatype=XSD.float)))
-        #grafoCompra.add((product_suj, ECSDI.Descripcion, Literal(product_desc, datatype=XSD.string)))
-        #grafoCompra.add((product_suj, ECSDI.Externo, Literal(product_ext, datatype=XSD.boolean)))
-        #grafoCompra.add((sujetoRespuesta, ECSDI.Valoracion, URIRef(product_valoracion)))
-        grafoCompra.add((sujetoCompra, ECSDI.Muestra, URIRef(product_suj)))
-    
-    grafoCompra.add((content, ECSDI.De, URIRef(sujetoCompra)))
-    grafoCompra.add((content, ECSDI.Di, URIRef(sujetoDireccion)))
-    vender(content,grafoCompra)
-
-    return True
 
 
 def register_message():
@@ -428,16 +333,24 @@ def comunicacion():
 
             # Averiguamos el tipo de la accion
             if 'content' in msgdic:
+                factura = Graph()
                 content = msgdic['content']
                 accion = gm.value(subject=content, predicate=RDF.type)
 
-            if accion == ECSDI.PeticionCompra: #AÑADIR EN LA ONTOLOGIA
+                if accion == ECSDI.PeticionCompra: #AÑADIR EN LA ONTOLOGIA
 
-                # Eliminar los ACLMessage
-                for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
-                    gm.remove((item, None, None))
+                    print(len(gm))
+                    for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                        gm.remove((item, None, None))
 
-                gr =  vender(gm, content) #retornamos la factura
+                    print(len(gm))
+                    factura = vender(content, gm) #retornamos la factura
+
+                gr = build_message(factura,
+                               ACL['inform'],
+                               sender=VendedorAgent.uri,
+                               msgcnt=mss_cnt,
+                               receiver=msgdic['sender'], )
     mss_cnt += 1
 
     logger.info('Respondemos a la peticion')
