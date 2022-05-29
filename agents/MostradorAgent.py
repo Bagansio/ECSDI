@@ -118,25 +118,31 @@ def buscarProductos(content, grafoEntrada):
     parametros = grafoEntrada.objects(content, ECSDI.RestringidaPor)
     filtros = {}
 
-    filtros['usuario'] =  grafoEntrada.value(subject=content, predicate=ECSDI.Id)
+    filtros['usuario'] = grafoEntrada.value(subject=content, predicate=ECSDI.Id)
     for p in parametros:
-            if grafoEntrada.value(subject=p, predicate=RDF.type) == ECSDI.RestriccionNombre:
-                Nombre = grafoEntrada.value(subject=p, predicate=ECSDI.Nombre)
-                filtros['nombre'] = Nombre
-            elif grafoEntrada.value(subject=p, predicate=RDF.type) == ECSDI.RestriccionPrecio:
-                PrecioMaximo = grafoEntrada.value(subject=p, predicate=ECSDI.PrecioMaximo)
-                PrecioMinimo = grafoEntrada.value(subject=p, predicate=ECSDI.PrecioMinimo)
+        if p == ECSDI.RestriccionNombre:
+            Nombre = grafoEntrada.value(subject=p, predicate=ECSDI.Nombre)
+            filtros['nombre'] = Nombre
+        elif p == ECSDI.RestriccionPrecio:
+            PrecioMaximo = grafoEntrada.value(subject=p, predicate=ECSDI.PrecioMaximo)
+            PrecioMinimo = grafoEntrada.value(subject=p, predicate=ECSDI.PrecioMinimo)
+
+
+            if PrecioMaximo != None:
+                print(PrecioMinimo)
                 filtros['precio_max'] = PrecioMaximo
+            if PrecioMinimo != None:
+                print(PrecioMaximo)
                 filtros['precio_min'] = PrecioMinimo
-            elif grafoEntrada.value(subject=p, predicate=RDF.type) == ECSDI.RestriccionCategoria:
-                Categoria = grafoEntrada.value(subject=p, predicate=ECSDI.Categoria)
-                filtros['categoria'] = Categoria
-            elif grafoEntrada.value(subject=p, predicate=RDF.type) == ECSDI.RestriccionMarca:
-                Marca = grafoEntrada.value(subject=p, predicate=ECSDI.Marca)
-                filtros['marca'] = Marca
-            elif grafoEntrada.value(subject=p, predicate=RDF.type) == ECSDI.RestriccionValoracion:
-                Valoracion = grafoEntrada.value(subject=p, predicate=ECSDI.Valoracion)
-                filtros['valoracion'] = Valoracion
+        elif p == ECSDI.RestriccionCategoria:
+            Categoria = grafoEntrada.value(subject=p, predicate=ECSDI.Categoria)
+            filtros['categoria'] = Categoria
+        elif p == ECSDI.RestriccionMarca:
+            Marca = grafoEntrada.value(subject=p, predicate=ECSDI.Marca)
+            filtros['marca'] = Marca
+        elif p == ECSDI.RestriccionValoracion:
+            Valoracion = grafoEntrada.value(subject=p, predicate=ECSDI.Valoracion)
+            filtros['valoracion'] = Valoracion
 
 
     resultado = filtrarProductos(**filtros)
@@ -199,7 +205,7 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
     prefix xsd:<http://www.w3.org/2001/XMLSchema#>
     prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
     prefix owl:<http://www.w3.org/2002/07/owl#>
-    SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria ?descripcion ?id ?externo
+    SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria ?descripcion ?externo
         where {
         {?producto rdf:type default:Producto } .
         ?producto default:Nombre ?nombre .
@@ -208,7 +214,6 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
         ?producto default:Peso ?peso .
         ?producto default:Categoria ?categoria .
         ?producto default:Descripcion ?descripcion .
-        ?producto default:Id ?id .
         ?producto default:Externo ?externo .
 
         FILTER("""
@@ -250,7 +255,6 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
 
     query += """)}"""
 
-
     graph_query = graph.query(query)
 
     
@@ -259,13 +263,12 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
     sujetoRespuesta = ECSDI['RespuestaDeBusqueda' + str(uuid.uuid4())]
 
     idHistorial = str(uuid.uuid4())
-    sujetoHistorial = ECSDI['Busqueda' + idHistorial]
+    sujetoHistorial = ECSDI['Busqueda-' + idHistorial]
     #mss_cnt += 1
     products_graph.add((sujetoRespuesta, RDF.type, ECSDI.RespuestaDeBusqueda))
     products_filter = Graph()
     products_filter.bind("ECSDI",ECSDI)
     products_filter.add((sujetoHistorial, RDF.type, ECSDI.Busqueda))
-    products_filter.add((sujetoHistorial, ECSDI.Id , Literal(idHistorial, datatype=XSD.string)))
     products_filter.add((sujetoHistorial, ECSDI.Usuario, Literal(usuario, datatype=XSD.string)))
 
     
@@ -277,13 +280,11 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
         product_precio = product['precio']
         product_suj = product['producto']
         product_desc = product['descripcion']
-        product_id = product['id']
         product_ext = product['externo']
 
 
         products_graph.add((product_suj, RDF.type, ECSDI.Producto))
         products_graph.add((product_suj, ECSDI.Nombre, Literal(product_nombre, datatype=XSD.string)))
-        products_graph.add((product_suj, ECSDI.Id, Literal(product_id, datatype=XSD.string)))
         products_graph.add((product_suj, ECSDI.Marca, Literal(product_marca, datatype=XSD.string)))
         products_graph.add((product_suj, ECSDI.Categoria, Literal(product_categoria, datatype=XSD.string)))
         products_graph.add((product_suj, ECSDI.Peso, Literal(product_peso, datatype=XSD.float)))
@@ -294,7 +295,7 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
         products_graph.add((sujetoRespuesta, ECSDI.Muestra, URIRef(product_suj)))
 
 
-        products_filter.add((sujetoHistorial, ECSDI.Producto, Literal(product_id, datatype=XSD.string)))
+        products_filter.add((sujetoHistorial, ECSDI.Producto, Literal(product_suj, datatype=XSD.string)))
 
     thread = Thread(target=almacenarHistorial, args=(products_filter,))
     thread.start()

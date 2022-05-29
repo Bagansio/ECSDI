@@ -129,7 +129,6 @@ def agregarDBProducto(data):
         item = ECSDI['Producto'+id]
 
         graph.add((item, RDF.type, ECSDI.Producto))
-        graph.add((item, ECSDI.Id, Literal(id, datatype=XSD.string)))
         graph.add((item, ECSDI.Nombre, Literal(data['Nombre'], datatype=XSD.string)))
         graph.add((item, ECSDI.Precio, Literal(data['Precio'], datatype=XSD.float)))
         graph.add((item, ECSDI.Categoria, Literal(data['Categoria'], datatype=XSD.string)))
