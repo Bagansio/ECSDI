@@ -3,6 +3,7 @@
 <head>
     <title>ECSDI - Home</title>
     <link rel="stylesheet"  type= "text/css" href= "{{ url_for('static',filename='styles.css') }}" />
+    <script src= "{{ url_for('static',filename='main.js') }}" ></script>
 </head>
 <body>
     {% include 'navbar.html' %}
@@ -44,6 +45,7 @@
             <td>{{ product['categoria'] }}</td>
             <td>{{ product['descripcion'] }}</td>
             <td>{{ product['precio'] }}€</td>
+            <td><img id={{ product['producto'] }} class="purchase" src="{{ url_for('static',filename='icons/purchase.png') }}" alt="comprar"/></td>
         </tr>
     {% endfor %}
     </table>

@@ -21,10 +21,10 @@ import argparse
 import threading
 import uuid
 
-from flask import Flask, request,render_template, session, redirect
+from flask import Flask, request, render_template, session, redirect, Response
 from rdflib import Graph, Namespace, Literal, URIRef, XSD
 from rdflib.namespace import FOAF, RDF
-from utils import db,agents
+from utils import db, agents
 
 from AgentUtil.OntoNamespaces import ECSDI
 from AgentUtil.ACL import ACL
@@ -83,7 +83,7 @@ else:
 # Flask stuff
 app = Flask(__name__)
 app.secret_key = 'secret'
-#app.debug = True
+app.debug = True
 if not args.verbose:
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
@@ -96,9 +96,9 @@ mss_cnt = 0
 
 # Datos del Agente
 PersonalAgent = Agent('PersonalAgent',
-                       agn.PersonalAgent,
-                       'http://%s:%d/comm' % (hostaddr, port),
-                       'http://%s:%d/Stop' % (hostaddr, port))
+                      agn.PersonalAgent,
+                      'http://%s:%d/comm' % (hostaddr, port),
+                      'http://%s:%d/Stop' % (hostaddr, port))
 
 # Directory agent address
 DirectoryAgent = Agent('DirectoryAgent',
@@ -108,6 +108,8 @@ DirectoryAgent = Agent('DirectoryAgent',
 
 MostradorAgent = None
 
+VendedorAgent = None
+
 # Global dsgraph triplestore
 dsgraph = Graph()
 
@@ -115,11 +117,69 @@ dsgraph = Graph()
 cola1 = Queue()
 
 
-
 # Agent Utils
 
-def buscar_productos(graph, form, suj):
 
+def obtener_productos(form = None):
+    global mss_cnt
+    global MostradorAgent
+
+    form = request.form
+
+    if MostradorAgent is None:
+        logger.info('Buscando al agente Mostrador')
+        MostradorAgent = agents.get_agent(DSO.MostradorAgent, PersonalAgent, DirectoryAgent, mss_cnt)
+
+        mss_cnt += 1
+
+    gmess = Graph()
+    # Construimos el mensaje de registro
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    gmess.bind("default", ECSDI)
+    reg_obj = agn['BuscarProductos' + str(mss_cnt)]
+    gmess.add((reg_obj, RDF.type, ECSDI.BuscarProductos))
+
+    us = None
+    if 'usuario' in session:
+        us = session['usuario']
+
+    gmess.add((reg_obj, ECSDI.Id, Literal(us, datatype=XSD.string)))
+
+    if form is not None and 'search' in form:
+        buscar_productos(gmess, form, reg_obj)
+
+    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+
+    gr = send_message(
+        build_message(gmess, perf=ACL.request,
+                      sender=PersonalAgent.uri,
+                      receiver=MostradorAgent.uri,
+                      content=reg_obj,
+                      msgcnt=mss_cnt),
+        MostradorAgent.address)
+    mss_cnt += 1
+
+    query = """
+                prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+                prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+                prefix owl:<http://www.w3.org/2002/07/owl#>
+                SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria ?descripcion ?externo
+                    where {
+                    {?producto rdf:type default:Producto } .
+                    ?producto default:Nombre ?nombre .
+                    ?producto default:Precio ?precio .
+                    ?producto default:Marca ?marca .
+                    ?producto default:Peso ?peso .
+                    ?producto default:Categoria ?categoria .
+                    ?producto default:Descripcion ?descripcion .
+                    ?producto default:Externo ?externo .
+                    }"""
+
+    return gr.query(query)
+
+def buscar_productos(graph, form, suj):
     if form['nombre'] != '':
         graph.add((suj, ECSDI.RestringidaPor, ECSDI.RestriccionNombre))
         graph.add((ECSDI.RestriccionNombre, ECSDI.Nombre, Literal(form['nombre'], datatype=XSD.string)))
@@ -136,11 +196,12 @@ def buscar_productos(graph, form, suj):
         graph.add((suj, ECSDI.RestringidaPor, ECSDI.RestriccionPrecio))
 
         if form['precioMinimo'] != '':
-            graph.add((ECSDI.RestriccionPrecio, ECSDI.PrecioMinimo, Literal(float(form['precioMinimo']), datatype=XSD.float)))
+            graph.add(
+                (ECSDI.RestriccionPrecio, ECSDI.PrecioMinimo, Literal(float(form['precioMinimo']), datatype=XSD.float)))
 
         if form['precioMaximo'] != '':
-            graph.add((ECSDI.RestriccionPrecio, ECSDI.PrecioMaximo, Literal(float(form['precioMaximo']), datatype=XSD.float)))
-
+            graph.add(
+                (ECSDI.RestriccionPrecio, ECSDI.PrecioMaximo, Literal(float(form['precioMaximo']), datatype=XSD.float)))
 
 
 def query_usuario(form, login):
@@ -164,6 +225,7 @@ def query_usuario(form, login):
 
     return query
 
+
 def login(form):
     error = ""
     logger.info(f"Logeando usuario: {form['username']}")
@@ -184,6 +246,7 @@ def login(form):
         logger.info(error)
 
     return error
+
 
 def registrar_usuario(form):
     error = ""
@@ -207,6 +270,7 @@ def registrar_usuario(form):
         session['usuario'] = item
         logger.info("Registro de nuevo usuario finalizado")
     return error
+
 
 # Agent functions
 
@@ -255,74 +319,88 @@ def browser_iface():
     Permite la comunicacion con el agente via un navegador
     via un formulario
     """
-    global mss_cnt
-    global MostradorAgent
 
-    form = request.form
-
-
-
-
-    if MostradorAgent is None:
-        logger.info('Buscando al agente Gestor Productos')
-        MostradorAgent = agents.get_agent(DSO.MostradorAgent, PersonalAgent, DirectoryAgent, mss_cnt)
-
-        mss_cnt += 1
-
-    gmess = Graph()
-    # Construimos el mensaje de registro
-    gmess.bind('foaf', FOAF)
-    gmess.bind('dso', DSO)
-    gmess.bind("default", ECSDI)
-    reg_obj = agn['BuscarProductos' + str(mss_cnt)]
-    gmess.add((reg_obj, RDF.type,  ECSDI.BuscarProductos))
-    gmess.add((reg_obj, DSO.Uri, PersonalAgent.uri))
-    gmess.add((reg_obj, FOAF.name, Literal(PersonalAgent.name)))
-    gmess.add((reg_obj, DSO.Address, Literal(PersonalAgent.address)))
-    gmess.add((reg_obj, DSO.AgentType, DSO.PersonalAgent))
-
-    us = None
-    if 'usuario' in session:
-        us = session['usuario']
-
-    gmess.add((reg_obj, ECSDI.Id, Literal(us, datatype=XSD.string)))
-
-    if 'search' in form:
-        print(form)
-        buscar_productos(gmess, form,reg_obj)
-
-    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
-
-    gr = send_message(
-        build_message(gmess, perf=ACL.request,
-                      sender=PersonalAgent.uri,
-                      receiver=MostradorAgent.uri,
-                      content=reg_obj,
-                      msgcnt=mss_cnt),
-        MostradorAgent.address)
-    mss_cnt += 1
-
-    query = """
-                prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                prefix xsd:<http://www.w3.org/2001/XMLSchema#>
-                prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
-                prefix owl:<http://www.w3.org/2002/07/owl#>
-                SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria ?descripcion ?externo
-                    where {
-                    {?producto rdf:type default:Producto } .
-                    ?producto default:Nombre ?nombre .
-                    ?producto default:Precio ?precio .
-                    ?producto default:Marca ?marca .
-                    ?producto default:Peso ?peso .
-                    ?producto default:Categoria ?categoria .
-                    ?producto default:Descripcion ?descripcion .
-                    ?producto default:Externo ?externo .
-                    }"""
-
-    graph_query = gr.query(query)
-
+    graph_query = obtener_productos(request.form)
     return render_template('main.html', query=graph_query)
 
+@app.route("/comprar", methods=['GET', 'POST'])
+def comprar_iface():
+
+    graph_query = obtener_productos()
+
+    global VendedorAgent
+    global mss_cnt
+
+    if not 'cart' in session or len(session['cart']) == 0:
+        return redirect('iface')
+
+    if not 'usuario' in session:
+        return redirect('login')
+
+
+    productos = []
+    for producto in graph_query:
+        if str(producto['producto']) in session['cart']:
+            productos.append(producto)
+
+    form = request.form
+    us = session['usuario']
+
+    if 'comprar' in form:
+        if form['numTarjeta'] != '' and form['prioridad'] != '' and form['direccion'] != '' and form['zip'] != '':
+            if VendedorAgent is None:
+                logger.info('Buscando al agente Vendedor')
+                VendedorAgent = agents.get_agent(DSO.VendedorAgent, PersonalAgent, DirectoryAgent, mss_cnt)
+
+                mss_cnt += 1
+
+            gmess = Graph()
+            # Construimos el mensaje de registro
+            gmess.bind('foaf', FOAF)
+            gmess.bind('dso', DSO)
+            gmess.bind("default", ECSDI)
+            id = str(uuid.uuid4())
+            reg_obj = agn['PeticionCompra' + str(id)]
+            gmess.add((reg_obj, RDF.type, ECSDI.PeticionCompra))
+            gmess.add((reg_obj, ECSDI.Usuario, URIRef(us)))
+            gmess.add((reg_obj, ECSDI.Prioridad, Literal(int(form['prioridad']), datatype=XSD.int)))
+            gmess.add((reg_obj, ECSDI.Tarjeta, Literal(int(form['numTarjeta']), datatype=XSD.int)))
+            gmess.add((reg_obj, ECSDI.Direccion, Literal(form['direccion'], datatype=XSD.string)))
+            gmess.add((reg_obj, ECSDI.CodigoPostal, Literal(int(form['zip']), datatype=XSD.int)))
+
+            sujetoCompra = ECSDI['Compra' + str(id)]
+            gmess.add((sujetoCompra, RDF.type, ECSDI.Compra))
+
+            for product in productos:
+                product_nombre = product['nombre']
+                product_precio = product['precio']
+                product_suj = product['producto']
+                gmess.add((product_suj, RDF.type, ECSDI.Producto))
+                gmess.add((product_suj, ECSDI.Nombre, Literal(product_nombre, datatype=XSD.string)))
+                gmess.add((product_suj, ECSDI.Precio, Literal(product_precio, datatype=XSD.float)))
+                gmess.add((sujetoCompra, ECSDI.Muestra, URIRef(product_suj)))
+
+            gmess.add((reg_obj, ECSDI.De, URIRef(sujetoCompra)))
+
+
+            gr = send_message(
+                build_message(gmess, perf=ACL.request,
+                              sender=PersonalAgent.uri,
+                              receiver=VendedorAgent.uri,
+                              content=reg_obj,
+                              msgcnt=mss_cnt),
+                VendedorAgent.address)
+            mss_cnt += 1
+
+            total = None
+
+            for s, o in gr.subject_objects(ECSDI.PrecioTotal):
+                total = o
+
+            session['cart'] = []
+            return render_template('factura.html', query=productos, total=total, data=form)
+
+    return render_template('comprar.html', query=productos)
 
 @app.route("/login", methods=['GET', 'POST'])
 def login_iface():
@@ -338,6 +416,7 @@ def login_iface():
                 return redirect("/iface")
     return render_template('login.html', error=error)
 
+
 @app.route("/register", methods=['GET', 'POST'])
 def register_iface():
     form = request.form
@@ -350,11 +429,37 @@ def register_iface():
                 return redirect("/iface")
     return render_template('register.html', error=error)
 
+
 @app.route("/logout", methods=['GET', 'POST'])
 def logout_iface():
     session.pop('usuario', None)
     logger.info('Usuario deslogeado')
     return redirect('/iface')
+
+
+@app.route("/addcart", methods=['POST'])
+def addcart_iface():
+    if 'product' in request.json:
+        if 'cart' not in session:
+            session['cart'] = []
+
+        temp = session['cart']
+        if request.json['product'] not in temp:
+            temp.append(request.json['product'])
+            session['cart'] = temp
+
+    return Response("ok", status=200)
+
+@app.route("/removecart", methods=['POST'])
+def removecart_iface():
+    if 'product' in request.json:
+        if 'cart' in session:
+            temp = session['cart']
+            temp.remove(request.json['product'])
+            session['cart'] = temp
+
+    return Response("ok", status=200)
+
 
 @app.route("/stop")
 def stop():
@@ -456,7 +561,6 @@ def agentbehavior1(cola):
             fin = True
         else:
             print(v)
-
 
 
 if __name__ == '__main__':

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ECSDI - Factura</title>
+    <link rel="stylesheet"  type= "text/css" href= "{{ url_for('static',filename='styles.css') }}" />
+    <script src= "{{ url_for('static',filename='main.js') }}" ></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <table>
+        <tr>
+            <th>Numero Tarjeta</th>
+            <th>Prioridad</th>
+            <th>Direccion</th>
+            <th>Codigo Postal</th>
+            <th>Precio Total</th>
+        </tr>
+        <tr>
+            <td>{{ data['numTarjeta'] }}</td>
+            <td>{{ data['prioridad'] }}</td>
+            <td>{{ data['direccion'] }}</td>
+            <td>{{ data['zip'] }}</td>
+            <td>{{ total }}€</td>
+        </tr>
+    </table>
+    </form>
+
+    <table id="products">
+            <tr>
+                <th>Nombre</th>
+                <th>Marca</th>
+                <th>Categoria</th>
+                <th>Descripcion</th>
+                <th>Precio</th>
+            </tr>
+        {% for product in query %}
+            <tr>
+                <td>{{ product['nombre'] }}</td>
+                <td>{{ product['marca'] }}</td>
+                <td>{{ product['categoria'] }}</td>
+                <td>{{ product['descripcion'] }}</td>
+                <td>{{ product['precio'] }}€</td>
+            </tr>
+        {% endfor %}
+        </table>
+
+</body>
+</html>
