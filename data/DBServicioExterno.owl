@@ -1,0 +1,13 @@
+@prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+default:ServicioExterno75f5a5fe-9347-4104-a3e6-9e9ce513a845 a default:ServicioExterno ;
+    default:Nombre "Culo du Macaco"^^xsd:string ;
+    default:Tarjeta "696969"^^xsd:int ;
+    default:TransportePropio false .
+
+default:ServicioExternof97bd2ca-6489-4c21-a6d8-5f9facab9fb7 a default:ServicioExterno ;
+    default:Nombre "1"^^xsd:string ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:TransportePropio true .
+
