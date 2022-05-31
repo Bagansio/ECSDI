@@ -175,14 +175,13 @@ def enviarVenta(content, gm):
         return Graph()
     
 
-
-
 def vender(content, gm):
     logger.info('Petición de compra recibida')
 
     # Obtenemos tarjeta de credito
     tarjetaCredito = gm.value(subject=content, predicate=ECSDI.Tarjeta) #AÑADIR TARJETA A LA ONTOLOGIA
     prioridad = gm.value(subject=content, predicate=ECSDI.Prioridad) #AÑADIR prioridad A LA ONTOLOGIA
+    
 
     # Creamos la factura 
     grafoFactura = Graph()
@@ -221,10 +220,9 @@ def vender(content, gm):
         #Añadimos el producto al grafoFactura
         grafoFactura.add((sujeto, ECSDI.FormadaPor, URIRef(producto)))
 
-    # Añadimos el precio total
-    grafoFactura.add((sujeto, ECSDI.PrecioTotal, Literal(precio, datatype=XSD.float))) #Revisar si hay preciototal en la onto
-
-
+    # Añadimos el precio productos y precio envío
+    grafoFactura.add((sujeto, ECSDI.PrecioProductos, Literal(precio, datatype=XSD.float))) #Revisar si hay preciototal en la onto
+    grafoFactura.add((sujeto, ECSDI.PrecioEnvio, Literal(float(prioridad), datatype=XSD.float)))
 
     # Llamamos a registrarVenda
     thread = threading.Thread(target=RegistrarVenta, args=(grafoFactura,))
