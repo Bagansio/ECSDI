@@ -135,7 +135,7 @@ def agregarDBProducto(data):
         graph.add((item, ECSDI.Peso, Literal(data['Peso'], datatype=XSD.float)))
         graph.add((item, ECSDI.Marca, Literal(data['Marca'], datatype=XSD.string)))
         graph.add((item, ECSDI.Descripcion, Literal(data['Descripcion'], datatype=XSD.string)))
-        graph.add((item, ECSDI.Externo, Literal(data['Externo'], datatype=XSD.boolean)))
+        graph.add((item, ECSDI.Externo, Literal(data['Externo'], datatype=XSD.string)))
         graph.add((item, ECSDI.Disponible, Literal(True, datatype=XSD.boolean)))
 
         graph.serialize(destination=db.DBProductos, format='turtle')
@@ -259,7 +259,7 @@ def browser_iface():
         if form['Nombre'] != '' and form['Marca'] != '' and form['Precio'] != '' and\
            form['Categoria'] != '' and form['Peso'] != '' and form['Descripcion'] != '':
             data = dict(form)
-            data['Externo'] = False
+            data['Externo'] = None
 
             agregarDBProducto(data)
 

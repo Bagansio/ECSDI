@@ -12,6 +12,7 @@ Agente que se registra como agente de hoteles y espera peticiones
 from pathlib import Path
 import sys
 
+
 path_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(path_root))
 
@@ -21,7 +22,7 @@ import argparse
 import threading
 import uuid
 
-from flask import Flask, request,render_template
+from flask import Flask, request,render_template, session
 from rdflib import Graph, Namespace, Literal, URIRef, XSD
 from rdflib.namespace import FOAF, RDF
 from utils import db,agents
@@ -106,6 +107,7 @@ DirectoryAgent = Agent('DirectoryAgent',
 
 
 GestorProductosAgent = None
+RegistroServicioExternoAgent = None
 
 
 # Global dsgraph triplestore
@@ -138,7 +140,7 @@ def agregarDBProducto(data):
         graph.add((item, ECSDI.Categoria, Literal(data['Categoria'], datatype=XSD.string)))
         graph.add((item, ECSDI.Peso, Literal(data['Peso'], datatype=XSD.float)))
         graph.add((item, ECSDI.Marca, Literal(data['Marca'], datatype=XSD.string)))
-        graph.add((item, ECSDI.Externo, Literal(True, datatype=XSD.boolean)))
+        graph.add((item, ECSDI.Externo, Literal(data['Externo'], datatype=XSD.string)))
 
         global GestorProductosAgent
 
@@ -200,6 +202,52 @@ def agregarproducto(content, gm):
 
     return resultadoComunicacion
 
+def obtener_vendedores(form = None):
+    global mss_cnt
+    global RegistroServicioExternoAgent
+
+    if RegistroServicioExternoAgent is None:
+        logger.info('Buscando al agente Registro Servicio Externo')
+        RegistroServicioExternoAgent = agents.get_agent(DSO.RegistroServicioExternoAgent, GestorServicioExternoAgent, DirectoryAgent, mss_cnt)
+        mss_cnt += 1
+
+    gmess = Graph()
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    gmess.bind("default", ECSDI)
+    reg_obj = agn['BuscarAgentesExternos' + str(mss_cnt)]
+    gmess.add((reg_obj, RDF.type, ECSDI.BuscarAgentesExternos))
+
+    us = None
+    if 'usuario' in session:
+        us = session['usuario']
+
+    gmess.add((reg_obj, ECSDI.Id, Literal(us, datatype=XSD.string)))
+
+    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+
+    gr = send_message(
+        build_message(gmess, perf=ACL.request,
+                      sender=GestorServicioExternoAgent.uri,
+                      receiver=RegistroServicioExternoAgent.uri,
+                      content=reg_obj,
+                      msgcnt=mss_cnt),
+        RegistroServicioExternoAgent.address)
+    mss_cnt += 1
+
+    query = """
+                prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+                prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+                prefix owl:<http://www.w3.org/2002/07/owl#>
+                SELECT ?servicioexterno ?nombre 
+                    where {
+                    {?servicioexterno rdf:type default:ServicioExterno } .
+                    ?servicioexterno default:Nombre ?nombre .
+                    }"""
+
+    return gr.query(query)
+
 
 # Agent functions
 
@@ -248,10 +296,19 @@ def browser_iface():
     Permite la comunicacion con el agente via un navegador
     via un formulario
     """
+    graph_query = obtener_vendedores()
+    
+    vendedoresExternos = []
+
+    for vendedor in graph_query:
+        vendedoresExternos.append(vendedor)
+
+    
+
     form = request.form
     if 'message' in form:
         if form['Nombre'] != '' and form['Marca'] != '' and form['Precio'] != '' and\
-           form['Categoria'] != '' and form['Peso'] != ''  and form['Descripcion'] != '':
+           form['Categoria'] != '' and form['Peso'] != ''  and form['Descripcion'] != '' and form['Externo'] != '':
 
             agregarDBProducto(request.form)
 
@@ -259,7 +316,7 @@ def browser_iface():
             logger.info('Error añadiendo el producto externo, formulario incorrecto')
 
 
-    return render_template('agregarproducto.html')
+    return render_template('agregarproductoexterno.html', query=vendedoresExternos)
 
 
 @app.route("/stop")
