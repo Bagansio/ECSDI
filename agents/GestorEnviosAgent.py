@@ -141,15 +141,7 @@ cola1 = Queue()
 
 
 
-@app.route("/iface", methods=['GET', 'POST'])
-def browser_iface():
-    """
-    Simplemente es para probar que funciona
-    """
-
-    return 
     
-
 @app.route("/stop")
 def stop():
     """
