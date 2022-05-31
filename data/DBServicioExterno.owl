@@ -1,10 +1,25 @@
 @prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+default:ServicioExterno500bc299-3230-4406-9d26-32091fd3d7cc a default:ServicioExterno ;
+    default:Nombre "VendedorEjemplo"^^xsd:string ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:TransportePropio false .
+
 default:ServicioExterno75f5a5fe-9347-4104-a3e6-9e9ce513a845 a default:ServicioExterno ;
     default:Nombre "Culo du Macaco"^^xsd:string ;
     default:Tarjeta "696969"^^xsd:int ;
     default:TransportePropio false .
+
+default:ServicioExterno8f3720fc-d000-4b1d-b2f7-ec0581376165 a default:ServicioExterno ;
+    default:Nombre "VendedorEjemplo2"^^xsd:string ;
+    default:Tarjeta "1234567"^^xsd:int ;
+    default:TransportePropio true .
+
+default:ServicioExternoe53e5570-1bd2-4460-a5d3-a79edc35a735 a default:ServicioExterno ;
+    default:Nombre "1111"^^xsd:string ;
+    default:Tarjeta "1111"^^xsd:int ;
+    default:TransportePropio true .
 
 default:ServicioExternof97bd2ca-6489-4c21-a6d8-5f9facab9fb7 a default:ServicioExterno ;
     default:Nombre "1"^^xsd:string ;

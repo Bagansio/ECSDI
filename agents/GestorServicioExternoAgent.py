@@ -202,6 +202,111 @@ def agregarproducto(content, gm):
 
     return resultadoComunicacion
 
+def agregarDBServicioExterno(data):
+    try:
+        logger.info('Registrando Servicio Externo: Nombre = ' + data['Nombre'] + ' TransportePropio = ' + data['TransportePropio'] + ' Tarjeta = ' + data['Tarjeta'])
+        global mss_cnt
+        ontologyFile = open(db.DBServicioExterno)
+        graph = Graph()
+        graph.parse(ontologyFile, format='turtle')
+        graph.bind("default", ECSDI)
+        id = str(uuid.uuid4())
+
+        item = ECSDI['ServicioExterno'+id]
+
+        graph.add((item, RDF.type, ECSDI.ServicioExterno))
+        graph.add((item, ECSDI.Nombre, Literal(data['Nombre'], datatype=XSD.string)))
+        graph.add((item, ECSDI.TransportePropio, Literal(data['TransportePropio'], datatype=XSD.boolean)))
+        graph.add((item, ECSDI.Tarjeta, Literal(data['Tarjeta'], datatype=XSD.int)))
+
+        graph.serialize(destination=db.DBServicioExterno, format='turtle')
+        logger.info("Registro de nuevo servicio externo finalizado")
+
+    except:
+        logger.info("Registro de nuevo servicio externo fallido")
+
+    
+def procesarServicioExterno(content, gm):
+    data = {
+        'Nombre': None,
+        'TransportePropio': None,
+        'Tarjeta': None,
+    }
+
+    for a,b,c in gm:
+
+        if 'Peticion' in a and b == ECSDI.Nombre:
+            data['Nombre'] = c
+
+        elif 'Peticion' in a and b == ECSDI.TransportePropio:
+            data['TransportePropio'] = c
+
+        elif 'Peticion' in a and  b == ECSDI.Tarjeta:
+            data['Tarjeta'] = c
+
+    agregarDBServicioExterno(data)
+
+
+def agregarServicioExterno(content, gm):
+    logger.info('Recibida petición de añadir servicio externo')
+    for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+        gm.remove((item, None, None))
+
+    thread = threading.Thread(target=procesarServicioExterno, args=(content, gm))
+    thread.start()
+
+    resultadoComunicacion = Graph()
+
+    return resultadoComunicacion
+
+
+def obtener_vendedores():
+    print ("Start")
+    ontologyFile = open(db.DBServicioExterno)
+    grafoVendedores = Graph()
+    grafoVendedores.parse(ontologyFile, format='turtle')
+    print ("grafo obtenido")
+
+    #for a,b,c in grafoVendedores:
+        #print(a)
+        #print(b)
+        #print(c)
+
+    query = """
+    prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+    prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+    prefix owl:<http://www.w3.org/2002/07/owl#>
+    SELECT ?servicioexterno ?nombre 
+        where {
+        {?servicioexterno rdf:type default:ServicioExterno } .
+        ?servicioexterno default:Nombre ?nombre .
+        } """
+
+    print ("query declarada")
+
+    vendedoresInfo = grafoVendedores.query(query)
+
+    print ("query ejecutada")
+    
+    print ("XXXXXXXXXXXXXXXXXXXXXXXXXXX")
+
+    vendedores = []
+
+    for vendedor in vendedoresInfo:
+        #print (vendedor)
+        print (vendedor['nombre'])
+        print (vendedor['servicioexterno'])
+        vendedores.append(str(vendedor['nombre']))
+
+    print ("XXXXXXXXXXXXXXXXXXXXXXXXXXX")
+
+    for vendedor in vendedores:
+        print (vendedor)
+    
+    return vendedores
+
+"""
 def obtener_vendedores(form = None):
     global mss_cnt
     global RegistroServicioExternoAgent
@@ -235,7 +340,7 @@ def obtener_vendedores(form = None):
         RegistroServicioExternoAgent.address)
     mss_cnt += 1
 
-    query = """
+    query = 
                 prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
                 prefix xsd:<http://www.w3.org/2001/XMLSchema#>
                 prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
@@ -244,9 +349,9 @@ def obtener_vendedores(form = None):
                     where {
                     {?servicioexterno rdf:type default:ServicioExterno } .
                     ?servicioexterno default:Nombre ?nombre .
-                    }"""
+                    }
 
-    return gr.query(query)
+    return gr.query(query) """
 
 
 # Agent functions
@@ -290,18 +395,20 @@ def register_message():
     return gr
 
 
-@app.route("/iface", methods=['GET', 'POST'])
+@app.route("/addproduct", methods=['GET', 'POST'])
 def browser_iface():
     """
     Permite la comunicacion con el agente via un navegador
     via un formulario
     """
+
+    """"
     graph_query = obtener_vendedores()
     
     vendedoresExternos = []
 
     for vendedor in graph_query:
-        vendedoresExternos.append(vendedor)
+        vendedoresExternos.append(vendedor) """
 
     
 
@@ -316,7 +423,29 @@ def browser_iface():
             logger.info('Error añadiendo el producto externo, formulario incorrecto')
 
 
-    return render_template('agregarproductoexterno.html', query=vendedoresExternos)
+    vendedores = obtener_vendedores() 
+    return render_template('agregarproductoexterno.html', vendedores=vendedores)
+
+@app.route("/addvendedor", methods=['GET', 'POST'])
+def browser_addvendedor():
+    """
+    Simplemente es para probar que funciona
+    """
+
+    form = request.form
+
+    if 'message' in form:
+        if form['Nombre'] != '' and form['TransportePropio'] != '' and form['Tarjeta'] != '':
+            data = dict(form)
+
+            agregarDBServicioExterno(data)
+
+        else:
+            logger.info('Error añadiendo el servicio externo, formulario incorrecto')
+
+
+    return render_template('agregarservicioexterno.html')
+    
 
 
 @app.route("/stop")
