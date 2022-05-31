@@ -20,6 +20,7 @@ import logging
 import argparse
 import threading
 import uuid
+import random
 
 from flask import Flask, request,render_template
 from rdflib import Graph, Namespace, Literal, URIRef, XSD
@@ -114,6 +115,42 @@ cola1 = Queue()
 
 # Agent Utils
 
+
+def prepararContraOferta(content, grafo_entrada):
+    global mss_cnt
+
+    logger.info("Recibida petición contra oferta")
+
+    peso = grafo_entrada.value(subject=content, predicate=ECSDI.Peso)
+    precioOferta = grafo_entrada.value(subject=content, predicate=ECSDI.Precio)
+
+    precio = calcularContraOferta(float(peso), precioOferta)
+
+    bajar = True
+    if precioOferta <= precio:
+        bajar = False
+
+    gm = Graph()
+    gm.bind('default', ECSDI)
+    logger.info("Haciendo contra oferta de transporte")
+    item = ECSDI['RespuestaContraOfertaTransporte' + str(mss_cnt)]
+    gm.add((item, RDF.type, ECSDI.RespuestaOfertaTransporte))
+    logger.info("Devolvemos oferta de transporte")
+    gm.add((item, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
+    gm.add((item, ECSDI.Bajar, Literal(bajar, datatype=XSD.boolean)))
+
+    return gm
+
+
+def calcularContraOferta(peso,precioOferta):
+    precio = calcularOferta(peso)
+
+    if precioOferta <= precio:
+        bajar = random.choice((True, False))
+        if bajar:
+            precio = abs(precioOferta - 1.)
+    return precio
+
 def prepararOferta(content, grafo_entrada):
 
     global mss_cnt
@@ -121,8 +158,7 @@ def prepararOferta(content, grafo_entrada):
 
     logger.info("Recibida petición oferta")
 
-    lote = grafo_entrada.value(subject=content, predicate=ECSDI.LoteEnvio)
-    peso = grafo_entrada.value(subject=lote, predicate=ECSDI.Peso)
+    peso = grafo_entrada.value(subject=content, predicate=ECSDI.Peso)
 
     precio = calcularOferta(float(peso))
     gm = Graph()
@@ -259,8 +295,11 @@ def comunicacion():
                 content = msgdic['content']
                 accion = gm.value(subject=content, predicate=RDF.type)
 
-                if accion == ECSDI.PedirOfertas:
+                if accion == ECSDI.PedirOferta:
                     grafo_response = prepararOferta(content, gm)
+
+                if accion == ECSDI.PedirContraOferta:
+                    grafo_response = prepararContraOferta(content, gm)
             # Aqui realizariamos lo que pide la accion
             # Por ahora simplemente retornamos un Inform-done
 
