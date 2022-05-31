@@ -125,7 +125,8 @@ def agregarDBProducto(data):
     try:
 
         logger.info("Registrando producto: [" + data['Nombre'] + " " + data['Marca'] +
-                    "] de " + data['Peso'] + "kg por " + data['Precio'] + "€")
+                    "] de " + data['Peso'] + "kg por " + data['Precio'] + "€" " al vendedor externo "+ data['Externo'] +
+                    " con una descripción: " + data['Descripcion'])
         # añadir el producto
         global mss_cnt
         ontologyFile = open(db.DBProductos)
@@ -138,9 +139,11 @@ def agregarDBProducto(data):
         graph.add((item, ECSDI.Nombre, Literal(data['Nombre'], datatype=XSD.string)))
         graph.add((item, ECSDI.Precio, Literal(data['Precio'], datatype=XSD.float)))
         graph.add((item, ECSDI.Categoria, Literal(data['Categoria'], datatype=XSD.string)))
+        graph.add((item, ECSDI.Descripcion, Literal(data['Descripcion'], datatype=XSD.string)))
         graph.add((item, ECSDI.Peso, Literal(data['Peso'], datatype=XSD.float)))
         graph.add((item, ECSDI.Marca, Literal(data['Marca'], datatype=XSD.string)))
         graph.add((item, ECSDI.Externo, Literal(data['Externo'], datatype=XSD.string)))
+
 
         global GestorProductosAgent
 
@@ -168,6 +171,7 @@ def procesarProductoExterno(graph):
         'Nombre': None,
         'Peso': None,
         'Precio': None,
+        'Externo':None
     }
 
     for a,b,c in graph:
@@ -185,6 +189,9 @@ def procesarProductoExterno(graph):
 
         elif b == ECSDI.Precio:
             data['Precio'] = c
+
+        elif b == ECSDI.Externo:
+            data['Externo'] = c
 
 
     return agregarDBProducto(data)
@@ -283,26 +290,8 @@ def obtener_vendedores():
         ?servicioexterno default:Nombre ?nombre .
         } """
 
-    print ("query declarada")
 
-    vendedoresInfo = grafoVendedores.query(query)
-
-    print ("query ejecutada")
-    
-    print ("XXXXXXXXXXXXXXXXXXXXXXXXXXX")
-
-    vendedores = []
-
-    for vendedor in vendedoresInfo:
-        #print (vendedor)
-        print (vendedor['nombre'])
-        print (vendedor['servicioexterno'])
-        vendedores.append(str(vendedor['nombre']))
-
-    print ("XXXXXXXXXXXXXXXXXXXXXXXXXXX")
-
-    for vendedor in vendedores:
-        print (vendedor)
+    vendedores = grafoVendedores.query(query)
     
     return vendedores
 
@@ -415,7 +404,7 @@ def browser_iface():
     form = request.form
     if 'message' in form:
         if form['Nombre'] != '' and form['Marca'] != '' and form['Precio'] != '' and\
-           form['Categoria'] != '' and form['Peso'] != ''  and form['Descripcion'] != '' and form['Externo'] != '':
+           form['Categoria'] != '' and form['Peso'] != ''  and form['Descripcion'] != '' and form['Externo'] is not None:
 
             agregarDBProducto(request.form)
 

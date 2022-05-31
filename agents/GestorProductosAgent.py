@@ -118,7 +118,7 @@ cola1 = Queue()
 def agregarDBProducto(data):
     try:
         logger.info("Registrando producto: [" + data['Nombre'] + " " + data['Marca'] +
-                    "] de " + data['Peso'] + "kg por " + data['Precio'] + "€")
+                    "] de " + data['Peso'] + "kg por " + data['Precio'] + "€" + " Agente Externo = " + data['Externo'])
         # añadir el producto
         global mss_cnt
         ontologyFile = open(db.DBProductos)
@@ -137,7 +137,6 @@ def agregarDBProducto(data):
         graph.add((item, ECSDI.Descripcion, Literal(data['Descripcion'], datatype=XSD.string)))
         graph.add((item, ECSDI.Externo, Literal(data['Externo'], datatype=XSD.string)))
         graph.add((item, ECSDI.Disponible, Literal(True, datatype=XSD.boolean)))
-
         graph.serialize(destination=db.DBProductos, format='turtle')
 
         logger.info("Registro de nuevo producto finalizado")
@@ -154,7 +153,8 @@ def procesarProducto(graph, content):
         'Nombre': None,
         'Peso': None,
         'Precio': None,
-        'Externo': None
+        'Externo': None,
+        'Descripcion': None
     }
 
     for a,b,c in graph:
@@ -176,6 +176,9 @@ def procesarProducto(graph, content):
 
         elif 'Peticion' in a and b == ECSDI.Externo:
             data['Externo'] = c
+        
+        elif 'Peticion' in a and b == ECSDI.Descripcion:
+            data['Descripcion'] = c
 
 
     agregarDBProducto(data)

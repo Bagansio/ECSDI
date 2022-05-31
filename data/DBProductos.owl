@@ -1,6 +1,16 @@
 @prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+default:Producto29ad1ab9-15c4-46af-a8a4-875ef0116ccf a default:Producto ;
+    default:Categoria "12"^^xsd:string ;
+    default:Descripcion "12"^^xsd:string ;
+    default:Disponible true ;
+    default:Externo "VendedorEjemplo"^^xsd:string ;
+    default:Marca "12"^^xsd:string ;
+    default:Nombre "12"^^xsd:string ;
+    default:Peso "12.0"^^xsd:float ;
+    default:Precio "12.0"^^xsd:float .
+
 default:Producto4dc1e17f-04d0-4057-80a1-74646bb94296 a default:Producto ;
     default:Categoria "Top"^^xsd:string ;
     default:Descripcion "Muy ricaa"^^xsd:string ;
