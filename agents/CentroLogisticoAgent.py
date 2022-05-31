@@ -57,6 +57,9 @@ parser.add_argument('--dhost', help="Host del agente de directorio")
 parser.add_argument('--dport', type=int,
                     help="Puerto de comunicacion del agente de directorio")
 
+parser.add_argument('--centro', type=int,
+                    help="Id del Centro Logistico")
+
 
 # Logging
 logger = config_logger(level=1)
@@ -101,7 +104,7 @@ dsgraph.bind('dso', DSO)
 agn = Namespace("http://www.agentes.org#")
 
 # Datos del Agente
-CentroLogisticoAgent = Agent('CentroLogisticoAgent',
+CentroLogisticoAgent = Agent('CentroLogisticoAgent' + str(args.centro),
                        agn.CentroLogisticoAgent,
                        'http://%s:%d/comm' % (hostaddr, port),
                        'http://%s:%d/Stop' % (hostaddr, port))
