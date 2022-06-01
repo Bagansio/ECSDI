@@ -143,6 +143,7 @@ def agregarDBProducto(data):
         graph.add((item, ECSDI.Peso, Literal(data['Peso'], datatype=XSD.float)))
         graph.add((item, ECSDI.Marca, Literal(data['Marca'], datatype=XSD.string)))
         graph.add((item, ECSDI.Externo, Literal(data['Externo'], datatype=XSD.string)))
+        graph.add((item, ECSDI.Valoracion, Literal(data['Valoracion'], datatype=XSD.int)))
 
 
         global GestorProductosAgent
@@ -171,28 +172,33 @@ def procesarProductoExterno(graph):
         'Nombre': None,
         'Peso': None,
         'Precio': None,
-        'Externo':None
+        'Externo': None,
+        'Descripcion': None,
+        'Valoracion': -1
     }
 
     for a,b,c in graph:
-        if b == ECSDI.Categoria:
+
+        if 'Peticion' in a and b == ECSDI.Categoria:
             data['Categoria'] = c
 
-        elif b == ECSDI.Marca:
+        elif 'Peticion' in a and b == ECSDI.Marca:
             data['Marca'] = c
 
-        elif b == ECSDI.Nombre:
+        elif 'Peticion' in a and  b == ECSDI.Nombre:
             data['Nombre'] = c
 
-        elif b == ECSDI.Peso:
+        elif 'Peticion' in a and b == ECSDI.Peso:
             data['Peso'] = c
 
-        elif b == ECSDI.Precio:
+        elif 'Peticion' in a and b == ECSDI.Precio:
             data['Precio'] = c
 
-        elif b == ECSDI.Externo:
+        elif 'Peticion' in a and b == ECSDI.Externo:
             data['Externo'] = c
-
+        
+        elif 'Peticion' in a and b == ECSDI.Descripcion:
+            data['Descripcion'] = c
 
     return agregarDBProducto(data)
 
@@ -406,7 +412,11 @@ def browser_iface():
         if form['Nombre'] != '' and form['Marca'] != '' and form['Precio'] != '' and\
            form['Categoria'] != '' and form['Peso'] != ''  and form['Descripcion'] != '' and form['Externo'] is not None:
 
-            agregarDBProducto(request.form)
+            data = dict(form)
+            data['Valoracion'] = -1
+            
+
+            agregarDBProducto(data)
 
         else:
             logger.info('Error añadiendo el producto externo, formulario incorrecto')

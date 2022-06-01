@@ -118,7 +118,7 @@ cola1 = Queue()
 def agregarDBProducto(data):
     try:
         logger.info("Registrando producto: [" + data['Nombre'] + " " + data['Marca'] +
-                    "] de " + data['Peso'] + "kg por " + data['Precio'] + "€" + " Agente Externo = " + data['Externo'])
+                    "] de " + data['Peso'] + "kg por " + data['Precio'] + "€" + " Agente Externo = ")
         # añadir el producto
         global mss_cnt
         ontologyFile = open(db.DBProductos)
@@ -137,6 +137,7 @@ def agregarDBProducto(data):
         graph.add((item, ECSDI.Descripcion, Literal(data['Descripcion'], datatype=XSD.string)))
         graph.add((item, ECSDI.Externo, Literal(data['Externo'], datatype=XSD.string)))
         graph.add((item, ECSDI.Disponible, Literal(True, datatype=XSD.boolean)))
+        graph.add((item, ECSDI.Valoracion, Literal(data['Valoracion'], datatype=XSD.int)))
         graph.serialize(destination=db.DBProductos, format='turtle')
 
         logger.info("Registro de nuevo producto finalizado")
@@ -154,7 +155,8 @@ def procesarProducto(graph, content):
         'Peso': None,
         'Precio': None,
         'Externo': None,
-        'Descripcion': None
+        'Descripcion': None,
+        'Valoracion': -1
     }
 
     for a,b,c in graph:
@@ -263,6 +265,7 @@ def browser_iface():
            form['Categoria'] != '' and form['Peso'] != '' and form['Descripcion'] != '':
             data = dict(form)
             data['Externo'] = None
+            data['Valoracion'] = -1
 
             agregarDBProducto(data)
 
