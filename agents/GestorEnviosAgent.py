@@ -36,6 +36,7 @@ from utils import db,agents
 
 from AgentUtil.OntoNamespaces import ECSDI
 from AgentUtil.ACL import ACL
+from AgentUtil.Ciudades import centrosMasProximos
 from AgentUtil.FlaskServer import shutdown_server
 from AgentUtil.ACLMessages import build_message, send_message, get_message_properties
 from AgentUtil.Agent import Agent
@@ -124,6 +125,26 @@ dsgraph = Graph()
 cola1 = Queue()
 
 
+def solicitarDevolucion(content, gm):
+    return None
+
+
+def solicitarEnvio(content, gm):
+    logger.info("SolicitarEnvio")
+    ontologyFile = open(db.DBCentrosLogisticos)
+    centrosLogisticos = Graph()
+    centrosLogisticos.parse(ontologyFile, format='turtle')
+
+    ciudad = gm.value(subject=content, predicate=ECSDI.Ciudad)
+
+    centrosMasCercanos = centrosMasProximos(ciudad) 
+
+    logger.info("Previo al for")
+    for centro in centrosMasCercanos:
+        print (centro)
+
+    return None
+
 
 
 
@@ -195,17 +216,45 @@ def comunicacion():
             # de registro
 
             # Averiguamos el tipo de la accion
+            logger.info("Previo al if content")
             if 'content' in msgdic:
+                response = Graph()
                 content = msgdic['content']
                 accion = gm.value(subject=content, predicate=RDF.type)
 
-            if accion == ECSDI.PeticionCompra: #AÑADIR EN LA ONTOLOGIA
+                print (content)
+                print (accion)
+                for a,b,c in gm:
+                    print(a)
+                    print(b)
+                    print(c)
 
-                # Eliminar los ACLMessage
-                for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
-                    gm.remove((item, None, None))
+                if accion == ECSDI.EnvioCompra: #AÑADIR EN LA ONTOLOGIA
+                    logger.info("Accion correcta")
 
-                #gr =  vender(gm, content) #retornamos la factura
+                    print(len(gm))
+                    for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                        gm.remove((item, None, None))
+
+                    print(len(gm))
+                    response = solicitarEnvio(content, gm) #retornamos la fecha y el transportista
+
+                elif accion == ECSDI.EnvioDevolucion: #AÑADIR EN LA ONTOLOGIA
+
+                        print(len(gm))
+                        for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                            gm.remove((item, None, None))
+
+                        print(len(gm))
+                        response = solicitarDevolucion(content, gm) #retornamos la fecha y el transportista
+
+
+                gr = build_message(response,
+                               ACL['inform'],
+                               sender=GestorEnviosAgent.uri,
+                               msgcnt=mss_cnt,
+                               receiver=msgdic['sender'], )
+
     mss_cnt += 1
 
     logger.info('Respondemos a la peticion')

@@ -147,34 +147,51 @@ def RegistrarVenta(grafoFactura):
 
 def enviarVenta(content, gm):
     global GestorEnviosAgent
+    global mss_cnt
 
-    logger.info('Haciendo petición de envio TODAVIA NO IMPLEMENTADA!!')
+    ciudad = gm.value(subject=content, predicate=ECSDI.Ciudad)
+    compra = gm.value(subject=content, predicate=ECSDI.De)
+
+
+    graph_message = Graph()
+    graph_message.bind('foaf', FOAF)
+    graph_message.bind('dso', DSO)
+    graph_message.bind("default", ECSDI)
+    graph_message.remove((content, RDF.type, ECSDI.PeticionCompra))
     gm.remove((content, RDF.type, ECSDI.PeticionCompra))
-    sujeto = ECSDI['PeticionEnvio' + str(uuid.uuid4())]
-    gm.add((sujeto, RDF.type, ECSDI.PeticionEnvio)) #No se si esta peticionenvio
+
+    reg_obj = ECSDI['EnvioCompra' + str(mss_cnt)]
+    graph_message.add((reg_obj, RDF.type, ECSDI.EnvioCompra))
+
+    graph_message.add((reg_obj,ECSDI.Ciudad,Literal(ciudad,datatype=XSD.string)))
+    for producto in gm.objects(subject=compra, predicate=ECSDI.Muestra):
+        graph_message.add((reg_obj, ECSDI.FormadaPor, URIRef(producto)))
+
 
     try:
-        if GestorEnviosAgent is None:
-            GestorEnviosAgent = agents.get_agent(DSO.GestorEnviosAgent, VendedorAgent, DirectoryAgent, mss_cnt)
+        logger.info("Obtiene el agente")
+        GestorEnviosAgent = agents.get_agent(DSO.GestorEnviosAgent, VendedorAgent, DirectoryAgent, mss_cnt)
 
+        print ("GestorEnviosAgent " + str(GestorEnviosAgent))
 
-        # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
-        graph = send_message(build_message(gm,
-                                    perf=ACL.request, sender=VendedorAgent.uri,
-                                    receiver=GestorEnviosAgent.uri,
-                                    msgcnt=mss_cnt(), content=sujeto), GestorEnviosAgent.address)
-
-
+        logger.info("Trata de enviar el mensaje")
+        graph = send_message(
+            build_message(graph_message, perf=ACL.request,
+                            sender=VendedorAgent.uri,
+                            receiver=GestorEnviosAgent.uri,
+                            content=reg_obj,
+                            msgcnt=mss_cnt),
+            GestorProductosAgent.address)
 
         mss_cnt += 1
-        logger.info("Petición de envio enviada")
+        logger.info("Petición de envio realizada")
         return graph
-
 
     except Exception as e:
         print(e)
         logger.info("No ha sido posible enviar la petición de envio")
         return Graph()
+
     
 
 def vender(content, gm):
