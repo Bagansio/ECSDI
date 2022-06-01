@@ -366,7 +366,7 @@ def comprar_iface():
             gmess.add((reg_obj, ECSDI.Prioridad, Literal(int(form['prioridad']), datatype=XSD.int)))
             gmess.add((reg_obj, ECSDI.Tarjeta, Literal(int(form['numTarjeta']), datatype=XSD.int)))
             gmess.add((reg_obj, ECSDI.Direccion, Literal(form['direccion'], datatype=XSD.string)))
-            gmess.add((reg_obj, ECSDI.CodigoPostal, Literal(int(form['zip']), datatype=XSD.int)))
+            gmess.add((reg_obj, ECSDI.Ciudad, Literal(form['zip'], datatype=XSD.string)))
 
             sujetoCompra = ECSDI['Compra' + str(id)]
             gmess.add((sujetoCompra, RDF.type, ECSDI.Compra))

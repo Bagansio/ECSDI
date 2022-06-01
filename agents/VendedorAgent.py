@@ -7,7 +7,7 @@ A este agente hay que pasarle un grafo con:
     numTarjeta 
     prioridad 
     direccion 
-    codigoPostal 
+    Ciudad 
     idCompra
     Productos
 
@@ -162,7 +162,9 @@ def enviarVenta(content, gm):
         graph = send_message(build_message(gm,
                                     perf=ACL.request, sender=VendedorAgent.uri,
                                     receiver=GestorEnviosAgent.uri,
-                                    msgcnt=getMessageCount(), content=sujeto), GestorEnviosAgent.address)
+                                    msgcnt=mss_cnt(), content=sujeto), GestorEnviosAgent.address)
+
+
 
         mss_cnt += 1
         logger.info("Petición de envio enviada")
@@ -200,12 +202,12 @@ def vender(content, gm):
 
     compra = gm.value(subject=content, predicate=ECSDI.De) #ESTO EXISTE EL ECSDI.De??? XDDD
     
-    # Obtenemos la dirección y el codigo postal
+    # Obtenemos la dirección y la ciudad postal
     direccion = gm.value(subject=content, predicate=ECSDI.Direccion)
-    codigoPostal = gm.value(subject=content, predicate=ECSDI.CodigoPostal)
+    ciudad = gm.value(subject=content, predicate=ECSDI.Ciudad)
 
     grafoFactura.add((sujeto,ECSDI.Direccion,Literal(direccion,datatype=XSD.string)))
-    grafoFactura.add((sujeto,ECSDI.CodigoPostal,Literal(codigoPostal,datatype=XSD.int)))
+    grafoFactura.add((sujeto,ECSDI.Ciudad,Literal(ciudad,datatype=XSD.string)))
 
     # Obtenemos los productos y calculamos el precio total
     precio = 0
@@ -282,7 +284,7 @@ def browser_iface():
     Simplemente es para probar que funciona
     """
 
-    return pruebaVendedorAgent()
+    return None
     
 
 @app.route("/stop")

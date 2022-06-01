@@ -1,3 +1,46 @@
 @prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+default:Factura26cf5377-d9c2-475c-aea7-90093acc0ca7 a default:Factura ;
+    default:CodigoPostal "4567"^^xsd:int ;
+    default:Direccion "direccion1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "3.0"^^xsd:float ;
+    default:PrecioProductos "20.0"^^xsd:float ;
+    default:Prioridad "3"^^xsd:int ;
+    default:Tarjeta "554321234"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura3f9d1dca-8fa7-4f2a-9354-5571fc5fc711 a default:Factura ;
+    default:CodigoPostal "4567"^^xsd:int ;
+    default:Direccion "direccion"^^xsd:string ;
+    default:FormadaPor default:Productob2771f40-577a-4867-831f-39bf6c7e6812 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1500.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "12345678"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura8531bf4e-9966-4d16-b2c1-e545e1d720ed a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:int ;
+    default:Direccion "direccion5"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1234567"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Facturaa8133e77-be2f-49e3-a4b1-3d9c12269a87 a default:Factura ;
+    default:Ciudad "12345678"^^xsd:int ;
+    default:Direccion "direccion2"^^xsd:string ;
+    default:FormadaPor default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "1.0"^^xsd:float ;
+    default:PrecioProductos "10.0"^^xsd:float ;
+    default:Prioridad "1"^^xsd:int ;
+    default:Tarjeta "132456787654321"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
