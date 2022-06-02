@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-filename: Transportista2Agent
+filename: Transportista1Agent
 
 Antes de ejecutar hay que añadir la raiz del proyecto a la variable PYTHONPATH
 
@@ -20,6 +20,7 @@ import logging
 import argparse
 import threading
 import uuid
+import random
 
 from flask import Flask, request,render_template
 from rdflib import Graph, Namespace, Literal, URIRef, XSD
@@ -104,6 +105,8 @@ DirectoryAgent = Agent('CentroLogisticoAgent',
                        'http://%s:%d/Register' % (dhostname, dport),
                        'http://%s:%d/Stop' % (dhostname, dport))
 
+TransportistaNombre = "DHV"
+
 # Global dsgraph triplestore
 dsgraph = Graph()
 
@@ -113,6 +116,70 @@ cola1 = Queue()
 
 
 # Agent Utils
+
+
+def prepararContraOferta(content, grafo_entrada):
+    global mss_cnt
+
+    logger.info("Recibida petición contra oferta")
+
+    peso = grafo_entrada.value(subject=content, predicate=ECSDI.Peso)
+    precioOferta = grafo_entrada.value(subject=content, predicate=ECSDI.Precio)
+
+    precio = calcularContraOferta(float(peso), float(precioOferta))
+
+    bajar = True
+    if precioOferta <= precio:
+        bajar = False
+
+    gm = Graph()
+    gm.bind('default', ECSDI)
+    logger.info("Haciendo contra oferta de transporte")
+    item = ECSDI['RespuestaContraOfertaTransporte' + str(mss_cnt)]
+    gm.add((item, RDF.type, ECSDI.RespuestaOfertaTransporte))
+    logger.info("Devolvemos oferta de transporte")
+    gm.add((item, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
+    gm.add((item, ECSDI.Bajar, Literal(bajar, datatype=XSD.boolean)))
+    gm.add((item, ECSDI.Nombre, Literal(TransportistaNombre, datatype=XSD.string)))
+
+    return gm
+
+
+def calcularContraOferta(peso,precioOferta):
+    precio = calcularOferta(peso)
+
+    if precioOferta <= precio:
+        bajar = random.choice((True, False))
+        if bajar:
+            precio = abs(precioOferta - 1.)
+    return precio
+
+def prepararOferta(content, grafo_entrada):
+
+    global mss_cnt
+    global TransportistaNombre
+
+    logger.info("Recibida petición oferta")
+
+    peso = grafo_entrada.value(subject=content, predicate=ECSDI.Peso)
+
+    precio = calcularOferta(float(peso))
+    gm = Graph()
+    gm.bind('default', ECSDI)
+    logger.info("Haciendo oferta de transporte")
+    item = ECSDI['RespuestaOfertaTransporte' + str(mss_cnt)]
+    gm.add((item, RDF.type, ECSDI.RespuestaOfertaTransporte))
+    logger.info("Devolvemos oferta de transporte")
+    gm.add((item, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
+    gm.add((item, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
+    gm.add((item, ECSDI.Nombre, Literal(TransportistaNombre, datatype=XSD.string)))
+    return gm
+
+def calcularOferta(peso):
+    logger.info("Calculando oferta")
+    oferta = round(peso * 1.03 + 0.5, 2)
+    logger.info("Oferta calculada de " + str(peso) + "kg: " + str(oferta) + "€")
+    return oferta
 
 
 # Agent functions
@@ -214,7 +281,7 @@ def comunicacion():
     if msgdic is None:
         # Si no es, respondemos que no hemos entendido el mensaje
         gr = build_message(
-            Graph(), ACL['not-understood'], sender=PersonalAgent.uri, msgcnt=mss_cnt)
+            Graph(), ACL['not-understood'], sender=TransportistaAgent.uri, msgcnt=mss_cnt)
     else:
         # Obtenemos la performativa
         perf = msgdic['performative']
@@ -222,23 +289,35 @@ def comunicacion():
         if perf != ACL.request:
             # Si no es un request, respondemos que no hemos entendido el mensaje
             gr = build_message(
-                Graph(), ACL['not-understood'], sender=PersonalAgent.uri, msgcnt=mss_cnt)
+                Graph(), ACL['not-understood'], sender=TransportistaAgent.uri, msgcnt=mss_cnt)
         else:
             # Extraemos el objeto del contenido que ha de ser una accion de la ontologia de acciones del agente
             # de registro
-
+            grafo_response = Graph()
             # Averiguamos el tipo de la accion
             if 'content' in msgdic:
                 content = msgdic['content']
                 accion = gm.value(subject=content, predicate=RDF.type)
 
-                if accion == ECSDI.PeticionAgregarProducto:
-                    gr = agregarproducto(content, gm)
+                if accion == ECSDI.PedirOferta:
+
+                    for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                        gm.remove((item, None, None))
+
+                    grafo_response = prepararOferta(content, gm)
+
+                if accion == ECSDI.PedirContraOferta:
+
+                    for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                        gm.remove((item, None, None))
+
+                    grafo_response = prepararContraOferta(content, gm)
             # Aqui realizariamos lo que pide la accion
             # Por ahora simplemente retornamos un Inform-done
-            gr = build_message(Graph(),
+
+            gr = build_message(grafo_response,
                                ACL['inform'],
-                               sender=PersonalAgent.uri,
+                               sender=TransportistaAgent.uri,
                                msgcnt=mss_cnt,
                                receiver=msgdic['sender'], )
     mss_cnt += 1

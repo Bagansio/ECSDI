@@ -4,7 +4,8 @@ from rdflib import Graph, Namespace, Literal, URIRef, XSD
 from flask import Flask, request,render_template
 from rdflib import Graph, Namespace, Literal, URIRef, XSD
 from rdflib.namespace import FOAF, RDF
-
+import datetime
+import random
 from AgentUtil.OntoNamespaces import ECSDI
 from AgentUtil.ACL import ACL
 from AgentUtil.FlaskServer import shutdown_server
@@ -66,3 +67,15 @@ def print_graph(graph):
         print(b)
         print(c)
         print("-------------------------------------------------------------------------")
+
+
+def get_date(prioridad):
+
+    date = datetime.date.today()
+    days = 1
+    if prioridad == 1:
+        days = random.choice((3,4,5))
+    elif prioridad == 0:
+        days = random.choice((5,6,7,8,9,10))
+
+    return date + datetime.timedelta(days=days)
