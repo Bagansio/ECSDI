@@ -23,6 +23,7 @@ DSO =  ClosedNamespace(
         'Search',
         'SolverAgent',
         'Modify',
+        'MultipleSearch',
 
         # Object properties
         'AgentType',

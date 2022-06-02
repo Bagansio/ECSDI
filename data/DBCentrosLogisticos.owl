@@ -2,7 +2,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 default:CentroLogistico1 a default:CentroLogistico ;
-    default:Nombre "CentroLogistico1"^^xsd:string ;
+    default:Nombre "CentroLogisticoAgent1"^^xsd:string ;
     default:PosicionX "6"^^xsd:int ;
     default:PosicionY "4"^^xsd:int ;
     default:Almacena default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
@@ -10,14 +10,14 @@ default:CentroLogistico1 a default:CentroLogistico ;
         default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 .
 
 default:CentroLogistico2 a default:CentroLogistico ;
-    default:Nombre "CentroLogistico2"^^xsd:string ;
+    default:Nombre "CentroLogisticoAgent2"^^xsd:string ;
     default:PosicionX "7"^^xsd:int ;
     default:PosicionY "1"^^xsd:int ;
     default:Almacena default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
         default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 .
 
 default:CentroLogistico3 a default:CentroLogistico ;
-    default:Nombre "CentroLogistico3"^^xsd:string ;
+    default:Nombre "CentroLogisticoAgent3"^^xsd:string ;
     default:PosicionX "2"^^xsd:int ;
     default:PosicionY "7"^^xsd:int ;
     default:Almacena default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,

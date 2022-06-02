@@ -147,6 +147,27 @@ def solicitarEnvio(content, gm):
     return r
 
 
+def obtenerCentrosLogiticos():
+
+    ontologyFile = open(db.DBCentrosLogisticos)
+    resultado = Graph()
+    resultado.parse(ontologyFile, format='turtle')
+
+    query = """
+                        prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                        prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+                        prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+                        prefix owl:<http://www.w3.org/2002/07/owl#>
+                        SELECT ?centrologistico ?nombre ?posicionx ?posiciony ?almacena 
+                            where {
+                            {?centrologistico rdf:type default:CentroLogistico } .
+                            ?centrologistico default:Nombre ?nombre .
+                            ?centrologistico default:PosicionX ?posicionx .
+                            ?centrologistico default:PosicionY ?posiciony .
+                            ?centrologistico default:Almacena ?almacena .
+                            }
+                            """
+    return resultado.query(query)
 
 
 
@@ -154,7 +175,37 @@ def solicitarEnvio(content, gm):
 
 
 
+@app.route("/info")
+def info():
+    """
+    XD
+    """
+    global DirectoryAgent
+    global GestorEnviosAgent
 
+    gmess = Graph()
+
+    # Construimos el mensaje de búsqueda
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    sear_obj = agn[GestorEnviosAgent.name + '-MultipleSearch']
+    gmess.add((sear_obj, RDF.type, DSO.MultipleSearch))
+    gmess.add((sear_obj, DSO.AgentType, DSO.CentroLogisticoAgent))
+
+    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+    gr = send_message(
+        build_message(gmess, perf=ACL.request,
+                      sender=GestorEnviosAgent.uri,
+                      receiver=DirectoryAgent.uri,
+                      content=sear_obj,
+                      msgcnt=mss_cnt),
+        DirectoryAgent.address)
+
+
+
+    agents.print_graph(gr)
+
+    return "Parando Servidor"
 
 
 

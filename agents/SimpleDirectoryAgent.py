@@ -178,6 +178,52 @@ def register():
                                  sender=DirectoryAgent.uri,
                                  msgcnt=mss_cnt)
 
+    def process_multiple_search():
+        # Asumimos que hay una accion de busqueda que puede tener
+        # diferentes parametros en funcion de si se busca un tipo de agente
+        # o un agente concreto por URI o nombre
+        # Podriamos resolver esto tambien con un query-ref y enviar un objeto de
+        # registro con variables y constantes
+
+        # Solo consideramos cuando Search indica el tipo de agente
+        # Buscamos una coincidencia exacta
+        # Retornamos el primero de la lista de posibilidades
+
+        logger.info('Peticion de busqueda')
+
+        agn_type = gm.value(subject=content, predicate=DSO.AgentType)
+
+        rsearch = dsgraph.triples(
+                                (None,
+                                 DSO.AgentType,
+                                 agn_type))
+
+        try:
+            gr = Graph()
+            gr.bind('dso', DSO)
+            rsp_obj = agn['Directory-response']
+
+            for element in list(rsearch):
+                agn_uri = element[0]
+                agn_add = dsgraph.value(subject=agn_uri, predicate=DSO.Address)
+                gr.add((rsp_obj, agn_type, agn_uri))
+                gr.add((agn_uri, DSO.Address, agn_add))
+            
+            return build_message(gr,
+                                 ACL.inform,
+                                 sender=DirectoryAgent.uri,
+                                 msgcnt=mss_cnt,
+                                 receiver=agn_uri,
+                                 content=rsp_obj)
+                                 
+        except Exception as e:
+            logger.info("No Hay ningun agente de ese tipo registrado")
+            # Si no encontramos nada retornamos un inform sin contenido
+            return build_message(Graph(),
+                                 ACL.inform,
+                                 sender=DirectoryAgent.uri,
+                                 msgcnt=mss_cnt)
+
     global dsgraph
     global mss_cnt
     # Extraemos el mensaje y creamos un grafo con él
@@ -215,6 +261,8 @@ def register():
             # Accion de busqueda
             elif accion == DSO.Search:
                 gr = process_search()
+            elif accion == DSO.MultipleSearch:
+                gr = process_multiple_search()
             # No habia ninguna accion en el mensaje
             else:
                 gr = build_message(Graph(),
