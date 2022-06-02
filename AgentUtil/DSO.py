@@ -43,6 +43,7 @@ DSO =  ClosedNamespace(
         'MostradorAgent',
         'VendedorAgent',
         'GestorEnviosAgent',
-        'RegistroServicioExternoAgent'
+        'RegistroServicioExternoAgent',
+        'TesoreroAgent'
     ]
 )

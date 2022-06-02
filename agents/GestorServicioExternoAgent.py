@@ -301,52 +301,15 @@ def obtener_vendedores():
     
     return vendedores
 
-"""
-def obtener_vendedores(form = None):
-    global mss_cnt
-    global RegistroServicioExternoAgent
+def obtener_vendedores_noFilter():
+    print ("Start")
+    ontologyFile = open(db.DBServicioExterno)
+    grafoVendedores = Graph()
+    grafoVendedores.parse(ontologyFile, format='turtle')
+    print ("grafo obtenido")
 
-    if RegistroServicioExternoAgent is None:
-        logger.info('Buscando al agente Registro Servicio Externo')
-        RegistroServicioExternoAgent = agents.get_agent(DSO.RegistroServicioExternoAgent, GestorServicioExternoAgent, DirectoryAgent, mss_cnt)
-        mss_cnt += 1
+    return grafoVendedores
 
-    gmess = Graph()
-    gmess.bind('foaf', FOAF)
-    gmess.bind('dso', DSO)
-    gmess.bind("default", ECSDI)
-    reg_obj = agn['BuscarAgentesExternos' + str(mss_cnt)]
-    gmess.add((reg_obj, RDF.type, ECSDI.BuscarAgentesExternos))
-
-    us = None
-    if 'usuario' in session:
-        us = session['usuario']
-
-    gmess.add((reg_obj, ECSDI.Id, Literal(us, datatype=XSD.string)))
-
-    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
-
-    gr = send_message(
-        build_message(gmess, perf=ACL.request,
-                      sender=GestorServicioExternoAgent.uri,
-                      receiver=RegistroServicioExternoAgent.uri,
-                      content=reg_obj,
-                      msgcnt=mss_cnt),
-        RegistroServicioExternoAgent.address)
-    mss_cnt += 1
-
-    query = 
-                prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                prefix xsd:<http://www.w3.org/2001/XMLSchema#>
-                prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
-                prefix owl:<http://www.w3.org/2002/07/owl#>
-                SELECT ?servicioexterno ?nombre 
-                    where {
-                    {?servicioexterno rdf:type default:ServicioExterno } .
-                    ?servicioexterno default:Nombre ?nombre .
-                    }
-
-    return gr.query(query) """
 
 
 # Agent functions
@@ -505,9 +468,13 @@ def comunicacion():
                 content = msgdic['content']
                 accion = gm.value(subject=content, predicate=RDF.type)
 
+                graph = Graph()
+                if accion == ECSDI.ObtenerVendedores:
+                    graph = obtener_vendedores_noFilter()
+
             # Aqui realizariamos lo que pide la accion
             # Por ahora simplemente retornamos un Inform-done
-            gr = build_message(Graph(),
+            gr = build_message(graph,
                                ACL['inform'],
                                sender=GestorServicioExternoAgent.uri,
                                msgcnt=mss_cnt,
