@@ -105,6 +105,8 @@ DirectoryAgent = Agent('CentroLogisticoAgent',
                        'http://%s:%d/Register' % (dhostname, dport),
                        'http://%s:%d/Stop' % (dhostname, dport))
 
+TransportistaNombre = "Seul"
+
 # Global dsgraph triplestore
 dsgraph = Graph()
 
@@ -138,6 +140,7 @@ def prepararContraOferta(content, grafo_entrada):
     logger.info("Devolvemos oferta de transporte")
     gm.add((item, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
     gm.add((item, ECSDI.Bajar, Literal(bajar, datatype=XSD.boolean)))
+    gm.add((item, ECSDI.Nombre, Literal(TransportistaNombre, datatype=XSD.string)))
 
     return gm
 
@@ -154,7 +157,7 @@ def calcularContraOferta(peso,precioOferta):
 def prepararOferta(content, grafo_entrada):
 
     global mss_cnt
-
+    global TransportistaNombre
 
     logger.info("Recibida petición oferta")
 
@@ -168,12 +171,14 @@ def prepararOferta(content, grafo_entrada):
     gm.add((item, RDF.type, ECSDI.RespuestaOfertaTransporte))
     logger.info("Devolvemos oferta de transporte")
     gm.add((item, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
-
+    gm.add((item, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
+    gm.add((item, ECSDI.Nombre, Literal(TransportistaNombre, datatype=XSD.string)))
     return gm
 
 def calcularOferta(peso):
     logger.info("Calculando oferta")
-    oferta = peso * 1.05
+    oferta = round(peso * 1.05, 2)
+
     logger.info("Oferta calculada de " + str(peso) + "kg: " + str(oferta) + "€")
     return oferta
 
@@ -296,9 +301,17 @@ def comunicacion():
                 accion = gm.value(subject=content, predicate=RDF.type)
 
                 if accion == ECSDI.PedirOferta:
+
+                    for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                        gm.remove((item, None, None))
+
                     grafo_response = prepararOferta(content, gm)
 
                 if accion == ECSDI.PedirContraOferta:
+
+                    for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                        gm.remove((item, None, None))
+
                     grafo_response = prepararContraOferta(content, gm)
             # Aqui realizariamos lo que pide la accion
             # Por ahora simplemente retornamos un Inform-done

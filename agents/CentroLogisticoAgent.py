@@ -28,6 +28,7 @@ sys.path.append(str(path_root))
 from multiprocessing import Process, Queue
 import argparse
 import logging
+import datetime
 
 from utils import agents
 from flask import Flask, request, render_template
@@ -106,7 +107,7 @@ agn = Namespace("http://www.agentes.org#")
 
 # Datos del Agente
 CentroLogisticoAgent = Agent('CentroLogisticoAgent' + str(args.centro),
-                       agn.CentroLogisticoAgent,
+                       agn['CentroLogisticoAgent' + str(args.centro)],
                        'http://%s:%d/comm' % (hostaddr, port),
                        'http://%s:%d/Stop' % (hostaddr, port))
 
@@ -128,17 +129,16 @@ cola1 = Queue()  # Cola de comunicacion entre procesos
 
 
 
-def pedirContraOferta(agn_uri, agn_add, peso, precio, indx, contraOfertas):
-    global  mss_cnt
+def pedirContraOferta(agn_uri, agn_add, peso, precio, indx, contraOfertas, mss_cnt):
     gmess = Graph()
     # Construimos el mensaje de registro
     gmess.bind('foaf', FOAF)
     gmess.bind('dso', DSO)
     gmess.bind("default", ECSDI)
-    reg_obj = ECSDI['PedirOferta' + mss_cnt]
+    reg_obj = ECSDI['PedirOferta' + str(mss_cnt) ]
     gmess.add((reg_obj, RDF.type, ECSDI.PedirContraOferta))
     gmess.add((reg_obj, ECSDI.Peso, Literal(peso, datatype=XSD.float)))
-    gmess.add((reg_obj, ECSDI.Peso, Literal(precio, datatype=XSD.float)))
+    gmess.add((reg_obj, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
     # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
     gr = send_message(
         build_message(gmess, perf=ACL.request,
@@ -147,6 +147,7 @@ def pedirContraOferta(agn_uri, agn_add, peso, precio, indx, contraOfertas):
                       content=reg_obj,
                       msgcnt=mss_cnt),
         agn_add)
+
     mss_cnt += 1
     precioContra = list(gr.triples((None, ECSDI.Precio, None)))[0][2]
 
@@ -159,6 +160,7 @@ def pedirContraOferta(agn_uri, agn_add, peso, precio, indx, contraOfertas):
 def negociar(content, gm):
 
     global mss_cnt
+    global dsgraph
 
     # Obtenemos los productos y calculamos el peso total
     peso = 0
@@ -174,14 +176,12 @@ def negociar(content, gm):
     agn_uri = rsearch[0][0]
     agn_add = dsgraph.value(subject=agn_uri, predicate=DSO.Address)
 
-    print(agn_uri + "    :    " + agn_add)
-
     gmess = Graph()
     # Construimos el mensaje de registro
     gmess.bind('foaf', FOAF)
     gmess.bind('dso', DSO)
     gmess.bind("default", ECSDI)
-    reg_obj = ECSDI['PedirOferta' + mss_cnt]
+    reg_obj = ECSDI['PedirOferta' + str(mss_cnt)]
     gmess.add((reg_obj, RDF.type,  ECSDI.PedirOferta))
     gmess.add((reg_obj, ECSDI.Peso, Literal(peso, datatype=XSD.float)))
 
@@ -196,6 +196,7 @@ def negociar(content, gm):
     mss_cnt += 1
 
     precioOferta = list(gr.triples((None, ECSDI.Precio, None)))[0][2]
+    prioridad = list(gm.triples((None, ECSDI.Prioridad, None)))[0][2]
 
     contraOfertas = [[-1 for y in range(2)] for x in range(len(rsearch))]
     threads = []
@@ -204,7 +205,10 @@ def negociar(content, gm):
         trans_add = dsgraph.value(subject=trans_uri, predicate=DSO.Address)
 
         if agn_uri != trans_uri:
-            threads.append(threading.Thread(target=pedirContraOferta, args=(trans_uri,trans_add, peso, precioOferta, indx, contraOfertas)))
+            threads.append(
+                threading.Thread(
+                    target=pedirContraOferta,
+                    args=(trans_uri, trans_add, peso, precioOferta, indx, contraOfertas, mss_cnt)))
 
     for thread in threads:
         thread.start()
@@ -219,6 +223,22 @@ def negociar(content, gm):
             precioTransporte = contra[0]
             transporte = contra[1]
 
+
+
+    date = agents.get_date(int(prioridad))
+
+    gr = Graph()
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    gmess.bind("default", ECSDI)
+    reg_obj = ECSDI['RespuestaEnvio' + str(mss_cnt)]
+    gmess.add((reg_obj, RDF.type, ECSDI.RespuestaEnvio))
+    gmess.add((reg_obj, ECSDI.Precio, Literal(precioTransporte, datatype=XSD.float)))
+    gmess.add((reg_obj, ECSDI.Nombre, Literal(transporte, datatype=XSD.string)))
+    gmess.add((reg_obj, ECSDI.Fecha, Literal(date, datatype=XSD.date)))
+
+    agents.print_graph(gmess)
+    return gmess
 
 
 
@@ -361,6 +381,23 @@ def info():
     global dsgraph
     global mss_cnt
 
+    gmess = Graph()
+    # Construimos el mensaje de registro
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    gmess.bind("default", ECSDI)
+    reg_obj = ECSDI['test' + str(mss_cnt)]
+    test1 = ECSDI['prod1']
+    test2 = ECSDI['prod1']
+    gmess.add((reg_obj, RDF.type, ECSDI.test))
+    gmess.add((reg_obj, ECSDI.Lote, test1))
+    gmess.add((reg_obj, ECSDI.Lote, test2))
+    gmess.add((test1, ECSDI.Peso, Literal(3, datatype=XSD.float)))
+    gmess.add((test2, ECSDI.Peso, Literal(5, datatype=XSD.float)))
+    gmess.add((reg_obj, ECSDI.Prioridad, Literal(1, datatype=XSD.int)))
+
+
+    negociar(reg_obj, gmess)
     return render_template('info.html', nmess=mss_cnt, graph=dsgraph.serialize(format='turtle'))
 
 
@@ -412,6 +449,10 @@ def comunicacion():
                 accion = gm.value(subject=content, predicate=RDF.type)
                 result = Graph()
                 if accion == ECSDI.PrepararEnvio:
+
+                    for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                        gm.remove((item, None, None))
+
                     result = negociar(content, gm)
 
             # Aqui realizariamos lo que pide la accion
