@@ -1,27 +1,29 @@
 # -*- coding: utf-8 -*-
 """
-filename: SimpleInfoAgent
-
+filename: MostradorAgent
 Antes de ejecutar hay que añadir la raiz del proyecto a la variable PYTHONPATH
-
-Agente que se registra como agente de hoteles y espera peticiones
-
-@author: javier
+Agente que se registra como agente de busquedas
+@author: Bagansio, Cristian Mesa, Artur Farriols
 """
+
 from pathlib import Path
 import sys
 
-path_root = Path(__file__).parents[1]
+from ECSDI.agents.GestorProductosAgent import GestorProductosAgent
+
+path_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(path_root))
 
 from multiprocessing import Process, Queue
 import logging
 import argparse
+import threading
+import uuid
 
-from flask import Flask, request
-from rdflib import Graph, Namespace, Literal
+from flask import Flask, request,render_template
+from rdflib import Graph, Namespace, Literal, URIRef, XSD
 from rdflib.namespace import FOAF, RDF
-
+from utils import db,agents
 
 from AgentUtil.OntoNamespaces import ECSDI
 from AgentUtil.ACL import ACL
@@ -32,9 +34,11 @@ from AgentUtil.Logging import config_logger
 from AgentUtil.DSO import DSO
 from AgentUtil.Util import gethostname
 import socket
+from threading import Thread
 
 
-__author__ = 'javier'
+
+__author__ = 'Artur, Cristian'
 
 # Definimos los parametros de la linea de comandos
 parser = argparse.ArgumentParser()
@@ -56,7 +60,7 @@ args = parser.parse_args()
 
 # Configuration stuff
 if args.port is None:
-    port = 9005
+    port = agents.agent_ports['TesoreroAgent']
 else:
     port = args.port
 
@@ -92,15 +96,19 @@ mss_cnt = 0
 
 # Datos del Agente
 TesoreroAgent = Agent('TesoreroAgent',
-                  agn.TesoreroAgent,
-                  'http://%s:%d/comm' % (hostaddr, port),
-                  'http://%s:%d/Stop' % (hostaddr, port))
+                                   agn.TesoreroAgent,
+                                   'http://%s:%d/comm' % (hostaddr, port),
+                                   'http://%s:%d/Stop' % (hostaddr, port))
 
 # Directory agent address
 DirectoryAgent = Agent('DirectoryAgent',
                        agn.Directory,
                        'http://%s:%d/Register' % (dhostname, dport),
                        'http://%s:%d/Stop' % (dhostname, dport))
+
+
+GestorServicioExternoAgent = None
+GestorProductosAgent = None
 
 # Global dsgraph triplestore
 dsgraph = Graph()
@@ -109,12 +117,94 @@ dsgraph = Graph()
 cola1 = Queue()
 
 
+def pagarCompra(content, gm):
+    global GestorServicioExternoAgent
+
+    tarjeta = gm.value(subject=content, predicate=ECSDI.Tarjeta)
+    precio = gm.value(subject=content, predicate=ECSDI.Precio)
+    productos = gm.value(subject=content, predicate=ECSDI.Productos)
+    
+    usuarioNombre = gm.value(subject=content, predicate=ECSDI.Nombre)
+    """ Cuando no se esta haciendo el juego de prueba hacer esto:"""
+    #usuario = gm.value(subject=content, predicate=ECSDI.Usuario)
+    #usuarioNombre = gm.value(subject=usuario, predicate=ECSDI.Nombre)
+
+
+
+    
+    logger.info("Cobrando al usuario " +str(usuarioNombre)+ " con la tarjeta acabada en " +str(tarjeta[-4:])+ "un total de " +str(precio)+"€ por los productos" )
+
+    try:
+        if GestorServicioExternoAgent is None:
+                logger.info("Obtiene el agente Gestor Servicio Externo")
+                GestorServicioExternoAgent = agents.get_agent(DSO.GestorServicioExternoAgent, TesoreroAgent, DirectoryAgent, mss_cnt)
+                graph_message = Graph()
+                graph_message.bind('foaf', FOAF)
+                graph_message.bind('dso', DSO)
+                graph_message.bind("default", ECSDI)
+
+                reg_obj = ECSDI['ObtenerVendedores' + str(mss_cnt)]
+                graph_message.add((reg_obj, RDF.type, ECSDI.ObtenerVendedores))
+
+                # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+                grafoVendedores = send_message(
+                    build_message(graph_message, perf=ACL.request,
+                                sender=TesoreroAgent.uri,
+                                receiver=GestorServicioExternoAgent.uri,
+                                content=reg_obj,
+                                msgcnt=mss_cnt),
+                    GestorServicioExternoAgent.address)
+
+                mss_cnt += 1
+
+    except Exception as e:
+        print(e)
+        logger.info("No ha sido posible obtener el agente")
+        return Graph()
+
+    
+    for producto in gm.objects(subject=productos, predicate=ECSDI.Muestra):
+        
+        externo = gm.value(subject=producto, predicate=ECSDI.Externo)
+        if externo is not None:
+            query = """
+                prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+                prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+                prefix owl:<http://www.w3.org/2002/07/owl#>
+                SELECT ?servicioexterno ?nombre ?tarjeta
+                    where {
+                    {?servicioexterno rdf:type default:ServicioExterno } .
+                    ?servicioexterno default:Nombre ?nombre .
+                    ?servicioexterno default:Tarjeta ?tarjeta .
+
+                    FILTER("""
+
+            query += """?nombre = '""" + externo +"""'"""
+            query += """)}""" 
+
+        graph_query = grafoVendedores.query(query)
+
+
+        for vendedor in graph_query:
+            logger.info("Pagando al vendedor externo " + vendedor['nombre'] + " con tarjeta acabada en" + tarjeta[-4:])
+
+
+
+def retornarImporte(content, gm):
+    return
+
+
+
+
+
+
+
 def register_message():
     """
     Envia un mensaje de registro al servicio de registro
     usando una performativa Request y una accion Register del
     servicio de directorio
-
     :param gmess:
     :return:
     """
@@ -133,7 +223,7 @@ def register_message():
     gmess.add((reg_obj, DSO.Uri, TesoreroAgent.uri))
     gmess.add((reg_obj, FOAF.name, Literal(TesoreroAgent.name)))
     gmess.add((reg_obj, DSO.Address, Literal(TesoreroAgent.address)))
-    gmess.add((reg_obj, DSO.AgentType, DSO.HotelsAgent))
+    gmess.add((reg_obj, DSO.AgentType, DSO.MostradorAgent))
 
     # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
     gr = send_message(
@@ -147,26 +237,110 @@ def register_message():
 
     return gr
 
+def prueba():
+    """No me deletees porfa gracias"""
+    global GestorProductosAgent
+    gm = Graph()
+    gm.bind("default", ECSDI)
 
-@app.route("/iface", methods=['GET', 'POST'])
-def browser_iface():
-    """
-    Permite la comunicacion con el agente via un navegador
-    via un formulario
-    """
-    return 'Nothing to see here'
+    content = "XD"
+
+    tarjeta = "123456789"
+
+    if GestorProductosAgent is None:
+        GestorProductosAgent = agents.get_agent(DSO.GestorProductosAgent, TesoreroAgent, DirectoryAgent, mss_cnt)
+
+    graph_message = Graph()
+    graph_message.bind('foaf', FOAF)
+    graph_message.bind('dso', DSO)
+    graph_message.bind("default", ECSDI)
+    reg_obj = ECSDI['PeticionProductos' + str(mss_cnt)]
+    graph_message.add((reg_obj, RDF.type, ECSDI.PeticionProductos))
+
+        # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+    graph = send_message(
+        build_message(graph_message, perf=ACL.request,
+                      sender=TesoreroAgent.uri,
+                      receiver=GestorProductosAgent.uri,
+                        content=reg_obj,
+                        msgcnt=mss_cnt),
+        GestorProductosAgent.address)
+
+    mss_cnt += 1
+
+
+    query = """
+    prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+    prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+    prefix owl:<http://www.w3.org/2002/07/owl#>
+    SELECT ?producto ?externo
+        where {
+        {?producto rdf:type default:Producto } .
+        ?producto default:Externo ?externo .
+        }
+        """
+    
+    graph_query = graph.query(query)
+
+    for producto in graph_query:
+        productoExterno = producto['externo']
+        productSuj = producto['producto']
+    
+    gm.add(content, ECSDI.Productos)
+    
+
+
+
+
+    precio = gm.value(subject=content, predicate=ECSDI.Precio)
+    productos = gm.value(subject=content, predicate=ECSDI.Productos)
+    
+    usuarioNombre = gm.value(subject=content, predicate=ECSDI.Nombre)
+
+
+    gm.add((content, RDF.type, ECSDI.ObtenerVendedores))
+    gm.add
+
+
+
+    tarjeta = gm.value(subject=content, predicate=ECSDI.Tarjeta)
+    precio = gm.value(subject=content, predicate=ECSDI.Precio)
+    productos = gm.value(subject=content, predicate=ECSDI.Productos)
+    
+    usuarioNombre = gm.value(subject=content, predicate=ECSDI.Nombre)
+
+
+
+    
+
+
+
+
+    pagarCompra(content, gm)
+
+
 
 
 @app.route("/stop")
 def stop():
     """
     Entrypoint que para el agente
-
     :return:
     """
     tidyup()
     shutdown_server()
     return "Parando Servidor"
+
+@app.route("/iface")
+def iface():
+    """
+    Entrypoint que para el agente
+    :return:
+    """
+    prueba():
+    return "Parando Servidor"
+
 
 
 @app.route("/comm")
@@ -175,7 +349,6 @@ def comunicacion():
     Entrypoint de comunicacion del agente
     Simplemente retorna un objeto fijo que representa una
     respuesta a una busqueda de hotel
-
     Asumimos que se reciben siempre acciones que se refieren a lo que puede hacer
     el agente (buscar con ciertas restricciones, reservar)
     Las acciones se mandan siempre con un Request
@@ -209,21 +382,24 @@ def comunicacion():
         else:
             # Extraemos el objeto del contenido que ha de ser una accion de la ontologia de acciones del agente
             # de registro
-
+            result_productos = Graph()
             # Averiguamos el tipo de la accion
             if 'content' in msgdic:
+
                 content = msgdic['content']
                 accion = gm.value(subject=content, predicate=RDF.type)
 
-                # Si l
-                if accion == ECSDI.RealizarCobro:
-                    logger.info("Procesando peticion de realizar cobro")
+                for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                    gm.remove((item, None, None))
 
-                    for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
-                        gm.remove((item,None,None))
+                if accion == ECSDI.PagarCompra:
+                    result = pagarCompra(content, gm)
+                elif accion == ECSDI.RetornarImporte:
+                    result = retornarImporte(content, gm)
+
             # Aqui realizariamos lo que pide la accion
             # Por ahora simplemente retornamos un Inform-done
-            gr = build_message(Graph(),
+            gr = build_message(result,
                                ACL['inform'],
                                sender=TesoreroAgent.uri,
                                msgcnt=mss_cnt,
@@ -234,20 +410,16 @@ def comunicacion():
 
     return gr.serialize(format='xml')
 
-
 def tidyup():
     """
     Acciones previas a parar el agente
-
     """
     global cola1
     cola1.put(0)
 
-
 def agentbehavior1(cola):
     """
     Un comportamiento del agente
-
     :return:
     """
     # Registramos el agente
@@ -263,15 +435,6 @@ def agentbehavior1(cola):
             fin = True
         else:
             print(v)
-
-
-
-#Utils del Agente
-
-def realizarCobro(grafo):
-
-
-
 
 if __name__ == '__main__':
     # Ponemos en marcha los behaviors
