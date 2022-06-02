@@ -159,7 +159,6 @@ def enviarVenta(content, gm):
     graph_message.bind('dso', DSO)
     graph_message.bind("default", ECSDI)
     graph_message.remove((content, RDF.type, ECSDI.PeticionCompra))
-    gm.remove((content, RDF.type, ECSDI.PeticionCompra))
 
     reg_obj = ECSDI['EnvioCompra' + str(mss_cnt)]
     graph_message.add((reg_obj, RDF.type, ECSDI.EnvioCompra))
@@ -168,8 +167,10 @@ def enviarVenta(content, gm):
     for producto in gm.objects(subject=compra, predicate=ECSDI.Muestra):
         graph_message.add((reg_obj, ECSDI.FormadaPor, URIRef(producto)))
 
+
         peso = gm.value(subject=producto, predicate=ECSDI.Peso)
         externo = gm.value(subject=producto, predicate=ECSDI.Externo)
+
         graph_message.add((producto, ECSDI.Peso, peso))
         graph_message.add((producto, ECSDI.Externo, externo))
 

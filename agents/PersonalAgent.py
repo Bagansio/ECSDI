@@ -178,6 +178,11 @@ def obtener_productos(form = None):
                     ?producto default:Externo ?externo .
                     }"""
 
+    graph_query =  gr.query(query)
+    for product in graph_query:
+        print ("Nombre: " + str(product['nombre']))
+        print ("Externo: " + str(product['externo']))
+
     return gr.query(query)
 
 def buscar_productos(graph, form, suj):
@@ -376,10 +381,15 @@ def comprar_iface():
             for product in productos:
                 product_nombre = product['nombre']
                 product_precio = product['precio']
+                product_peso = product['peso']
+                product_externo = product['externo']
                 product_suj = product['producto']
+
                 gmess.add((product_suj, RDF.type, ECSDI.Producto))
                 gmess.add((product_suj, ECSDI.Nombre, Literal(product_nombre, datatype=XSD.string)))
                 gmess.add((product_suj, ECSDI.Precio, Literal(product_precio, datatype=XSD.float)))
+                gmess.add((product_suj, ECSDI.Peso, Literal(product_peso, datatype=XSD.float)))
+                gmess.add((product_suj, ECSDI.Externo, Literal(product_externo, datatype=XSD.string)))
                 gmess.add((sujetoCompra, ECSDI.Muestra, URIRef(product_suj)))
 
             gmess.add((reg_obj, ECSDI.De, URIRef(sujetoCompra)))

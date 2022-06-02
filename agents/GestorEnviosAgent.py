@@ -137,13 +137,14 @@ def solicitarEnvio(content, gm):
 
     ciudad = gm.value(subject=content, predicate=ECSDI.Ciudad)
 
-    centrosMasCercanos = centrosMasProximos(ciudad) 
+    #centrosMasCercanos = centrosMasProximos(ciudad) 
 
     logger.info("Previo al for")
-    for centro in centrosMasCercanos:
-        print (centro)
+    #for centro in centrosMasCercanos:
+        #print (centro)
 
-    return None
+    r = Graph()
+    return r
 
 
 
@@ -224,10 +225,10 @@ def comunicacion():
 
                 print (content)
                 print (accion)
-                for a,b,c in gm:
-                    print(a)
-                    print(b)
-                    print(c)
+                #for a,b,c in gm:
+                    #print(a)
+                    #print(b)
+                    #print(c)
 
                 if accion == ECSDI.EnvioCompra: #AÑADIR EN LA ONTOLOGIA
                     logger.info("Accion correcta")
