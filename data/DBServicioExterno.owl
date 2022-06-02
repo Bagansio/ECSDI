@@ -1,0 +1,13 @@
+@prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+default:ServicioExternoc53e51be-877b-48e2-8e1d-3dbeaab974a0 a default:ServicioExterno ;
+    default:Nombre "Cristian"^^xsd:string ;
+    default:Tarjeta "1234"^^xsd:int ;
+    default:TransportePropio true .
+
+default:ServicioExternof2dc3d23-4536-48ef-88e6-c8a29964f350 a default:ServicioExterno ;
+    default:Nombre "Alex"^^xsd:string ;
+    default:Tarjeta "4321"^^xsd:int ;
+    default:TransportePropio false .
+

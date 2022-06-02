@@ -205,7 +205,7 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
     prefix xsd:<http://www.w3.org/2001/XMLSchema#>
     prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
     prefix owl:<http://www.w3.org/2002/07/owl#>
-    SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria ?descripcion ?externo
+    SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria ?descripcion ?externo ?valoracion
         where {
         {?producto rdf:type default:Producto } .
         ?producto default:Nombre ?nombre .
@@ -215,6 +215,7 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
         ?producto default:Categoria ?categoria .
         ?producto default:Descripcion ?descripcion .
         ?producto default:Externo ?externo .
+        ?producto default:Valoracion ?valoracion .
 
         FILTER("""
 
@@ -281,6 +282,7 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
         product_suj = product['producto']
         product_desc = product['descripcion']
         product_ext = product['externo']
+        product_valoracion = product['valoracion']
 
 
         products_graph.add((product_suj, RDF.type, ECSDI.Producto))
@@ -290,8 +292,8 @@ def filtrarProductos(precio_min = 0.0, precio_max = sys.float_info.max, nombre =
         products_graph.add((product_suj, ECSDI.Peso, Literal(product_peso, datatype=XSD.float)))
         products_graph.add((product_suj, ECSDI.Precio, Literal(product_precio, datatype=XSD.float)))
         products_graph.add((product_suj, ECSDI.Descripcion, Literal(product_desc, datatype=XSD.string)))
-        products_graph.add((product_suj, ECSDI.Externo, Literal(product_ext, datatype=XSD.boolean)))
-     #  products_graph.add((sujetoRespuesta, ECSDI.Valoracion, URIRef(product_valoracion)))
+        products_graph.add((product_suj, ECSDI.Externo, Literal(product_ext, datatype=XSD.string)))
+        products_graph.add((sujetoRespuesta, ECSDI.Valoracion, URIRef(product_valoracion)))
         products_graph.add((sujetoRespuesta, ECSDI.Muestra, URIRef(product_suj)))
 
 

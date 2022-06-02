@@ -1,33 +1,36 @@
 @prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-default:Producto4dc1e17f-04d0-4057-80a1-74646bb94296 a default:Producto ;
-    default:Categoria "Top"^^xsd:string ;
-    default:Descripcion "Muy ricaa"^^xsd:string ;
+default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a a default:Producto ;
+    default:Categoria "Clothes"^^xsd:string ;
+    default:Descripcion "Ninguna"^^xsd:string ;
     default:Disponible true ;
-    default:Externo false ;
-    default:Marca "FontBella"^^xsd:string ;
-    default:Nombre "Agua"^^xsd:string ;
-    default:Peso "1.0"^^xsd:float ;
-    default:Precio "3.0"^^xsd:float .
+    default:Externo "None"^^xsd:string ;
+    default:Marca "Pull"^^xsd:string ;
+    default:Nombre "ProductoPlataforma"^^xsd:string ;
+    default:Peso "0.25"^^xsd:float ;
+    default:Precio "10.0"^^xsd:float ;
+    default:Valoracion "-1"^^xsd:int .
 
-default:Producto87b8f67e-8533-43d8-96d0-7cf5563cd625 a default:Producto ;
-    default:Categoria "Normie"^^xsd:string ;
-    default:Descripcion "Tomatoso"^^xsd:string ;
+default:Productob2771f40-577a-4867-831f-39bf6c7e6812 a default:Producto ;
+    default:Categoria "Souvenir"^^xsd:string ;
+    default:Descripcion "The body of the rifle is painted olive and adorned with an image of a dragon spitting fire. The body of the dragon is adorned with Celtic ornaments."^^xsd:string ;
     default:Disponible true ;
-    default:Externo false ;
-    default:Marca "Tomatico"^^xsd:string ;
-    default:Nombre "Tomate"^^xsd:string ;
-    default:Peso "333.0"^^xsd:float ;
-    default:Precio "3.2"^^xsd:float .
+    default:Externo "Cristian"^^xsd:string ;
+    default:Marca "Valve"^^xsd:string ;
+    default:Nombre "DragonLore"^^xsd:string ;
+    default:Peso "7.0"^^xsd:float ;
+    default:Precio "1500.0"^^xsd:float ;
+    default:Valoracion "-1"^^xsd:int .
 
-default:Productoe0a37b71-3075-4b82-8201-83b41215170b a default:Producto ;
-    default:Categoria "Top"^^xsd:string ;
-    default:Descripcion "Riquilla"^^xsd:string ;
+default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 a default:Producto ;
+    default:Categoria "Clothes"^^xsd:string ;
+    default:Descripcion "Ninguna"^^xsd:string ;
     default:Disponible true ;
-    default:Externo false ;
-    default:Marca "Viladrau"^^xsd:string ;
-    default:Nombre "Agua"^^xsd:string ;
-    default:Peso "2.0"^^xsd:float ;
-    default:Precio "5.0"^^xsd:float .
+    default:Externo "Alex"^^xsd:string ;
+    default:Marca "Pull"^^xsd:string ;
+    default:Nombre "productoVendedorExterno"^^xsd:string ;
+    default:Peso "0.25"^^xsd:float ;
+    default:Precio "10.0"^^xsd:float ;
+    default:Valoracion "-1"^^xsd:int .
 

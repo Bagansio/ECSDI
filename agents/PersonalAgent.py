@@ -123,6 +123,7 @@ cola1 = Queue()
 def obtener_productos(form = None):
     global mss_cnt
     global MostradorAgent
+    global DirectoryAgent
 
     form = request.form
 
@@ -176,6 +177,11 @@ def obtener_productos(form = None):
                     ?producto default:Descripcion ?descripcion .
                     ?producto default:Externo ?externo .
                     }"""
+
+    graph_query =  gr.query(query)
+    for product in graph_query:
+        print ("Nombre: " + str(product['nombre']))
+        print ("Externo: " + str(product['externo']))
 
     return gr.query(query)
 
@@ -329,6 +335,7 @@ def comprar_iface():
     graph_query = obtener_productos()
 
     global VendedorAgent
+    global DirectoryAgent
     global mss_cnt
 
     if not 'cart' in session or len(session['cart']) == 0:
@@ -366,7 +373,7 @@ def comprar_iface():
             gmess.add((reg_obj, ECSDI.Prioridad, Literal(int(form['prioridad']), datatype=XSD.int)))
             gmess.add((reg_obj, ECSDI.Tarjeta, Literal(int(form['numTarjeta']), datatype=XSD.int)))
             gmess.add((reg_obj, ECSDI.Direccion, Literal(form['direccion'], datatype=XSD.string)))
-            gmess.add((reg_obj, ECSDI.CodigoPostal, Literal(int(form['zip']), datatype=XSD.int)))
+            gmess.add((reg_obj, ECSDI.Ciudad, Literal(form['zip'], datatype=XSD.string)))
 
             sujetoCompra = ECSDI['Compra' + str(id)]
             gmess.add((sujetoCompra, RDF.type, ECSDI.Compra))
@@ -374,17 +381,22 @@ def comprar_iface():
             for product in productos:
                 product_nombre = product['nombre']
                 product_precio = product['precio']
+                product_peso = product['peso']
+                product_externo = product['externo']
                 product_suj = product['producto']
+
                 gmess.add((product_suj, RDF.type, ECSDI.Producto))
                 gmess.add((product_suj, ECSDI.Nombre, Literal(product_nombre, datatype=XSD.string)))
                 gmess.add((product_suj, ECSDI.Precio, Literal(product_precio, datatype=XSD.float)))
+                gmess.add((product_suj, ECSDI.Peso, Literal(product_peso, datatype=XSD.float)))
+                gmess.add((product_suj, ECSDI.Externo, Literal(product_externo, datatype=XSD.string)))
                 gmess.add((sujetoCompra, ECSDI.Muestra, URIRef(product_suj)))
 
             gmess.add((reg_obj, ECSDI.De, URIRef(sujetoCompra)))
 
 
             gr = send_message(
-                build_message(gmess, perf=ACL.request,
+                build_message(gmess, perf=ACL.request, 
                               sender=PersonalAgent.uri,
                               receiver=VendedorAgent.uri,
                               content=reg_obj,

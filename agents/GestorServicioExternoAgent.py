@@ -12,6 +12,7 @@ Agente que se registra como agente de hoteles y espera peticiones
 from pathlib import Path
 import sys
 
+
 path_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(path_root))
 
@@ -21,7 +22,7 @@ import argparse
 import threading
 import uuid
 
-from flask import Flask, request,render_template
+from flask import Flask, request,render_template, session
 from rdflib import Graph, Namespace, Literal, URIRef, XSD
 from rdflib.namespace import FOAF, RDF
 from utils import db,agents
@@ -106,6 +107,7 @@ DirectoryAgent = Agent('DirectoryAgent',
 
 
 GestorProductosAgent = None
+RegistroServicioExternoAgent = None
 
 
 # Global dsgraph triplestore
@@ -123,7 +125,8 @@ def agregarDBProducto(data):
     try:
 
         logger.info("Registrando producto: [" + data['Nombre'] + " " + data['Marca'] +
-                    "] de " + data['Peso'] + "kg por " + data['Precio'] + "€")
+                    "] de " + data['Peso'] + "kg por " + data['Precio'] + "€" " al vendedor externo "+ data['Externo'] +
+                    " con una descripción: " + data['Descripcion'])
         # añadir el producto
         global mss_cnt
         ontologyFile = open(db.DBProductos)
@@ -136,9 +139,12 @@ def agregarDBProducto(data):
         graph.add((item, ECSDI.Nombre, Literal(data['Nombre'], datatype=XSD.string)))
         graph.add((item, ECSDI.Precio, Literal(data['Precio'], datatype=XSD.float)))
         graph.add((item, ECSDI.Categoria, Literal(data['Categoria'], datatype=XSD.string)))
+        graph.add((item, ECSDI.Descripcion, Literal(data['Descripcion'], datatype=XSD.string)))
         graph.add((item, ECSDI.Peso, Literal(data['Peso'], datatype=XSD.float)))
         graph.add((item, ECSDI.Marca, Literal(data['Marca'], datatype=XSD.string)))
-        graph.add((item, ECSDI.Externo, Literal(True, datatype=XSD.boolean)))
+        graph.add((item, ECSDI.Externo, Literal(data['Externo'], datatype=XSD.string)))
+        graph.add((item, ECSDI.Valoracion, Literal(data['Valoracion'], datatype=XSD.int)))
+
 
         global GestorProductosAgent
 
@@ -166,24 +172,33 @@ def procesarProductoExterno(graph):
         'Nombre': None,
         'Peso': None,
         'Precio': None,
+        'Externo': None,
+        'Descripcion': None,
+        'Valoracion': -1
     }
 
     for a,b,c in graph:
-        if b == ECSDI.Categoria:
+
+        if 'Peticion' in a and b == ECSDI.Categoria:
             data['Categoria'] = c
 
-        elif b == ECSDI.Marca:
+        elif 'Peticion' in a and b == ECSDI.Marca:
             data['Marca'] = c
 
-        elif b == ECSDI.Nombre:
+        elif 'Peticion' in a and  b == ECSDI.Nombre:
             data['Nombre'] = c
 
-        elif b == ECSDI.Peso:
+        elif 'Peticion' in a and b == ECSDI.Peso:
             data['Peso'] = c
 
-        elif b == ECSDI.Precio:
+        elif 'Peticion' in a and b == ECSDI.Precio:
             data['Precio'] = c
 
+        elif 'Peticion' in a and b == ECSDI.Externo:
+            data['Externo'] = c
+        
+        elif 'Peticion' in a and b == ECSDI.Descripcion:
+            data['Descripcion'] = c
 
     return agregarDBProducto(data)
 
@@ -199,6 +214,139 @@ def agregarproducto(content, gm):
     resultadoComunicacion = Graph()
 
     return resultadoComunicacion
+
+def agregarDBServicioExterno(data):
+    try:
+        logger.info('Registrando Servicio Externo: Nombre = ' + data['Nombre'] + ' TransportePropio = ' + data['TransportePropio'] + ' Tarjeta = ' + data['Tarjeta'])
+        global mss_cnt
+        ontologyFile = open(db.DBServicioExterno)
+        graph = Graph()
+        graph.parse(ontologyFile, format='turtle')
+        graph.bind("default", ECSDI)
+        id = str(uuid.uuid4())
+
+        item = ECSDI['ServicioExterno'+id]
+
+        graph.add((item, RDF.type, ECSDI.ServicioExterno))
+        graph.add((item, ECSDI.Nombre, Literal(data['Nombre'], datatype=XSD.string)))
+        graph.add((item, ECSDI.TransportePropio, Literal(data['TransportePropio'], datatype=XSD.boolean)))
+        graph.add((item, ECSDI.Tarjeta, Literal(data['Tarjeta'], datatype=XSD.int)))
+
+        graph.serialize(destination=db.DBServicioExterno, format='turtle')
+        logger.info("Registro de nuevo servicio externo finalizado")
+
+    except:
+        logger.info("Registro de nuevo servicio externo fallido")
+
+    
+def procesarServicioExterno(content, gm):
+    data = {
+        'Nombre': None,
+        'TransportePropio': None,
+        'Tarjeta': None,
+    }
+
+    for a,b,c in gm:
+
+        if 'Peticion' in a and b == ECSDI.Nombre:
+            data['Nombre'] = c
+
+        elif 'Peticion' in a and b == ECSDI.TransportePropio:
+            data['TransportePropio'] = c
+
+        elif 'Peticion' in a and  b == ECSDI.Tarjeta:
+            data['Tarjeta'] = c
+
+    agregarDBServicioExterno(data)
+
+
+def agregarServicioExterno(content, gm):
+    logger.info('Recibida petición de añadir servicio externo')
+    for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+        gm.remove((item, None, None))
+
+    thread = threading.Thread(target=procesarServicioExterno, args=(content, gm))
+    thread.start()
+
+    resultadoComunicacion = Graph()
+
+    return resultadoComunicacion
+
+
+def obtener_vendedores():
+    print ("Start")
+    ontologyFile = open(db.DBServicioExterno)
+    grafoVendedores = Graph()
+    grafoVendedores.parse(ontologyFile, format='turtle')
+    print ("grafo obtenido")
+
+    #for a,b,c in grafoVendedores:
+        #print(a)
+        #print(b)
+        #print(c)
+
+    query = """
+    prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+    prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+    prefix owl:<http://www.w3.org/2002/07/owl#>
+    SELECT ?servicioexterno ?nombre 
+        where {
+        {?servicioexterno rdf:type default:ServicioExterno } .
+        ?servicioexterno default:Nombre ?nombre .
+        } """
+
+
+    vendedores = grafoVendedores.query(query)
+    
+    return vendedores
+
+"""
+def obtener_vendedores(form = None):
+    global mss_cnt
+    global RegistroServicioExternoAgent
+
+    if RegistroServicioExternoAgent is None:
+        logger.info('Buscando al agente Registro Servicio Externo')
+        RegistroServicioExternoAgent = agents.get_agent(DSO.RegistroServicioExternoAgent, GestorServicioExternoAgent, DirectoryAgent, mss_cnt)
+        mss_cnt += 1
+
+    gmess = Graph()
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    gmess.bind("default", ECSDI)
+    reg_obj = agn['BuscarAgentesExternos' + str(mss_cnt)]
+    gmess.add((reg_obj, RDF.type, ECSDI.BuscarAgentesExternos))
+
+    us = None
+    if 'usuario' in session:
+        us = session['usuario']
+
+    gmess.add((reg_obj, ECSDI.Id, Literal(us, datatype=XSD.string)))
+
+    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+
+    gr = send_message(
+        build_message(gmess, perf=ACL.request,
+                      sender=GestorServicioExternoAgent.uri,
+                      receiver=RegistroServicioExternoAgent.uri,
+                      content=reg_obj,
+                      msgcnt=mss_cnt),
+        RegistroServicioExternoAgent.address)
+    mss_cnt += 1
+
+    query = 
+                prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+                prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+                prefix owl:<http://www.w3.org/2002/07/owl#>
+                SELECT ?servicioexterno ?nombre 
+                    where {
+                    {?servicioexterno rdf:type default:ServicioExterno } .
+                    ?servicioexterno default:Nombre ?nombre .
+                    }
+
+    return gr.query(query) """
 
 
 # Agent functions
@@ -242,24 +390,61 @@ def register_message():
     return gr
 
 
-@app.route("/iface", methods=['GET', 'POST'])
+@app.route("/addproduct", methods=['GET', 'POST'])
 def browser_iface():
     """
     Permite la comunicacion con el agente via un navegador
     via un formulario
     """
+
+    """"
+    graph_query = obtener_vendedores()
+    
+    vendedoresExternos = []
+
+    for vendedor in graph_query:
+        vendedoresExternos.append(vendedor) """
+
+    
+
     form = request.form
     if 'message' in form:
         if form['Nombre'] != '' and form['Marca'] != '' and form['Precio'] != '' and\
-           form['Categoria'] != '' and form['Peso'] != ''  and form['Descripcion'] != '':
+           form['Categoria'] != '' and form['Peso'] != ''  and form['Descripcion'] != '' and form['Externo'] is not None:
 
-            agregarDBProducto(request.form)
+            data = dict(form)
+            data['Valoracion'] = -1
+            
+
+            agregarDBProducto(data)
 
         else:
             logger.info('Error añadiendo el producto externo, formulario incorrecto')
 
 
-    return render_template('agregarproducto.html')
+    vendedores = obtener_vendedores() 
+    return render_template('agregarproductoexterno.html', vendedores=vendedores)
+
+@app.route("/addvendedor", methods=['GET', 'POST'])
+def browser_addvendedor():
+    """
+    Simplemente es para probar que funciona
+    """
+
+    form = request.form
+
+    if 'message' in form:
+        if form['Nombre'] != '' and form['TransportePropio'] != '' and form['Tarjeta'] != '':
+            data = dict(form)
+
+            agregarDBServicioExterno(data)
+
+        else:
+            logger.info('Error añadiendo el servicio externo, formulario incorrecto')
+
+
+    return render_template('agregarservicioexterno.html')
+    
 
 
 @app.route("/stop")

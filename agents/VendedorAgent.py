@@ -7,7 +7,7 @@ A este agente hay que pasarle un grafo con:
     numTarjeta 
     prioridad 
     direccion 
-    codigoPostal 
+    Ciudad 
     idCompra
     Productos
 
@@ -147,35 +147,61 @@ def RegistrarVenta(grafoFactura):
 
 def enviarVenta(content, gm):
     global GestorEnviosAgent
+    global DirectoryAgent
+    global mss_cnt
 
-    logger.info('Haciendo petición de envio TODAVIA NO IMPLEMENTADA!!')
-    gm.remove((content, RDF.type, ECSDI.PeticionCompra))
-    sujeto = ECSDI['PeticionEnvio' + str(uuid.uuid4())]
-    gm.add((sujeto, RDF.type, ECSDI.PeticionEnvio)) #No se si esta peticionenvio
+    ciudad = gm.value(subject=content, predicate=ECSDI.Ciudad)
+    compra = gm.value(subject=content, predicate=ECSDI.De)
+
+
+    graph_message = Graph()
+    graph_message.bind('foaf', FOAF)
+    graph_message.bind('dso', DSO)
+    graph_message.bind("default", ECSDI)
+    graph_message.remove((content, RDF.type, ECSDI.PeticionCompra))
+
+    reg_obj = ECSDI['EnvioCompra' + str(mss_cnt)]
+    graph_message.add((reg_obj, RDF.type, ECSDI.EnvioCompra))
+
+    graph_message.add((reg_obj,ECSDI.Ciudad,Literal(ciudad,datatype=XSD.string)))
+    for producto in gm.objects(subject=compra, predicate=ECSDI.Muestra):
+        graph_message.add((reg_obj, ECSDI.FormadaPor, URIRef(producto)))
+
+
+        peso = gm.value(subject=producto, predicate=ECSDI.Peso)
+        externo = gm.value(subject=producto, predicate=ECSDI.Externo)
+
+        graph_message.add((producto, ECSDI.Peso, peso))
+        graph_message.add((producto, ECSDI.Externo, externo))
+
 
     try:
         if GestorEnviosAgent is None:
+            logger.info("Obtiene el agente")
             GestorEnviosAgent = agents.get_agent(DSO.GestorEnviosAgent, VendedorAgent, DirectoryAgent, mss_cnt)
 
+        print ("GestorEnviosAgent " + str(GestorEnviosAgent.uri))
+        print ("GestorEnviosAgent " + str(GestorEnviosAgent.address))
 
-        # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
-        graph = send_message(build_message(gm,
-                                    perf=ACL.request, sender=VendedorAgent.uri,
-                                    receiver=GestorEnviosAgent.uri,
-                                    msgcnt=getMessageCount(), content=sujeto), GestorEnviosAgent.address)
+        logger.info("Trata de enviar el mensaje")
+        graph = send_message(
+            build_message(graph_message, perf=ACL.request,
+                            sender=VendedorAgent.uri,
+                            receiver=GestorEnviosAgent.uri,
+                            content=reg_obj,
+                            msgcnt=mss_cnt),
+            GestorEnviosAgent.address)
 
         mss_cnt += 1
-        logger.info("Petición de envio enviada")
+        logger.info("Petición de envio realizada")
         return graph
-
 
     except Exception as e:
         print(e)
         logger.info("No ha sido posible enviar la petición de envio")
         return Graph()
+
     
-
-
 
 def vender(content, gm):
     logger.info('Petición de compra recibida')
@@ -183,6 +209,7 @@ def vender(content, gm):
     # Obtenemos tarjeta de credito
     tarjetaCredito = gm.value(subject=content, predicate=ECSDI.Tarjeta) #AÑADIR TARJETA A LA ONTOLOGIA
     prioridad = gm.value(subject=content, predicate=ECSDI.Prioridad) #AÑADIR prioridad A LA ONTOLOGIA
+    
 
     # Creamos la factura 
     grafoFactura = Graph()
@@ -201,12 +228,12 @@ def vender(content, gm):
 
     compra = gm.value(subject=content, predicate=ECSDI.De) #ESTO EXISTE EL ECSDI.De??? XDDD
     
-    # Obtenemos la dirección y el codigo postal
+    # Obtenemos la dirección y la ciudad postal
     direccion = gm.value(subject=content, predicate=ECSDI.Direccion)
-    codigoPostal = gm.value(subject=content, predicate=ECSDI.CodigoPostal)
+    ciudad = gm.value(subject=content, predicate=ECSDI.Ciudad)
 
     grafoFactura.add((sujeto,ECSDI.Direccion,Literal(direccion,datatype=XSD.string)))
-    grafoFactura.add((sujeto,ECSDI.CodigoPostal,Literal(codigoPostal,datatype=XSD.int)))
+    grafoFactura.add((sujeto,ECSDI.Ciudad,Literal(ciudad,datatype=XSD.string)))
 
     # Obtenemos los productos y calculamos el precio total
     precio = 0
@@ -221,10 +248,9 @@ def vender(content, gm):
         #Añadimos el producto al grafoFactura
         grafoFactura.add((sujeto, ECSDI.FormadaPor, URIRef(producto)))
 
-    # Añadimos el precio total
-    grafoFactura.add((sujeto, ECSDI.PrecioTotal, Literal(precio, datatype=XSD.float))) #Revisar si hay preciototal en la onto
-
-
+    # Añadimos el precio productos y precio envío
+    grafoFactura.add((sujeto, ECSDI.PrecioProductos, Literal(precio, datatype=XSD.float))) #Revisar si hay preciototal en la onto
+    grafoFactura.add((sujeto, ECSDI.PrecioEnvio, Literal(float(prioridad), datatype=XSD.float)))
 
     # Llamamos a registrarVenda
     thread = threading.Thread(target=RegistrarVenta, args=(grafoFactura,))
@@ -284,7 +310,7 @@ def browser_iface():
     Simplemente es para probar que funciona
     """
 
-    return pruebaVendedorAgent()
+    return None
     
 
 @app.route("/stop")

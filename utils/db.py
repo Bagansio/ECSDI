@@ -8,3 +8,6 @@ DBProductosAdquiridos = '../data/DBProductosAdquiridos.owl'
 DBLotesAEnviar = '../data/DBLotesAEnviar.owl'
 DBServiciosDeTransporte = '../data/DBServiciosDeTransporte.owl'
 DBHistorial = '../data/DBHistorial.owl'
+DBServicioExterno = '../data/DBServicioExterno.owl'
+DBServicioExternoDEBUG = "ECSDI/data/DBServicioExterno.owl"
+DBCentrosLogisticos = '../data/DBCentrosLogisticos.owl'
