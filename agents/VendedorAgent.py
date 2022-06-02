@@ -147,6 +147,7 @@ def RegistrarVenta(grafoFactura):
 
 def enviarVenta(content, gm):
     global GestorEnviosAgent
+    global DirectoryAgent
     global mss_cnt
 
     ciudad = gm.value(subject=content, predicate=ECSDI.Ciudad)
@@ -167,12 +168,19 @@ def enviarVenta(content, gm):
     for producto in gm.objects(subject=compra, predicate=ECSDI.Muestra):
         graph_message.add((reg_obj, ECSDI.FormadaPor, URIRef(producto)))
 
+        peso = gm.value(subject=producto, predicate=ECSDI.Peso)
+        externo = gm.value(subject=producto, predicate=ECSDI.Externo)
+        graph_message.add((producto, ECSDI.Peso, peso))
+        graph_message.add((producto, ECSDI.Externo, externo))
+
 
     try:
-        logger.info("Obtiene el agente")
-        GestorEnviosAgent = agents.get_agent(DSO.GestorEnviosAgent, VendedorAgent, DirectoryAgent, mss_cnt)
+        if GestorEnviosAgent is None:
+            logger.info("Obtiene el agente")
+            GestorEnviosAgent = agents.get_agent(DSO.GestorEnviosAgent, VendedorAgent, DirectoryAgent, mss_cnt)
 
-        print ("GestorEnviosAgent " + str(GestorEnviosAgent))
+        print ("GestorEnviosAgent " + str(GestorEnviosAgent.uri))
+        print ("GestorEnviosAgent " + str(GestorEnviosAgent.address))
 
         logger.info("Trata de enviar el mensaje")
         graph = send_message(
@@ -181,7 +189,7 @@ def enviarVenta(content, gm):
                             receiver=GestorEnviosAgent.uri,
                             content=reg_obj,
                             msgcnt=mss_cnt),
-            GestorProductosAgent.address)
+            GestorEnviosAgent.address)
 
         mss_cnt += 1
         logger.info("Petición de envio realizada")

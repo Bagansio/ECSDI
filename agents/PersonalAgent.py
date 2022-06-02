@@ -123,6 +123,7 @@ cola1 = Queue()
 def obtener_productos(form = None):
     global mss_cnt
     global MostradorAgent
+    global DirectoryAgent
 
     form = request.form
 
@@ -329,6 +330,7 @@ def comprar_iface():
     graph_query = obtener_productos()
 
     global VendedorAgent
+    global DirectoryAgent
     global mss_cnt
 
     if not 'cart' in session or len(session['cart']) == 0:
@@ -384,7 +386,7 @@ def comprar_iface():
 
 
             gr = send_message(
-                build_message(gmess, perf=ACL.request,
+                build_message(gmess, perf=ACL.request, 
                               sender=PersonalAgent.uri,
                               receiver=VendedorAgent.uri,
                               content=reg_obj,

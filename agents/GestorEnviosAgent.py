@@ -70,7 +70,7 @@ args = parser.parse_args()
 
 # Configuration stuff
 if args.port is None:
-    port = agents.agent_ports['VendedorAgent']
+    port = agents.agent_ports['GestorEnviosAgent']
 else:
     port = args.port
 
