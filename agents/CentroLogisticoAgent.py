@@ -16,6 +16,7 @@ directory-service-ontology.owl
 
 @author: Bagansio, Artur Farriols, Cristian Mesa
 """
+import threading
 from pathlib import Path
 import sys
 
@@ -27,6 +28,7 @@ sys.path.append(str(path_root))
 from multiprocessing import Process, Queue
 import argparse
 import logging
+import datetime
 
 from utils import agents
 from flask import Flask, request, render_template
@@ -56,6 +58,9 @@ parser.add_argument('--port', type=int,
 parser.add_argument('--dhost', help="Host del agente de directorio")
 parser.add_argument('--dport', type=int,
                     help="Puerto de comunicacion del agente de directorio")
+
+parser.add_argument('--centro', type=int,
+                    help="Id del Centro Logistico")
 
 
 # Logging
@@ -101,8 +106,8 @@ dsgraph.bind('dso', DSO)
 agn = Namespace("http://www.agentes.org#")
 
 # Datos del Agente
-CentroLogisticoAgent = Agent('CentroLogisticoAgent',
-                       agn.CentroLogisticoAgent,
+CentroLogisticoAgent = Agent('CentroLogisticoAgent' + str(args.centro),
+                       agn['CentroLogisticoAgent' + str(args.centro)],
                        'http://%s:%d/comm' % (hostaddr, port),
                        'http://%s:%d/Stop' % (hostaddr, port))
 
@@ -121,6 +126,120 @@ if not args.verbose:
 mss_cnt = 0
 
 cola1 = Queue()  # Cola de comunicacion entre procesos
+
+
+
+def pedirContraOferta(agn_uri, agn_add, peso, precio, indx, contraOfertas, mss_cnt):
+    gmess = Graph()
+    # Construimos el mensaje de registro
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    gmess.bind("default", ECSDI)
+    reg_obj = ECSDI['PedirOferta' + str(mss_cnt) ]
+    gmess.add((reg_obj, RDF.type, ECSDI.PedirContraOferta))
+    gmess.add((reg_obj, ECSDI.Peso, Literal(peso, datatype=XSD.float)))
+    gmess.add((reg_obj, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
+    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+    gr = send_message(
+        build_message(gmess, perf=ACL.request,
+                      sender=CentroLogisticoAgent.uri,
+                      receiver=agn_uri,
+                      content=reg_obj,
+                      msgcnt=mss_cnt),
+        agn_add)
+
+    mss_cnt += 1
+    precioContra = list(gr.triples((None, ECSDI.Precio, None)))[0][2]
+
+    contraOfertas[indx][1] = list(gr.triples((None, ECSDI.Nombre, None)))[0][2]
+    if precioContra != -1 and precioContra < precio:
+        contraOfertas[indx][0] = precioContra
+
+
+
+def negociar(content, gm):
+
+    global mss_cnt
+    global dsgraph
+
+    # Obtenemos los productos y calculamos el peso total
+    peso = 0
+    for producto in gm.objects(subject=content, predicate=ECSDI.Lote):
+        # Obtenemos precio producto
+        p = gm.value(subject=producto, predicate=ECSDI.Peso)
+
+        # sumamos a precio total
+        peso += float(p)
+
+    # Obtenemos un transportista random para pedir oferta
+    rsearch = list(dsgraph.triples((None, DSO.AgentType, DSO.TransportistaAgent)))
+    agn_uri = rsearch[0][0]
+    agn_add = dsgraph.value(subject=agn_uri, predicate=DSO.Address)
+
+    gmess = Graph()
+    # Construimos el mensaje de registro
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    gmess.bind("default", ECSDI)
+    reg_obj = ECSDI['PedirOferta' + str(mss_cnt)]
+    gmess.add((reg_obj, RDF.type,  ECSDI.PedirOferta))
+    gmess.add((reg_obj, ECSDI.Peso, Literal(peso, datatype=XSD.float)))
+
+    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+    gr = send_message(
+        build_message(gmess, perf=ACL.request,
+                      sender=CentroLogisticoAgent.uri,
+                      receiver=agn_uri,
+                      content=reg_obj,
+                      msgcnt=mss_cnt),
+        agn_add)
+    mss_cnt += 1
+
+    precioOferta = list(gr.triples((None, ECSDI.Precio, None)))[0][2]
+    prioridad = list(gm.triples((None, ECSDI.Prioridad, None)))[0][2]
+
+    contraOfertas = [[-1 for y in range(2)] for x in range(len(rsearch))]
+    threads = []
+    for indx, transportista in enumerate(rsearch):
+        trans_uri = transportista[0]
+        trans_add = dsgraph.value(subject=trans_uri, predicate=DSO.Address)
+
+        if agn_uri != trans_uri:
+            threads.append(
+                threading.Thread(
+                    target=pedirContraOferta,
+                    args=(trans_uri, trans_add, peso, precioOferta, indx, contraOfertas, mss_cnt)))
+
+    for thread in threads:
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+    transporte = list(gr.triples((None, ECSDI.Nombre, None)))[0][2]
+    precioTransporte = precioOferta
+    for contra in contraOfertas:
+        if contra[0] != -1 and contra[0] < precioTransporte:
+            precioTransporte = contra[0]
+            transporte = contra[1]
+
+
+
+    date = agents.get_date(int(prioridad))
+
+    gr = Graph()
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    gmess.bind("default", ECSDI)
+    reg_obj = ECSDI['RespuestaEnvio' + str(mss_cnt)]
+    gmess.add((reg_obj, RDF.type, ECSDI.RespuestaEnvio))
+    gmess.add((reg_obj, ECSDI.Precio, Literal(precioTransporte, datatype=XSD.float)))
+    gmess.add((reg_obj, ECSDI.Nombre, Literal(transporte, datatype=XSD.string)))
+    gmess.add((reg_obj, ECSDI.Fecha, Literal(date, datatype=XSD.date)))
+
+    agents.print_graph(gmess)
+    return gmess
+
 
 
 @app.route("/Register")
@@ -242,6 +361,7 @@ def register():
             # Accion de busqueda
             elif accion == DSO.Search:
                 gr = process_search()
+
             # No habia ninguna accion en el mensaje
             else:
                 gr = build_message(Graph(),
@@ -261,51 +381,92 @@ def info():
     global dsgraph
     global mss_cnt
 
-    rsearch = dsgraph.triples((None, DSO.AgentType, DSO.TransportistaAgent))
-    agn_uri = list(rsearch)[0][0]
-    agn_add = dsgraph.value(subject=agn_uri, predicate=DSO.Address)
-
-    print(agn_uri + "    :    " + agn_add)
-    id = 'Lote'
-    item = ECSDI[id]
-
-
-
     gmess = Graph()
     # Construimos el mensaje de registro
     gmess.bind('foaf', FOAF)
     gmess.bind('dso', DSO)
     gmess.bind("default", ECSDI)
-    reg_obj = agn['PedirOfertas' + mss_cnt]
-    gmess.add((reg_obj, RDF.type,  ECSDI.PedirOfertas))
-    gmess.add((reg_obj, DSO.Uri, CentroLogisticoAgent.uri))
-    gmess.add((reg_obj, FOAF.name, Literal(CentroLogisticoAgent.name)))
-    gmess.add((reg_obj, DSO.Address, Literal(CentroLogisticoAgent.address)))
-    gmess.add((reg_obj, DSO.AgentType, DSO.CentroLogisticoAgent))
-    gmess.add((reg_obj, ECSDI.LoteEnvio, item))
-    gmess.add((item, RDF.type, ECSDI.Lote))
-    gmess.add((item, ECSDI.Peso, Literal(50, datatype=XSD.float)))
-    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
-    gr = send_message(
-        build_message(gmess, perf=ACL.request,
-                      sender=CentroLogisticoAgent.uri,
-                      receiver=agn_uri,
-                      content=reg_obj,
-                      msgcnt=mss_cnt),
-        agn_add)
-    mss_cnt += 1
+    reg_obj = ECSDI['test' + str(mss_cnt)]
+    test1 = ECSDI['prod1']
+    test2 = ECSDI['prod1']
+    gmess.add((reg_obj, RDF.type, ECSDI.test))
+    gmess.add((reg_obj, ECSDI.Lote, test1))
+    gmess.add((reg_obj, ECSDI.Lote, test2))
+    gmess.add((test1, ECSDI.Peso, Literal(3, datatype=XSD.float)))
+    gmess.add((test2, ECSDI.Peso, Literal(5, datatype=XSD.float)))
+    gmess.add((reg_obj, ECSDI.Prioridad, Literal(1, datatype=XSD.int)))
 
 
-    for a,b,c in gr:
-        print(a)
-        print(b)
-        print(c)
-    msg_dic = get_message_properties(gr)
-
-    print(msg_dic)
-
+    negociar(reg_obj, gmess)
     return render_template('info.html', nmess=mss_cnt, graph=dsgraph.serialize(format='turtle'))
 
+
+
+@app.route("/comm")
+def comunicacion():
+    """
+    Entrypoint de comunicacion del agente
+    Simplemente retorna un objeto fijo que representa una
+    respuesta a una busqueda de hotel
+
+    Asumimos que se reciben siempre acciones que se refieren a lo que puede hacer
+    el agente (buscar con ciertas restricciones, reservar)
+    Las acciones se mandan siempre con un Request
+    Prodriamos resolver las busquedas usando una performativa de Query-ref
+    """
+    global dsgraph
+    global mss_cnt
+
+    logger.info('Peticion de informacion recibida')
+
+    # Extraemos el mensaje y creamos un grafo con el
+    message = request.args['content']
+    gm = Graph()
+    gm.parse(data=message, format='xml')
+
+    msgdic = get_message_properties(gm)
+
+    # Comprobamos que sea un mensaje FIPA ACL
+    if msgdic is None:
+        # Si no es, respondemos que no hemos entendido el mensaje
+        gr = build_message(
+            Graph(), ACL['not-understood'], sender=CentroLogisticoAgent.uri, msgcnt=mss_cnt)
+    else:
+        # Obtenemos la performativa
+        perf = msgdic['performative']
+
+        if perf != ACL.request:
+            # Si no es un request, respondemos que no hemos entendido el mensaje
+            gr = build_message(
+                Graph(), ACL['not-understood'], sender=CentroLogisticoAgent.uri, msgcnt=mss_cnt)
+        else:
+            # Extraemos el objeto del contenido que ha de ser una accion de la ontologia de acciones del agente
+            # de registro
+
+            # Averiguamos el tipo de la accion
+            if 'content' in msgdic:
+                content = msgdic['content']
+                accion = gm.value(subject=content, predicate=RDF.type)
+                result = Graph()
+                if accion == ECSDI.PrepararEnvio:
+
+                    for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                        gm.remove((item, None, None))
+
+                    result = negociar(content, gm)
+
+            # Aqui realizariamos lo que pide la accion
+            # Por ahora simplemente retornamos un Inform-done
+            gr = build_message(result,
+                               ACL['inform'],
+                               sender=CentroLogisticoAgent.uri,
+                               msgcnt=mss_cnt,
+                               receiver=msgdic['sender'], )
+    mss_cnt += 1
+
+    logger.info('Respondemos a la peticion')
+
+    return gr.serialize(format='xml')
 
 @app.route("/stop")
 def stop():
