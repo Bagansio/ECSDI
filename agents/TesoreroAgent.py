@@ -9,7 +9,6 @@ Agente que se registra como agente de busquedas
 from pathlib import Path
 import sys
 
-from ECSDI.agents.GestorProductosAgent import GestorProductosAgent
 
 path_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(path_root))
@@ -117,12 +116,18 @@ dsgraph = Graph()
 cola1 = Queue()
 
 
-def pagarCompra(content, gm):
+def pagarCompra(content, gm):    
     global GestorServicioExternoAgent
+    global mss_cnt
+
+    logger.info("Efectuando cobro")
+
 
     tarjeta = gm.value(subject=content, predicate=ECSDI.Tarjeta)
+    #print(str(tarjeta))
     precio = gm.value(subject=content, predicate=ECSDI.Precio)
-    productos = gm.value(subject=content, predicate=ECSDI.Productos)
+    #print(str(precio))
+    compra = gm.value(subject=content, predicate=ECSDI.Contiene)
     
     usuarioNombre = gm.value(subject=content, predicate=ECSDI.Nombre)
     """ Cuando no se esta haciendo el juego de prueba hacer esto:"""
@@ -132,7 +137,7 @@ def pagarCompra(content, gm):
 
 
     
-    logger.info("Cobrando al usuario " +str(usuarioNombre)+ " con la tarjeta acabada en " +str(tarjeta[-4:])+ "un total de " +str(precio)+"€ por los productos" )
+    logger.info("Cobrando al usuario " +str(usuarioNombre)+ " con la tarjeta acabada en " +str(tarjeta[-4:])+ " un total de " +str(precio)+"€ por los productos" )
 
     try:
         if GestorServicioExternoAgent is None:
@@ -163,7 +168,7 @@ def pagarCompra(content, gm):
         return Graph()
 
     
-    for producto in gm.objects(subject=productos, predicate=ECSDI.Muestra):
+    for producto in gm.objects(subject=compra, predicate=ECSDI.Productos):
         
         externo = gm.value(subject=producto, predicate=ECSDI.Externo)
         if externo is not None:
@@ -187,12 +192,34 @@ def pagarCompra(content, gm):
 
 
         for vendedor in graph_query:
-            logger.info("Pagando al vendedor externo " + vendedor['nombre'] + " con tarjeta acabada en" + tarjeta[-4:])
+            tarjeta = vendedor['tarjeta']
+            logger.info("Pagando al vendedor externo " + vendedor['nombre'] + " con tarjeta acabada en " + tarjeta[-4:])
+
+    logger.info("Cobro finalizado")
+
+    return Graph()
 
 
 
 def retornarImporte(content, gm):
-    return
+    global GestorServicioExternoAgent
+    global mss_cnt
+
+    logger.info("Efectuando cobro")
+
+
+    tarjeta = gm.value(subject=content, predicate=ECSDI.Tarjeta)
+    #print(str(tarjeta))
+    precio = gm.value(subject=content, predicate=ECSDI.Precio)
+    #print(str(precio))
+    producto = gm.value(subject=content, predicate=ECSDI.Product)
+
+    
+
+
+
+    
+    return Graph()
 
 
 
@@ -240,12 +267,22 @@ def register_message():
 def prueba():
     """No me deletees porfa gracias"""
     global GestorProductosAgent
+    global mss_cnt
     gm = Graph()
     gm.bind("default", ECSDI)
 
-    content = "XD"
 
-    tarjeta = "123456789"
+    content = agn['PeticionCompra' + str(id)]
+    tarjeta = 123456789
+    precio = 100.0
+    usuarioNombre = "Alex"
+    gm.add((content, RDF.type, ECSDI.PagarCompra))
+    gm.add((content, ECSDI.Tarjeta, Literal(int(tarjeta), datatype=XSD.int)))
+    #print(str(gm.value(subject=content, predicate=ECSDI.Tarjeta)))
+    gm.add((content, ECSDI.Precio,  Literal(float(precio), datatype=XSD.float)))
+    #print(str(gm.value(subject=content, predicate=ECSDI.Precio)))
+    gm.add((content, ECSDI.Nombre, Literal(usuarioNombre, datatype=XSD.string)))
+
 
     if GestorProductosAgent is None:
         GestorProductosAgent = agents.get_agent(DSO.GestorProductosAgent, TesoreroAgent, DirectoryAgent, mss_cnt)
@@ -283,39 +320,18 @@ def prueba():
     
     graph_query = graph.query(query)
 
+    sujetoProductos = ECSDI['ProductosPago' + str(id)] #sujetoCompra
+    graph_message.add((sujetoProductos, RDF.type, ECSDI.ProductosPago))
+
+
     for producto in graph_query:
-        productoExterno = producto['externo']
-        productSuj = producto['producto']
-    
-    gm.add(content, ECSDI.Productos)
-    
+        product_externo = producto['externo']
+        product_suj = producto['producto']
 
+        gm.add((product_suj, ECSDI.Externo, Literal(product_externo, datatype=XSD.string)))
+        gm.add((sujetoProductos, ECSDI.Productos, URIRef(product_suj))) #sujetoCompra
 
-
-
-    precio = gm.value(subject=content, predicate=ECSDI.Precio)
-    productos = gm.value(subject=content, predicate=ECSDI.Productos)
-    
-    usuarioNombre = gm.value(subject=content, predicate=ECSDI.Nombre)
-
-
-    gm.add((content, RDF.type, ECSDI.ObtenerVendedores))
-    gm.add
-
-
-
-    tarjeta = gm.value(subject=content, predicate=ECSDI.Tarjeta)
-    precio = gm.value(subject=content, predicate=ECSDI.Precio)
-    productos = gm.value(subject=content, predicate=ECSDI.Productos)
-    
-    usuarioNombre = gm.value(subject=content, predicate=ECSDI.Nombre)
-
-
-
-    
-
-
-
+    gm.add((content, ECSDI.Contiene, URIRef(sujetoProductos)))  #ECSDI.DE
 
     pagarCompra(content, gm)
 
@@ -338,7 +354,8 @@ def iface():
     Entrypoint que para el agente
     :return:
     """
-    prueba():
+    prueba()
+
     return "Parando Servidor"
 
 
