@@ -20,6 +20,7 @@ Y guarda en DBCompras la factura.
 from pathlib import Path
 import sys
 
+
 path_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(path_root))
 
@@ -48,7 +49,7 @@ from threading import Thread
 
 
 
-__author__ = 'Artur, Cristian'
+__author__ = 'Artur, Cristian, Bagansio'
 
 # Definimos los parametros de la linea de comandos
 parser = argparse.ArgumentParser()
@@ -119,6 +120,7 @@ DirectoryAgent = Agent('DirectoryAgent',
 
 
 CentrosLogisticosAgents = None
+GestorServicioExternoAgent = None
 
 
 # Global dsgraph triplestore
@@ -133,14 +135,85 @@ def solicitarDevolucion(content, gm):
 
 
 def solicitarEnvio(content, gm):
+    global CentrosLogisticosAgents
+    global GestorServicioExternoAgent
+    global mss_cnt
+
     logger.info("SolicitarEnvio")
-    ontologyFile = open(db.DBCentrosLogisticos)
-    centrosLogisticos = Graph()
-    centrosLogisticos.parse(ontologyFile, format='turtle')
-
+    
     ciudad = gm.value(subject=content, predicate=ECSDI.Ciudad)
+    logger.info("CIUDAD: "+ciudad)
 
-    centrosMasCercanos = centrosMasProximos(ciudad)
+    centrosMasCercanos = centrosMasProximos(str(ciudad))
+
+    for c in centrosMasCercanos:
+        logger.info("Centro: " +str(c))
+
+    centrosLogisticos = obtenerCentrosLogiticos()
+
+    for key in centrosLogisticos:
+        print(str(key))
+
+    compra = gm.value(subject=content, predicate = ECSDI.Contiene) 
+    logger.info("COMPRA: " +compra)
+
+    if GestorServicioExternoAgent is None:
+        logger.info('Buscando al agente GestorServicioExternoAgent')
+        GestorServicioExternoAgent = agents.get_agent(DSO.GestorServicioExternoAgent, GestorEnviosAgent, DirectoryAgent, mss_cnt)
+            
+    graph_message = Graph()
+    graph_message.bind('foaf', FOAF)
+    graph_message.bind('dso', DSO)
+    graph_message.bind("default", ECSDI)
+    reg_obj = ECSDI['ObtenerVendedores' + str(mss_cnt)]
+    graph_message.add((reg_obj, RDF.type, ECSDI.ObtenerVendedores))
+
+        # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+    grafoVendedores = send_message(
+        build_message(graph_message, perf=ACL.request,
+                    sender=GestorEnviosAgent.uri,
+                    receiver=GestorServicioExternoAgent.uri,
+                        content=reg_obj,
+                        msgcnt=mss_cnt),
+        GestorServicioExternoAgent.address)
+
+
+    for producto in gm.objects(subject=compra, predicate=ECSDI.Productos):
+        logger.info("pruducto: " + str(producto))
+
+        externo = gm.value(subject=producto, predicate=ECSDI.Externo)
+
+        if externo is not None:
+            query = """
+                prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+                prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+                prefix owl:<http://www.w3.org/2002/07/owl#>
+                SELECT ?servicioexterno ?nombre ?transportepropio
+                    where {
+                    {?servicioexterno rdf:type default:ServicioExterno } .
+                    ?servicioexterno default:Nombre ?nombre .
+                    ?servicioexterno default:TransportePropio ?transportepropio .
+
+                    FILTER("""
+
+            query += """?nombre = '""" + externo +"""'"""
+            query += """)}""" 
+
+            graph_query = grafoVendedores.query(query)
+
+            for vendedor in graph_query:
+                if vendedor['transportepropio'] is True:
+                    
+            
+            
+            mss_cnt += 1
+            
+
+
+
+
+        logger.info("externo: " + str(externo))
 
     logger.info("Previo al for")
     #for centro in centrosMasCercanos:
@@ -211,11 +284,6 @@ def obtenerCentrosLogiticos():
         centros[centro['nombre']] = cen
 
     return centros
-
-
-
-
-
 
 
 
