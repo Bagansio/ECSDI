@@ -118,6 +118,9 @@ DirectoryAgent = Agent('DirectoryAgent',
 
 
 
+CentrosLogisticosAgents = None
+
+
 # Global dsgraph triplestore
 dsgraph = Graph()
 
@@ -137,7 +140,7 @@ def solicitarEnvio(content, gm):
 
     ciudad = gm.value(subject=content, predicate=ECSDI.Ciudad)
 
-    #centrosMasCercanos = centrosMasProximos(ciudad) 
+    centrosMasCercanos = centrosMasProximos(ciudad)
 
     logger.info("Previo al for")
     #for centro in centrosMasCercanos:
@@ -147,39 +150,11 @@ def solicitarEnvio(content, gm):
     return r
 
 
+
+
+
+
 def obtenerCentrosLogiticos():
-
-    ontologyFile = open(db.DBCentrosLogisticos)
-    resultado = Graph()
-    resultado.parse(ontologyFile, format='turtle')
-
-    query = """
-                        prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                        prefix xsd:<http://www.w3.org/2001/XMLSchema#>
-                        prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
-                        prefix owl:<http://www.w3.org/2002/07/owl#>
-                        SELECT ?centrologistico ?nombre ?posicionx ?posiciony ?almacena 
-                            where {
-                            {?centrologistico rdf:type default:CentroLogistico } .
-                            ?centrologistico default:Nombre ?nombre .
-                            ?centrologistico default:PosicionX ?posicionx .
-                            ?centrologistico default:PosicionY ?posiciony .
-                            ?centrologistico default:Almacena ?almacena .
-                            }
-                            """
-    return resultado.query(query)
-
-
-
-
-
-
-
-@app.route("/info")
-def info():
-    """
-    XD
-    """
     global DirectoryAgent
     global GestorEnviosAgent
 
@@ -202,10 +177,40 @@ def info():
         DirectoryAgent.address)
 
 
+    centros = dict()
+    ontologyFile = open(db.DBCentrosLogisticos)
+    resultado = Graph()
+    resultado.parse(ontologyFile, format='turtle')
 
-    agents.print_graph(gr)
+    query = """
+                        prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                        prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+                        prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+                        prefix owl:<http://www.w3.org/2002/07/owl#>
+                        SELECT ?centrologistico ?nombre ?posicionx ?posiciony ?almacena 
+                            where {
+                            {?centrologistico rdf:type default:CentroLogistico } .
+                            ?centrologistico default:Nombre ?nombre .
+                            ?centrologistico default:PosicionX ?posicionx .
+                            ?centrologistico default:PosicionY ?posiciony .
+                            ?centrologistico default:Almacena ?almacena .
+                            }
+                            """
 
-    return "Parando Servidor"
+    query_result = resultado.query(query)
+
+    for centro in query_result:
+        cen = dict()
+
+        cen['posicionx'] = float(centro['posicionx'])
+        cen['posiciony'] = float(centro['posiciony'])
+        cen['almacena'] = list(resultado.objects(subject=centro['centrologistico'], predicate=ECSDI.Almacena))
+
+        cen['uri'] = str(agn[centro['nombre']])
+        cen['address'] = gr.value(predicate=DSO.Address, subject=URIRef(cen['uri']))
+        centros[centro['nombre']] = cen
+
+    return centros
 
 
 
@@ -364,9 +369,11 @@ def agentbehavior1(cola):
     Un comportamiento del agente
     :return:
     """
+    global CentrosLogisticosAgents
     # Registramos el agente
     gr = register_message()
 
+    CentrosLogisticosAgents = obtenerCentrosLogiticos()
     # Escuchando la cola hasta que llegue un 0
     fin = False
     while not fin:

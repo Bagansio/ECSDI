@@ -36,6 +36,7 @@ from AgentUtil.Agent import Agent
 from AgentUtil.ACLMessages import build_message, get_message_properties
 from AgentUtil.Logging import config_logger
 from AgentUtil.DSO import DSO
+from AgentUtil.OntoNamespaces import ECSDI
 from AgentUtil.Util import gethostname
 import socket
 
@@ -197,18 +198,20 @@ def register():
                                 (None,
                                  DSO.AgentType,
                                  agn_type))
-
         try:
             gr = Graph()
             gr.bind('dso', DSO)
+            gr.bind('default', ECSDI)
             rsp_obj = agn['Directory-response']
 
             for element in list(rsearch):
                 agn_uri = element[0]
                 agn_add = dsgraph.value(subject=agn_uri, predicate=DSO.Address)
+                agn_name = dsgraph.value(subject=agn_uri, predicate=FOAF.name)
                 gr.add((rsp_obj, agn_type, agn_uri))
                 gr.add((agn_uri, DSO.Address, agn_add))
-            
+                gr.add((agn_uri, ECSDI.Nombre, agn_name))
+
             return build_message(gr,
                                  ACL.inform,
                                  sender=DirectoryAgent.uri,
