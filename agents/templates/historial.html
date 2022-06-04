@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ECSDI - Comprar</title>
+    <link rel="stylesheet"  type= "text/css" href= "{{ url_for('static',filename='styles.css') }}" />
+    <script src= "{{ url_for('static',filename='main.js') }}" ></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <table id="compras">
+            <tr>
+                <th>Ciudad</th>
+                <th>Direccion</th>
+                <th>Prioridad</th>
+                <th>Tarjeta</th>
+
+                <th>Precio Envio</th>
+                <th>Precio Productos</th>
+                <th>Precio Total</th>
+            </tr>
+        {% for compra in query %}
+            <tr id="{{compra['factura']}}">
+                <td>{{ compra['ciudad'] }}</td>
+                <td>{{ compra['direccion'] }}</td>
+                <td>{{ compra['prioridad'] }}</td>
+                <td>{{ compra['tarjeta'] }}</td>
+                <td>{{ compra['precioEnvio'] }}€</td>
+                <td>{{ compra['precioProductos'] }}€</td>
+                <td>{{  compra['precioProductos'] +  compra['precioEnvio'] }}€</td>
+                <td><a href="/historialinfo?factura={{ compra['factura'].split('#')[1] }}"><img id={{ compra['factura'] }} class="info" src="{{ url_for('static',filename='icons/info.png') }}" alt="info"/></a></td>
+            </tr>
+        {% endfor %}
+        </table>
+
+</body>
+</html>

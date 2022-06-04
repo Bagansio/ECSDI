@@ -201,7 +201,57 @@ def enviarVenta(content, gm):
         logger.info("No ha sido posible enviar la petición de envio")
         return Graph()
 
-    
+def historial(content, gm):
+    logger.info('Peticion de historial de compras')
+
+    usuario = gm.value(subject=content, predicate=ECSDI.Usuario)
+
+    ontologyFile = open(db.DBCompras)
+    compras = Graph()
+    compras.parse(ontologyFile, format='turtle')
+
+    query = """
+            prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+            prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+            prefix owl:<http://www.w3.org/2002/07/owl#>
+            SELECT DISTINCT ?factura ?ciudad ?direccion ?formada ?precioEnvio ?precioProductos ?prioridad ?tarjeta ?usuario 
+                where {
+                {?factura rdf:type default:Factura } .
+                ?factura default:Ciudad ?ciudad .
+                ?factura default:Direccion ?direccion .
+                ?factura default:FormadaPor ?formada .
+                ?factura default:PrecioEnvio ?precioEnvio .
+                ?factura default:PrecioProductos ?precioProductos .
+                ?factura default:Prioridad ?prioridad .
+                ?factura default:Tarjeta ?tarjeta .
+                ?factura default:Usuario ?usuario .
+                FILTER (?usuario = '""" + str(usuario) + """')}
+                """
+
+    historial = compras.query(query)
+
+    # Creamos la respuesta
+    grafoFactura = Graph()
+    grafoFactura.bind('default', ECSDI)
+    sujeto = ECSDI['Historial-' + str(uuid.uuid4())]
+    grafoFactura.add((sujeto, RDF.type, ECSDI.Historial))  # NO SE SI HAY Historial EN LA ONTO
+
+    for compra in historial:
+        grafoFactura.add((sujeto, ECSDI.Factura, compra['factura']))
+        grafoFactura.add((compra['factura'], RDF.type, ECSDI.Factura))
+        grafoFactura.add((compra['factura'], ECSDI.Ciudad, compra['ciudad']))
+        grafoFactura.add((compra['factura'], ECSDI.Direccion, compra['direccion']))
+        grafoFactura.add((compra['factura'], ECSDI.FormadaPor, compra['formada']))
+        grafoFactura.add((compra['factura'], ECSDI.PrecioEnvio, compra['precioEnvio']))
+        grafoFactura.add((compra['factura'], ECSDI.PrecioProductos, compra['precioProductos']))
+        grafoFactura.add((compra['factura'], ECSDI.Prioridad, compra['prioridad']))
+        grafoFactura.add((compra['factura'], ECSDI.Tarjeta, compra['tarjeta']))
+        grafoFactura.add((compra['factura'], ECSDI.Usuario, compra['usuario']))
+
+    logger.info("Retornando el historial")
+    return grafoFactura
+
 
 def vender(content, gm):
     logger.info('Petición de compra recibida')
@@ -220,7 +270,7 @@ def vender(content, gm):
 
     # Obtenemos Usuario
     Usuario = gm.value(subject=content, predicate=ECSDI.Usuario)
-    grafoFactura.add((sujeto, ECSDI.Usuario, URIRef(Usuario)))
+    grafoFactura.add((sujeto, ECSDI.Usuario, Literal(Usuario, datatype=XSD.string)))
 
     # Añadimos la tarjeta de credito al grafoFactura
     grafoFactura.add((sujeto, ECSDI.Tarjeta, Literal(tarjetaCredito, datatype=XSD.int)))
@@ -367,20 +417,25 @@ def comunicacion():
 
             # Averiguamos el tipo de la accion
             if 'content' in msgdic:
-                factura = Graph()
+                response = Graph()
                 content = msgdic['content']
                 accion = gm.value(subject=content, predicate=RDF.type)
 
                 if accion == ECSDI.PeticionCompra: #AÑADIR EN LA ONTOLOGIA
 
-                    print(len(gm))
+                    for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                        gm.remove((item, None, None))
+                    response = vender(content, gm) #retornamos la factura
+
+                if accion == ECSDI.PeticionHistorialCompras:
+
                     for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
                         gm.remove((item, None, None))
 
-                    print(len(gm))
-                    factura = vender(content, gm) #retornamos la factura
+                    response = historial(content, gm)
 
-                gr = build_message(factura,
+
+                gr = build_message(response,
                                ACL['inform'],
                                sender=VendedorAgent.uri,
                                msgcnt=mss_cnt,

@@ -18,22 +18,23 @@ from AgentUtil.Util import gethostname
 import socket
 from threading import Thread
 
+ciudades = {
+    "Barcelona": [7, 6],
+    "Berga": [2, 5],
+    "Figueres": [1, 8],
+    "Girona": [4, 7],
+    "Lloret": [5, 9],
+    "Manresa": [5, 4],
+    "Mataro": [6, 7],
+    "Reus": [8, 2],
+    "Sabadell": [6, 6],
+    "Salou": [9, 2],
+    "Tarragona": [8, 3],
+    "Urgell": [2, 3]
+}
 
 def centrosMasProximos (ciudad):
-    ciudades = {
-        "Barcelona" : [7, 6],
-        "Berga" : [2, 5],
-        "Figueres" : [1, 8],
-        "Girona" : [4, 7],
-        "Lloret" : [5, 9],
-        "Manresa" : [5, 4],
-        "Mataro" : [6, 7],
-        "Reus" : [8, 2],
-        "Sabadell" : [6, 6],
-        "Salou" : [9, 2],
-        "Tarragona" : [8, 3],
-        "Urgell" : [2, 3]
-    }
+
 
     centrosLogisticos = {
         "CentroLogistico1" : [6, 5],
