@@ -33,6 +33,7 @@ from AgentUtil.ACLMessages import build_message, send_message, get_message_prope
 from AgentUtil.Agent import Agent
 from AgentUtil.Logging import config_logger
 from AgentUtil.DSO import DSO
+from AgentUtil.Ciudades import ciudades
 from AgentUtil.Util import gethostname
 import socket
 
@@ -105,6 +106,8 @@ DirectoryAgent = Agent('DirectoryAgent',
                        agn.Directory,
                        'http://%s:%d/Register' % (dhostname, dport),
                        'http://%s:%d/Stop' % (dhostname, dport))
+
+GestorDevolucionesAgent = None
 
 MostradorAgent = None
 
@@ -179,11 +182,61 @@ def obtener_productos(form = None):
                     }"""
 
     graph_query =  gr.query(query)
-    for product in graph_query:
-        print ("Nombre: " + str(product['nombre']))
-        print ("Externo: " + str(product['externo']))
 
     return gr.query(query)
+
+def obtener_historial(usuario):
+
+
+    global PersonalAgent
+    global VendedorAgent
+    global DirectoryAgent
+    global mss_cnt
+
+
+    if VendedorAgent is None:
+        VendedorAgent = agents.get_agent(DSO.VendedorAgent, PersonalAgent, DirectoryAgent, mss_cnt)
+
+    gmess = Graph()
+    # Construimos el mensaje de registro
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    gmess.bind("default", ECSDI)
+    id = str(uuid.uuid4())
+    reg_obj = agn['PeticionHistorial-' + str(id)]
+    gmess.add((reg_obj, RDF.type, ECSDI.PeticionHistorialCompras))
+    gmess.add((reg_obj, ECSDI.Usuario, URIRef(usuario)))
+    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+
+    gr = send_message(
+        build_message(gmess, perf=ACL.request,
+                      sender=PersonalAgent.uri,
+                      receiver=VendedorAgent.uri,
+                      content=reg_obj,
+                      msgcnt=mss_cnt),
+        VendedorAgent.address)
+
+    mss_cnt += 1
+    query = """
+            prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+            prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+            prefix owl:<http://www.w3.org/2002/07/owl#>
+            SELECT DISTINCT ?factura ?ciudad ?direccion (GROUP_CONCAT(?formada;SEPARATOR=",") AS ?productos) ?precioEnvio ?precioProductos ?prioridad ?tarjeta ?usuario 
+                where {
+                {?factura rdf:type default:Factura } .
+                ?factura default:Ciudad ?ciudad .
+                ?factura default:Direccion ?direccion .
+                ?factura default:FormadaPor ?formada .
+                ?factura default:PrecioEnvio ?precioEnvio .
+                ?factura default:PrecioProductos ?precioProductos .
+                ?factura default:Prioridad ?prioridad .
+                ?factura default:Tarjeta ?tarjeta .
+                ?factura default:Usuario ?usuario . }
+            GROUP BY ?factura"""
+
+    return gr.query(query)
+
 
 def buscar_productos(graph, form, suj):
     if form['nombre'] != '':
@@ -353,8 +406,9 @@ def comprar_iface():
     form = request.form
     us = session['usuario']
 
+
     if 'comprar' in form:
-        if form['numTarjeta'] != '' and form['prioridad'] != '' and form['direccion'] != '' and form['zip'] != '':
+        if form['numTarjeta'] != '' and form['prioridad'] != '' and form['direccion'] != '' and form['ciudad'] != '':
             if VendedorAgent is None:
                 logger.info('Buscando al agente Vendedor')
                 VendedorAgent = agents.get_agent(DSO.VendedorAgent, PersonalAgent, DirectoryAgent, mss_cnt)
@@ -373,7 +427,7 @@ def comprar_iface():
             gmess.add((reg_obj, ECSDI.Prioridad, Literal(int(form['prioridad']), datatype=XSD.int)))
             gmess.add((reg_obj, ECSDI.Tarjeta, Literal(int(form['numTarjeta']), datatype=XSD.int)))
             gmess.add((reg_obj, ECSDI.Direccion, Literal(form['direccion'], datatype=XSD.string)))
-            gmess.add((reg_obj, ECSDI.Ciudad, Literal(form['zip'], datatype=XSD.string)))
+            gmess.add((reg_obj, ECSDI.Ciudad, Literal(form['ciudad'], datatype=XSD.string)))
 
             sujetoCompra = ECSDI['Compra' + str(id)]
             gmess.add((sujetoCompra, RDF.type, ECSDI.Compra))
@@ -412,7 +466,104 @@ def comprar_iface():
             session['cart'] = []
             return render_template('factura.html', query=productos, total=total, data=form)
 
-    return render_template('comprar.html', query=productos)
+
+
+    return render_template('comprar.html', query=productos, cities=ciudades.keys())
+
+
+@app.route("/historialinfo", methods=['GET','POST'])
+def historial_info_iface():
+
+    global GestorDevolucionesAgent
+    global DirectoryAgent
+    global PersonalAgent
+    global mss_cnt
+
+    if not 'usuario' in session:
+        return redirect('login')
+
+    formFactura = ECSDI[request.args.get('factura')]
+    error = ""
+
+    form = request.form
+    historial = obtener_historial(session['usuario'])
+    productos = obtener_productos()
+    print(formFactura)
+    factura = None
+    prodinfo = []
+    for compra in historial:
+        if compra['factura'] == formFactura:
+            factura = compra
+
+    if factura is not None:
+        prods = factura['productos'].split(',')
+        for producto in productos:
+            for prod in prods:
+                if prod == str(producto['producto']):
+                    prodinfo.append(producto)
+
+    if 'devolver' in form:
+        gm = Graph()
+        gm.bind('foaf', FOAF)
+        gm.bind('dso', DSO)
+        gm.bind("default", ECSDI)
+        reg_obj = agn['PeticionDevolucion-' + str(mss_cnt)]
+        gm.add((reg_obj, RDF.type, ECSDI.PeticionDevolucion))
+        gm.add((reg_obj, ECSDI.Usuario,  URIRef(session['usuario'])))
+        gm.add((reg_obj, ECSDI.Motivo, Literal(form['motivo'], datatype=XSD.string)))
+        print(form)
+        for p in prodinfo:
+            if str(p['producto']) == form['id']:
+                gm.add((reg_obj, ECSDI.Producto, URIRef(p['producto'])))
+                gm.add((p['producto'], ECSDI.Precio, p['precio']))
+                gm.add((p['producto'], ECSDI.Externo, p['externo']))
+                gm.add((p['producto'], ECSDI.Peso, p['peso']))
+
+        gm.add((reg_obj, ECSDI.Factura, factura['factura']))
+        gm.add((factura['factura'], RDF.type, ECSDI.Factura))
+        gm.add((factura['factura'], ECSDI.Tarjeta, factura['tarjeta']))
+        gm.add((factura['factura'], ECSDI.Ciudad, factura['ciudad']))
+        gm.add((factura['factura'], ECSDI.Fecha, Literal(agents.get_date(2), datatype=XSD.date)))
+
+        if GestorDevolucionesAgent is None:
+            GestorDevolucionesAgent = agents.get_agent(DSO.GestorDevolucionesAgent, PersonalAgent, DirectoryAgent, mss_cnt)
+
+        gr = send_message(
+            build_message(gm, perf=ACL.request,
+                          sender=PersonalAgent.uri,
+                          receiver=GestorDevolucionesAgent.uri,
+                          content=reg_obj,
+                          msgcnt=mss_cnt),
+            GestorDevolucionesAgent.address)
+        mss_cnt += 1
+
+        estado = list(gr.triples((None, ECSDI.Estado, None)))
+        if len(estado) > 0 and str(estado[0][2]) == 'Rechazada':
+            error = "El plazo ha expirado"
+
+
+        agents.print_graph(gr)
+
+
+    return render_template('historialinfo.html', factura=factura, prods=prodinfo, error=error)
+
+@app.route("/historial", methods=['GET', 'POST'])
+def historial_iface():
+
+
+
+    if not 'usuario' in session:
+        return redirect('login')
+
+
+    historial = obtener_historial(session['usuario'])
+
+    for h in historial:
+        print(h['productos'])
+    return render_template('historial.html', query=historial)
+
+
+
 
 @app.route("/login", methods=['GET', 'POST'])
 def login_iface():

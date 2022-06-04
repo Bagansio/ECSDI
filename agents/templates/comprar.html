@@ -24,7 +24,11 @@
                 <option value="3">En un día</option>
             </select></td>
             <td><input type="text" name="direccion" /></td>
-            <td><input name="zip" type="text" /></td>
+            <td><select name="ciudad">
+                {% for city in cities %}
+                <option value="{{ city }}">{{ city }}</option>
+                {% endfor %}
+            </select></td>
 
             <td><input type="submit" name="comprar" value="Comprar"></td>
         </tr>

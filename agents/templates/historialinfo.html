@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ECSDI - Comprar</title>
+    <link rel="stylesheet"  type= "text/css" href= "{{ url_for('static',filename='styles.css') }}" />
+    <script src= "{{ url_for('static',filename='main.js') }}" ></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <b style="color:red">{{ error }}</b>
+
+
+    <table id="compras">
+            <tr>
+                <th>Ciudad</th>
+                <th>Direccion</th>
+                <th>Prioridad</th>
+                <th>Tarjeta</th>
+
+                <th>Precio Envio</th>
+                <th>Precio Productos</th>
+                <th>Precio Total</th>
+            </tr>
+            <tr id="{{factura['factura']}}">
+                <td>{{ factura['ciudad'] }}</td>
+                <td>{{ factura['direccion'] }}</td>
+                <td>{{ factura['prioridad'] }}</td>
+                <td>{{ factura['tarjeta'] }}</td>
+                <td>{{ factura['precioEnvio'] }}€</td>
+                <td>{{ factura['precioProductos'] }}€</td>
+                <td>{{  factura['precioProductos'] +  factura['precioEnvio'] }}€</td>
+            </tr>
+    </table>
+    <br>
+     <table id="products">
+        <tr>
+            <th>Nombre</th>
+            <th>Marca</th>
+            <th>Categoria</th>
+            <th>Descripcion</th>
+            <th>Precio</th>
+        </tr>
+    {% for product in prods %}
+        <tr>
+            <td>{{ product['nombre'] }}</td>
+            <td>{{ product['marca'] }}</td>
+            <td>{{ product['categoria'] }}</td>
+            <td>{{ product['descripcion'] }}</td>
+            <td>{{ product['precio'] }}€</td>
+            <form action="/historialinfo?factura={{ factura['factura'].split('#')[1] }}" method="post">
+                <td><select name="motivo">
+                    <option value="defectuoso">Defectuoso</option>
+                    <option value="equivocado">Equivocado</option>
+                    <option value="expectativa">Expectativa</option>
+                </select></td>
+                <input type="hidden" name="id" value="{{ product['producto'] }}">
+                <td><input type="submit" name="devolver" value="Devolver"></td>
+            </form>
+        </tr>
+    {% endfor %}
+    </table>
+
+</body>
+</html>

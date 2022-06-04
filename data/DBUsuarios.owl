@@ -5,3 +5,7 @@ default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 a default:Usuario ;
     default:Nombre "a"^^xsd:string ;
     default:Password "a"^^xsd:string .
 
+default:Usuario845dfb89-f090-4939-ba18-da5e8bd2d29e a default:Usuario ;
+    default:Nombre "p"^^xsd:string ;
+    default:Password "p"^^xsd:string .
+
