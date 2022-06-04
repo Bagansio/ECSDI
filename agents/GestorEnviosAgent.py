@@ -130,6 +130,18 @@ dsgraph = Graph()
 cola1 = Queue()
 
 
+def crearGrafo(content, gm, reg_obj):
+    grafo = Graph()
+    grafo.bind('foaf', FOAF)
+    grafo.bind('dso', DSO)
+    grafo.bind("default", ECSDI)
+    grafo.add((reg_obj, RDF.type, ECSDI.PrepararEnvio))
+
+    prioridad = gm.value(subject=content, predicate=ECSDI.Prioridad)
+    grafo.add((reg_obj, ECSDI.Prioridad, Literal(prioridad, datatype=XSD.int)))
+
+    return grafo
+
 def solicitarDevolucion(content, gm):
     return None
 
@@ -138,6 +150,10 @@ def solicitarEnvio(content, gm):
     global CentrosLogisticosAgents
     global GestorServicioExternoAgent
     global mss_cnt
+
+
+    if CentrosLogisticosAgents is None:
+        CentrosLogisticosAgents = obtenerCentrosLogiticos()
 
     logger.info("SolicitarEnvio")
     
@@ -155,7 +171,7 @@ def solicitarEnvio(content, gm):
         print(str(key))
 
     compra = gm.value(subject=content, predicate = ECSDI.Contiene) 
-    logger.info("COMPRA: " +compra)
+    logger.info("COMPRA: " +str(compra))
 
     if GestorServicioExternoAgent is None:
         logger.info('Buscando al agente GestorServicioExternoAgent')
@@ -179,20 +195,27 @@ def solicitarEnvio(content, gm):
 
     mss_cnt += 1
 
-    grafo1 = Graph()
-    grafo2 = Graph()
-    grafo3 = Graph()
+    reg_obj1 = ECSDI['PrepararEnvio' + str(uuid.uuid4())]
+    grafo1 = crearGrafo(content,gm, reg_obj1)
+
+    reg_obj2 = ECSDI['PrepararEnvio' + str(uuid.uuid4())]
+    grafo2 = crearGrafo(content,gm, reg_obj2)
+
+    reg_obj3 = ECSDI['PrepararEnvio' + str(uuid.uuid4())]
+    grafo3 = crearGrafo(content,gm, reg_obj3)
+
+
 
     productosCentroLogistico = {
-        "CentroLogisticoAgent1" : grafo1,
-        "CentroLogisticoAgent1" : grafo2,
-        "CentroLogisticoAgent1" : grafo3
+        "CentroLogisticoAgent1" : [grafo1, reg_obj1, False],
+        "CentroLogisticoAgent2" : [grafo2, reg_obj2, False],
+        "CentroLogisticoAgent3" : [grafo3, reg_obj3, False]
     }
 
 
     for producto in gm.objects(subject=compra, predicate=ECSDI.Productos):
         TransportePropio = False
-        logger.info("pruducto: " + str(producto))
+        logger.info("producto: " + str(producto))
 
         externo = gm.value(subject=producto, predicate=ECSDI.Externo)
 
@@ -214,35 +237,73 @@ def solicitarEnvio(content, gm):
             query += """)}""" 
 
             graph_query = grafoVendedores.query(query)
-
+            #logger.info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
             for vendedor in graph_query:
-                if vendedor['transportepropio'] is True:
+             #   logger.info("Comprobando el transporte propio del vendedor:" + str(vendedor) +"con transporte propio: " + str(vendedor['transportepropio']))
+                if str(vendedor['transportepropio']) == 'true':
+             #       logger.info("SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE ")
                     TransportePropio = True
-                    
+            #logger.info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+        
         if TransportePropio is False:
             Contiene = False
             print ('Producto1: ' + str(producto))
-            for centro in centrosLogisticos:
-                
-                for productoCentro in centro['almacena']:
-                    if producto == productoCentro:
+            for centro in centrosMasCercanos:
+                logger.info("CENTRO: " + centro)
+
+                cent = centrosLogisticos[str(centro)]
+                productos = cent['almacena']
+
+
+                for p in productos:
+                    if producto == p:
+                        logger.info("p = "+ str(p) + "producto = " + str(producto))
+
                         Contiene = True
                         break
                 
                 if Contiene is True:
+                    reg_objAUX = productosCentroLogistico[str(centro)][1]
+                    peso = gm.value(subject=producto, predicate=ECSDI.Peso)
 
+                    productosCentroLogistico[str(centro)][0].add((reg_objAUX, ECSDI.Lote, URIRef(producto)))
+                    productosCentroLogistico[str(centro)][0].add((producto, ECSDI.Peso, Literal(float(peso), datatype=XSD.float)))
+                    productosCentroLogistico[str(centro)][2]=True
 
-
+                    break
+                
                     
+    for key,centro in productosCentroLogistico.items():
+        id = key.split("CentroLogisticoAgent")[1]
+        logger.info("ID: " + id)
+
+        logger.info("COMPROBANDO EL CENTRO: " +str(key))
+
+        if centro[2] is True:
+            logger.info("Enviado productos lote")
+            logger.info("EL CENTRO ES:" +str(key))
+
             
             
+            logger.info("CONTENT= " +centro[1])
+            agents.print_graph(centro[0])
+            
+            print(CentrosLogisticosAgents)
+            print(key)
+            print(CentrosLogisticosAgents[key])
+
+                # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+            grafoVendedores = send_message(
+                build_message(centro[0], perf=ACL.request,
+                            sender=GestorEnviosAgent.uri,
+                            receiver=CentrosLogisticosAgents[key]['uri'],
+                            content=centro[1],
+                            msgcnt=mss_cnt),
+                CentrosLogisticosAgents[key]['address'])
+
+            mss_cnt += 1        
             
             
-
-
-
-
-        logger.info("externo: " + str(externo))
 
     logger.info("Previo al for")
     #for centro in centrosMasCercanos:
@@ -308,9 +369,9 @@ def obtenerCentrosLogiticos():
         cen['posiciony'] = float(centro['posiciony'])
         cen['almacena'] = list(resultado.objects(subject=centro['centrologistico'], predicate=ECSDI.Almacena))
 
-        cen['uri'] = str(agn[centro['nombre']])
-        cen['address'] = gr.value(predicate=DSO.Address, subject=URIRef(cen['uri']))
-        centros[centro['nombre']] = cen
+        cen['uri'] = agn[centro['nombre']]
+        cen['address'] = gr.value(predicate=DSO.Address, subject=cen['uri'])
+        centros[str(centro['nombre'])] = cen
 
     return centros
 
@@ -471,6 +532,9 @@ def agentbehavior1(cola):
     gr = register_message()
 
     CentrosLogisticosAgents = obtenerCentrosLogiticos()
+    
+
+
     # Escuchando la cola hasta que llegue un 0
     fin = False
     while not fin:

@@ -1,6 +1,18 @@
 @prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+default:Factura0a7b85fa-24cb-4cf1-92f6-46159d0fd927 a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Factura0ac8a3a0-a523-4451-bf8a-505f32988fa3 a default:Factura ;
     default:Ciudad "Barcelona"^^xsd:string ;
     default:Direccion "1"^^xsd:string ;
@@ -8,6 +20,18 @@ default:Factura0ac8a3a0-a523-4451-bf8a-505f32988fa3 a default:Factura ;
         default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
     default:PrecioEnvio "0.0"^^xsd:float ;
     default:PrecioProductos "20.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura0ad7a3c3-abda-4161-9dfb-1b143df18f86 a default:Factura ;
+    default:Ciudad "Berga"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
     default:Prioridad "0"^^xsd:int ;
     default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
@@ -28,6 +52,18 @@ default:Factura0c63400b-0339-4608-aee2-efd20a44981b a default:Factura ;
     default:FormadaPor default:Productob2771f40-577a-4867-831f-39bf6c7e6812 ;
     default:PrecioEnvio "0.0"^^xsd:float ;
     default:PrecioProductos "1500.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura0d381bb5-3a3f-4795-9937-374550639efc a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
     default:Prioridad "0"^^xsd:int ;
     default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
@@ -62,6 +98,30 @@ default:Factura13aca455-7cf3-4d17-a1fb-d4cdd67e5ae4 a default:Factura ;
     default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Factura1445537f-202c-43d5-8fe1-f5ef5fa7ef4c a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura15b7cd65-33bf-4849-8912-f4da1e746c0c a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Factura15bd3a8c-7198-4d73-bd26-e3d4ce852a3b a default:Factura ;
     default:Ciudad "Barcelona"^^xsd:string ;
     default:Direccion "123123123"^^xsd:string ;
@@ -70,6 +130,42 @@ default:Factura15bd3a8c-7198-4d73-bd26-e3d4ce852a3b a default:Factura ;
     default:PrecioProductos "1500.0"^^xsd:float ;
     default:Prioridad "0"^^xsd:int ;
     default:Tarjeta "323123"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura1a755ba5-4503-42f6-9e90-5b2aab433d07 a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura1b52b5db-aa23-471f-b2ac-883e568f8fbe a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura1b7c1261-1b2b-45d7-b58e-7c66e0b44dd4 a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
 default:Factura1d73f6f2-857f-495f-a04b-050cdee12fff a default:Factura ;
@@ -90,6 +186,18 @@ default:Factura20dd20bd-47a6-4559-967d-27e281e6afd8 a default:Factura ;
     default:PrecioProductos "1500.0"^^xsd:float ;
     default:Prioridad "0"^^xsd:int ;
     default:Tarjeta "111111"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura21b35182-2a9c-42e9-8a6f-162f79561f05 a default:Factura ;
+    default:Ciudad "Berga"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
 default:Factura24d5192e-04fc-4662-b933-f7471a4af73d a default:Factura ;
@@ -123,6 +231,18 @@ default:Factura26cf5377-d9c2-475c-aea7-90093acc0ca7 a default:Factura ;
     default:Tarjeta "554321234"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Factura2b15526f-6cc8-4a0a-b37e-b857ca263062 a default:Factura ;
+    default:Ciudad "Berga"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Factura2df6d0a0-372e-4d3b-85ce-131eaf052a84 a default:Factura ;
     default:Ciudad "Barcelona"^^xsd:string ;
     default:Direccion "Font Bosquina 19A"^^xsd:string ;
@@ -131,6 +251,18 @@ default:Factura2df6d0a0-372e-4d3b-85ce-131eaf052a84 a default:Factura ;
     default:PrecioProductos "1500.0"^^xsd:float ;
     default:Prioridad "0"^^xsd:int ;
     default:Tarjeta "1634165456"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura31b78f57-2482-4ac9-88ae-6d7b21f49326 a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
 default:Factura36a5aec8-685d-4f0b-8bbb-fe0d9a76f432 a default:Factura ;
@@ -153,6 +285,18 @@ default:Factura37b28e3e-f8c4-4907-95a3-8259dccfda42 a default:Factura ;
     default:Tarjeta "98765456765"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Factura384983a3-0304-41fc-bc8c-d6649211dd58 a default:Factura ;
+    default:Ciudad "Berga"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Factura39350967-70ba-4c09-acce-14c63643ac12 a default:Factura ;
     default:Ciudad "Barcelona"^^xsd:string ;
     default:Direccion "22"^^xsd:string ;
@@ -161,6 +305,18 @@ default:Factura39350967-70ba-4c09-acce-14c63643ac12 a default:Factura ;
     default:PrecioProductos "1500.0"^^xsd:float ;
     default:Prioridad "0"^^xsd:int ;
     default:Tarjeta "22"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura3c315345-db37-429e-a903-9344de3481db a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
 default:Factura3e0ac335-ef3f-482e-84a8-f635b607e4a9 a default:Factura ;
@@ -173,6 +329,18 @@ default:Factura3e0ac335-ef3f-482e-84a8-f635b607e4a9 a default:Factura ;
     default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Factura3e23f21b-ed0a-41ea-adbd-198f8d6fe732 a default:Factura ;
+    default:Ciudad "Berga"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Factura3f9d1dca-8fa7-4f2a-9354-5571fc5fc711 a default:Factura ;
     default:CodigoPostal "4567"^^xsd:int ;
     default:Direccion "direccion"^^xsd:string ;
@@ -181,6 +349,18 @@ default:Factura3f9d1dca-8fa7-4f2a-9354-5571fc5fc711 a default:Factura ;
     default:PrecioProductos "1500.0"^^xsd:float ;
     default:Prioridad "0"^^xsd:int ;
     default:Tarjeta "12345678"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura4064cff1-6515-4adb-86b0-0c0b3a5bad66 a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
 default:Factura40f2ca1d-2f41-4817-916a-6e6fca412576 a default:Factura ;
@@ -201,6 +381,42 @@ default:Factura42c98db8-1a0e-4078-95b7-092aebcfd9b8 a default:Factura ;
     default:PrecioProductos "1500.0"^^xsd:float ;
     default:Prioridad "0"^^xsd:int ;
     default:Tarjeta "324234234"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura44c128b5-20c0-4415-b9d8-630a657b020f a default:Factura ;
+    default:Ciudad "Berga"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura4ba3f358-4e78-4648-b775-85887b141c14 a default:Factura ;
+    default:Ciudad "Berga"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura4dd3ab7f-1919-4bf0-ab86-a79c3f67bc1b a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
 default:Factura4f35a705-603b-42b8-a2c3-44e6a11e3d14 a default:Factura ;
@@ -283,6 +499,18 @@ default:Factura58c2c29d-4fff-4c39-bbcb-85f3a30c30fd a default:Factura ;
     default:Tarjeta "12345678"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Factura5bad8a1f-edae-4a00-91d9-2da35ce99f5d a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Factura5c3d5f00-6b6b-4c00-96c8-6e7f61bcd787 a default:Factura ;
     default:Ciudad "Barcelona"^^xsd:string ;
     default:Direccion "4324234234"^^xsd:string ;
@@ -313,8 +541,68 @@ default:Factura5ccb16e9-5ae7-442a-ba7a-bfddb13ccaee a default:Factura ;
     default:Tarjeta "11111"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Factura5e4bd67a-9092-4234-88b4-3ce8356a7657 a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura63bb6280-30d6-4ea1-86d5-d1a5240e7c0f a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura63f1a351-5af0-4c4b-9ccc-4653429d8dc5 a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Factura6960c9f7-f92f-42eb-b8d7-be046a9a38cc a default:Factura ;
     default:Ciudad "1"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura6c19ab9d-3b1b-469c-90cb-6f5030939ec5 a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura6ff815ab-5602-412b-a185-036f5bb0c958 a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
     default:Direccion "1"^^xsd:string ;
     default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
         default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
@@ -355,6 +643,18 @@ default:Factura75baba2e-7fdd-439a-932e-9fc6cffa994b a default:Factura ;
     default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Factura77b352a1-e561-473f-927b-31f9c0dd2a00 a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Factura79438c4c-5677-4c34-aec2-21ccd5587ec2 a default:Factura ;
     default:Ciudad "Barcelona"^^xsd:string ;
     default:Direccion "324234234324"^^xsd:string ;
@@ -375,6 +675,30 @@ default:Factura7bb6ae90-b11b-4951-82b3-b3ced0386bc8 a default:Factura ;
     default:Tarjeta "212121212"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Factura7d643016-e2f6-40cd-8522-37783d33de6f a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura7d8b3ede-f350-4fbd-b3ee-be0365ca0145 a default:Factura ;
+    default:Ciudad "Berga"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Factura8251b27e-8d1a-446c-b16a-c84a0e032205 a default:Factura ;
     default:Ciudad "Barcelona"^^xsd:string ;
     default:Direccion "Font Bosquina 19A"^^xsd:string ;
@@ -383,6 +707,18 @@ default:Factura8251b27e-8d1a-446c-b16a-c84a0e032205 a default:Factura ;
     default:PrecioProductos "1500.0"^^xsd:float ;
     default:Prioridad "0"^^xsd:int ;
     default:Tarjeta "6454654654"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura83c7398c-964b-4305-9fa0-e7dd1772ec4a a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
 default:Factura83cd0141-48df-454a-bfff-2bafa1d1edc9 a default:Factura ;
@@ -427,6 +763,18 @@ default:Factura89b1a7f1-5717-4144-a22c-95ee3736f5c2 a default:Factura ;
     default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Factura8a0a173b-d9ca-40b3-87d7-e9cc9091e40c a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Factura8c88a9fe-45dc-46f9-a9a6-358ae83b3f3a a default:Factura ;
     default:Ciudad "Barcelona"^^xsd:string ;
     default:Direccion "11111111111"^^xsd:string ;
@@ -435,6 +783,30 @@ default:Factura8c88a9fe-45dc-46f9-a9a6-358ae83b3f3a a default:Factura ;
     default:PrecioProductos "1500.0"^^xsd:float ;
     default:Prioridad "0"^^xsd:int ;
     default:Tarjeta "1111111"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura96ae0dd6-0b53-4e5d-ba4f-b81aa08f30ac a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Factura96d5b844-aff6-4ec4-b252-4ee5bb79a0d3 a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
 default:Factura987597e1-d48d-4057-bdb3-8dfcb02758bb a default:Factura ;
@@ -457,6 +829,18 @@ default:Factura9e33c8f5-7e84-46d6-aed5-51865d73b42a a default:Factura ;
     default:Tarjeta "4564654654"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Facturaa5c0c0ca-9f55-4de1-8172-0f79b7e71e37 a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Facturaa8133e77-be2f-49e3-a4b1-3d9c12269a87 a default:Factura ;
     default:Ciudad "12345678"^^xsd:int ;
     default:Direccion "direccion2"^^xsd:string ;
@@ -465,6 +849,54 @@ default:Facturaa8133e77-be2f-49e3-a4b1-3d9c12269a87 a default:Factura ;
     default:PrecioProductos "10.0"^^xsd:float ;
     default:Prioridad "1"^^xsd:int ;
     default:Tarjeta "132456787654321"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Facturaa840558f-c024-46c5-a698-36c58445610b a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Facturaac97f938-0fc6-4403-8d07-51f8dcf6d2c4 a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Facturaae048127-f30a-40d4-a990-2c8d65750d3f a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Facturab064cf24-f675-4bc8-a642-fff0e86c1838 a default:Factura ;
+    default:Ciudad "Berga"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
 default:Facturab3e08ddd-31a9-4b23-aac1-5de2bfa35f32 a default:Factura ;
@@ -537,6 +969,18 @@ default:Facturac0d4f0c7-c07b-40c8-a652-dce909e43fac a default:Factura ;
     default:Tarjeta "2314324324324"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Facturac0e3a59f-2bf1-44cc-87e8-b93803e3cbc1 a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Facturac37a4770-7acd-4836-be05-ac1bc0a1563d a default:Factura ;
     default:Ciudad "1"^^xsd:string ;
     default:Direccion "1"^^xsd:string ;
@@ -555,6 +999,18 @@ default:Facturac4858dfd-cecd-446a-983a-8ad43994e197 a default:Factura ;
     default:PrecioProductos "1500.0"^^xsd:float ;
     default:Prioridad "0"^^xsd:int ;
     default:Tarjeta "5"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Facturac5b7178d-6453-41c8-937a-b60e4dd84fae a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
 default:Facturac7f31847-0b71-43ca-88b1-2946a38c887b a default:Factura ;
@@ -599,6 +1055,30 @@ default:Facturacebe7c02-3971-4469-b794-af4e28422b99 a default:Factura ;
     default:Tarjeta "234234234"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Facturad66ecb9f-76a8-407a-b2fc-f5c8ceae356d a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Facturad7defdc3-29b7-4a7d-be4b-59ad10fb1ba8 a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Facturad9931742-21a2-4c7c-a912-c596abab7a7b a default:Factura ;
     default:Ciudad "Urgell"^^xsd:string ;
     default:Direccion "1"^^xsd:string ;
@@ -629,12 +1109,48 @@ default:Facturadd583980-c150-442d-869d-e47427241fb2 a default:Factura ;
     default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Facturadf42e7c7-294e-49a8-a65a-1843ac2327db a default:Factura ;
+    default:Ciudad "Berga"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Facturae2fc3037-662b-47e0-8a53-e0119ca21447 a default:Factura ;
     default:Ciudad "Barcelona"^^xsd:string ;
     default:Direccion "1"^^xsd:string ;
     default:FormadaPor default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
     default:PrecioEnvio "0.0"^^xsd:float ;
     default:PrecioProductos "10.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Facturae3a2ec6a-222d-41bb-9ae6-6a06f359cceb a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Facturae46403ce-3fa1-4e93-83fa-d1dd5c723223 a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
     default:Prioridad "0"^^xsd:int ;
     default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
@@ -650,6 +1166,42 @@ default:Facturae528d713-ae0c-4ecc-81c3-a67dc845c86f a default:Factura ;
     default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Facturae6b08cc3-d608-41b2-a714-1e000b3c4406 a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Facturae6d3b24e-6059-4647-809e-f052e47cda50 a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Facturae8f3702f-11ce-43de-91e3-2942a7e1d35f a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Facturaea5927a6-28d7-434f-ae72-3300a539022f a default:Factura ;
     default:Ciudad "Barcelona"^^xsd:string ;
     default:Direccion "2"^^xsd:string ;
@@ -658,6 +1210,18 @@ default:Facturaea5927a6-28d7-434f-ae72-3300a539022f a default:Factura ;
     default:PrecioProductos "1500.0"^^xsd:float ;
     default:Prioridad "0"^^xsd:int ;
     default:Tarjeta "2"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Facturaea8fc7d2-53bc-4165-aa89-d97fc2f09e70 a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
 default:Facturaebb1f771-7763-470e-a6c7-f9cf54b199a8 a default:Factura ;
@@ -670,12 +1234,36 @@ default:Facturaebb1f771-7763-470e-a6c7-f9cf54b199a8 a default:Factura ;
     default:Tarjeta "111"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Facturaebfbde68-451c-4a11-9526-bf62787e73b7 a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Facturaef8ed175-72cd-4e8e-b895-f4fc1f88370a a default:Factura ;
     default:Ciudad "Barcelona"^^xsd:string ;
     default:Direccion "1"^^xsd:string ;
     default:FormadaPor default:Productob2771f40-577a-4867-831f-39bf6c7e6812 ;
     default:PrecioEnvio "0.0"^^xsd:float ;
     default:PrecioProductos "1500.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
+default:Facturaefa9c96f-831d-40d4-8df7-f6d2380fb4f1 a default:Factura ;
+    default:Ciudad "Reus"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
     default:Prioridad "0"^^xsd:int ;
     default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
