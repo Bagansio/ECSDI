@@ -152,7 +152,7 @@ def enviarVenta(content, gm):
 
     ciudad = gm.value(subject=content, predicate=ECSDI.Ciudad)
     compra = gm.value(subject=content, predicate=ECSDI.De)
-
+    prioridad = gm.value(subject=content, predicate=ECSDI.Prioridad)
 
     graph_message = Graph()
     graph_message.bind('foaf', FOAF)
@@ -160,20 +160,36 @@ def enviarVenta(content, gm):
     graph_message.bind("default", ECSDI)
     graph_message.remove((content, RDF.type, ECSDI.PeticionCompra))
 
-    reg_obj = ECSDI['EnvioCompra' + str(mss_cnt)]
+    reg_obj = ECSDI['EnvioCompra' + str(uuid.uuid4())]
     graph_message.add((reg_obj, RDF.type, ECSDI.EnvioCompra))
 
     graph_message.add((reg_obj,ECSDI.Ciudad,Literal(ciudad,datatype=XSD.string)))
+
+
+    sujetoProductos = ECSDI['ProductosAdquiridos' + str(uuid.uuid4())]
+    graph_message.add((sujetoProductos, RDF.type, ECSDI.ProductosAdquiridos))
+
+    logger.info("COMPRA: " +compra)
+
+
     for producto in gm.objects(subject=compra, predicate=ECSDI.Muestra):
-        graph_message.add((reg_obj, ECSDI.FormadaPor, URIRef(producto)))
+        logger.info("producto: " + str(producto))
+        
+        product_suj = producto
 
+        peso = gm.value(subject=product_suj, predicate=ECSDI.Peso)
+        externo = gm.value(subject=product_suj, predicate=ECSDI.Externo)
 
-        peso = gm.value(subject=producto, predicate=ECSDI.Peso)
-        externo = gm.value(subject=producto, predicate=ECSDI.Externo)
+        logger.info("IMPRIME PESO Y EXTERNO" + str(peso) + ' '+ str(externo))
+        
 
-        graph_message.add((producto, ECSDI.Peso, peso))
-        graph_message.add((producto, ECSDI.Externo, externo))
+        graph_message.add((product_suj, ECSDI.Peso, Literal(float(peso), datatype=XSD.float)))
+        graph_message.add((product_suj, ECSDI.Externo, Literal(str(externo), datatype=XSD.string)))
+        graph_message.add((sujetoProductos, ECSDI.Productos, URIRef(product_suj)))
 
+    graph_message.add((reg_obj, ECSDI.Contiene, URIRef(sujetoProductos)))
+
+    graph_message.add((reg_obj, ECSDI.Prioridad, Literal(prioridad, datatype=XSD.int)))
 
     try:
         if GestorEnviosAgent is None:

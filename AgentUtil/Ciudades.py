@@ -37,9 +37,9 @@ def centrosMasProximos (ciudad):
 
 
     centrosLogisticos = {
-        "CentroLogistico1" : [6, 5],
-        "CentroLogistico2" : [2, 7],
-        "CentroLogistico3" : [8, 1]
+        "CentroLogisticoAgent1" : [6, 5],
+        "CentroLogisticoAgent2" : [2, 7],
+        "CentroLogisticoAgent3" : [8, 1]
     }
 
     distancias = {}
@@ -47,14 +47,21 @@ def centrosMasProximos (ciudad):
 
     for values in centrosLogisticos.values():
         dist = math.sqrt(abs(ciudades[ciudad][0] - values[0]) ** 2 + abs(ciudades[ciudad][1] - values[1]) ** 2)
-        distancias["CentroLogistico" + str(centroActual)] = dist
+        distancias["CentroLogisticoAgent" + str(centroActual)] = dist
         centroActual += 1
+    
+    print(distancias['CentroLogisticoAgent1'])
+    print(distancias['CentroLogisticoAgent2'])
+    print(distancias['CentroLogisticoAgent3'])
 
-    dict(sorted(distancias.items(), key=lambda item: item[1]))
+
+    distanciasOrdenadas = dict(sorted(distancias.items(), key=lambda item: item[1]))
+
+
 
     resultado = []
 
-    for key in distancias:
+    for key in distanciasOrdenadas:
         resultado.append(key)
 
     return resultado
