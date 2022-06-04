@@ -115,6 +115,12 @@ default:Busqueda-1ba33cf3-4cd5-45bf-a1f0-df0cb558b27f a default:Busqueda ;
         "http://www.owl-ontologies.com/ECSDIPractica#Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4"^^xsd:string ;
     default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
 
+default:Busqueda-1e47e33a-d191-42cc-8fe4-41427ea7a00c a default:Busqueda ;
+    default:Producto "http://www.owl-ontologies.com/ECSDIPractica#Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a"^^xsd:string,
+        "http://www.owl-ontologies.com/ECSDIPractica#Productob2771f40-577a-4867-831f-39bf6c7e6812"^^xsd:string,
+        "http://www.owl-ontologies.com/ECSDIPractica#Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4"^^xsd:string ;
+    default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
+
 default:Busqueda-203e1738-ca8e-45dc-b774-06250cfef522 a default:Busqueda ;
     default:Producto "http://www.owl-ontologies.com/ECSDIPractica#Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a"^^xsd:string,
         "http://www.owl-ontologies.com/ECSDIPractica#Productob2771f40-577a-4867-831f-39bf6c7e6812"^^xsd:string,
@@ -150,6 +156,12 @@ default:Busqueda-2facbabc-dfd7-4166-88cd-fc0735ddfcf5 a default:Busqueda ;
         "http://www.owl-ontologies.com/ECSDIPractica#Productob2771f40-577a-4867-831f-39bf6c7e6812"^^xsd:string,
         "http://www.owl-ontologies.com/ECSDIPractica#Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4"^^xsd:string ;
     default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
+
+default:Busqueda-30aec077-d6a1-4489-addd-9cb244282577 a default:Busqueda ;
+    default:Producto "http://www.owl-ontologies.com/ECSDIPractica#Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a"^^xsd:string,
+        "http://www.owl-ontologies.com/ECSDIPractica#Productob2771f40-577a-4867-831f-39bf6c7e6812"^^xsd:string,
+        "http://www.owl-ontologies.com/ECSDIPractica#Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4"^^xsd:string ;
+    default:Usuario "None"^^xsd:string .
 
 default:Busqueda-32e723a5-ce48-4ff9-bf4c-52a2a6821753 a default:Busqueda ;
     default:Producto "http://www.owl-ontologies.com/ECSDIPractica#Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a"^^xsd:string,
@@ -379,6 +391,12 @@ default:Busqueda-6f39d1d3-1da0-4436-a212-7eb5b2bd52a6 a default:Busqueda ;
         "http://www.owl-ontologies.com/ECSDIPractica#Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4"^^xsd:string ;
     default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
 
+default:Busqueda-72d80861-0eb2-42d9-96d2-3030102e2def a default:Busqueda ;
+    default:Producto "http://www.owl-ontologies.com/ECSDIPractica#Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a"^^xsd:string,
+        "http://www.owl-ontologies.com/ECSDIPractica#Productob2771f40-577a-4867-831f-39bf6c7e6812"^^xsd:string,
+        "http://www.owl-ontologies.com/ECSDIPractica#Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4"^^xsd:string ;
+    default:Usuario "None"^^xsd:string .
+
 default:Busqueda-76351eae-060b-466c-9ee0-c58c2622d2f0 a default:Busqueda ;
     default:Producto "http://www.owl-ontologies.com/ECSDIPractica#Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a"^^xsd:string,
         "http://www.owl-ontologies.com/ECSDIPractica#Productob2771f40-577a-4867-831f-39bf6c7e6812"^^xsd:string,
@@ -547,6 +565,12 @@ default:Busqueda-97aac499-d1f9-45d0-8a27-491d318a9466 a default:Busqueda ;
         "http://www.owl-ontologies.com/ECSDIPractica#Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4"^^xsd:string ;
     default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
 
+default:Busqueda-99a706ac-3908-4217-ab5e-9828d8efe454 a default:Busqueda ;
+    default:Producto "http://www.owl-ontologies.com/ECSDIPractica#Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a"^^xsd:string,
+        "http://www.owl-ontologies.com/ECSDIPractica#Productob2771f40-577a-4867-831f-39bf6c7e6812"^^xsd:string,
+        "http://www.owl-ontologies.com/ECSDIPractica#Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4"^^xsd:string ;
+    default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
+
 default:Busqueda-9ade5c07-db07-44a0-b78d-764b7458d079 a default:Busqueda ;
     default:Producto "http://www.owl-ontologies.com/ECSDIPractica#Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a"^^xsd:string,
         "http://www.owl-ontologies.com/ECSDIPractica#Productob2771f40-577a-4867-831f-39bf6c7e6812"^^xsd:string,
@@ -590,6 +614,12 @@ default:Busqueda-a6cd382c-30a4-4960-9062-38792ab0ef79 a default:Busqueda ;
     default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
 
 default:Busqueda-aa626ad1-111b-4481-bba0-5a9acf80bd31 a default:Busqueda ;
+    default:Producto "http://www.owl-ontologies.com/ECSDIPractica#Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a"^^xsd:string,
+        "http://www.owl-ontologies.com/ECSDIPractica#Productob2771f40-577a-4867-831f-39bf6c7e6812"^^xsd:string,
+        "http://www.owl-ontologies.com/ECSDIPractica#Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4"^^xsd:string ;
+    default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
+
+default:Busqueda-ab17c8c5-0c3a-4943-8f14-2fab1760ef77 a default:Busqueda ;
     default:Producto "http://www.owl-ontologies.com/ECSDIPractica#Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a"^^xsd:string,
         "http://www.owl-ontologies.com/ECSDIPractica#Productob2771f40-577a-4867-831f-39bf6c7e6812"^^xsd:string,
         "http://www.owl-ontologies.com/ECSDIPractica#Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4"^^xsd:string ;
@@ -722,6 +752,12 @@ default:Busqueda-d5c23f4d-1dac-449a-9802-ebe72e8e8520 a default:Busqueda ;
     default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
 
 default:Busqueda-d8a3fadf-3c4e-42d8-b8d8-a04e142473bb a default:Busqueda ;
+    default:Producto "http://www.owl-ontologies.com/ECSDIPractica#Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a"^^xsd:string,
+        "http://www.owl-ontologies.com/ECSDIPractica#Productob2771f40-577a-4867-831f-39bf6c7e6812"^^xsd:string,
+        "http://www.owl-ontologies.com/ECSDIPractica#Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4"^^xsd:string ;
+    default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
+
+default:Busqueda-dad39198-6a01-44ec-ab07-fda4c9fa1768 a default:Busqueda ;
     default:Producto "http://www.owl-ontologies.com/ECSDIPractica#Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a"^^xsd:string,
         "http://www.owl-ontologies.com/ECSDIPractica#Productob2771f40-577a-4867-831f-39bf6c7e6812"^^xsd:string,
         "http://www.owl-ontologies.com/ECSDIPractica#Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4"^^xsd:string ;

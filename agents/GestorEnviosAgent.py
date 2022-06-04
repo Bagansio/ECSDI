@@ -177,8 +177,21 @@ def solicitarEnvio(content, gm):
                         msgcnt=mss_cnt),
         GestorServicioExternoAgent.address)
 
+    mss_cnt += 1
+
+    grafo1 = Graph()
+    grafo2 = Graph()
+    grafo3 = Graph()
+
+    productosCentroLogistico = {
+        "CentroLogisticoAgent1" : grafo1,
+        "CentroLogisticoAgent1" : grafo2,
+        "CentroLogisticoAgent1" : grafo3
+    }
+
 
     for producto in gm.objects(subject=compra, predicate=ECSDI.Productos):
+        TransportePropio = False
         logger.info("pruducto: " + str(producto))
 
         externo = gm.value(subject=producto, predicate=ECSDI.Externo)
@@ -204,10 +217,26 @@ def solicitarEnvio(content, gm):
 
             for vendedor in graph_query:
                 if vendedor['transportepropio'] is True:
+                    TransportePropio = True
+                    
+        if TransportePropio is False:
+            Contiene = False
+            print ('Producto1: ' + str(producto))
+            for centro in centrosLogisticos:
+                
+                for productoCentro in centro['almacena']:
+                    if producto == productoCentro:
+                        Contiene = True
+                        break
+                
+                if Contiene is True:
+
+
+
                     
             
             
-            mss_cnt += 1
+            
             
 
 

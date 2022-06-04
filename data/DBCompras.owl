@@ -577,6 +577,18 @@ default:Facturacb82524d-d633-430e-8d94-f509082b4dff a default:Factura ;
     default:Tarjeta "1"^^xsd:int ;
     default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
 
+default:Facturacbd40f09-d0df-450b-8726-ccd0b7c23db6 a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "1"^^xsd:string ;
+    default:FormadaPor default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
+        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1520.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "1"^^xsd:int ;
+    default:Usuario default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 .
+
 default:Facturacebe7c02-3971-4469-b794-af4e28422b99 a default:Factura ;
     default:Ciudad "Barcelona"^^xsd:string ;
     default:Direccion "23423432"^^xsd:string ;
