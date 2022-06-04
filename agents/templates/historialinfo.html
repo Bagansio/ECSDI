@@ -8,6 +8,9 @@
 <body>
     {% include 'navbar.html' %}
 
+    <b style="color:red">{{ error }}</b>
+
+
     <table id="compras">
             <tr>
                 <th>Ciudad</th>
@@ -45,13 +48,14 @@
             <td>{{ product['categoria'] }}</td>
             <td>{{ product['descripcion'] }}</td>
             <td>{{ product['precio'] }}€</td>
-            <form action="/comprar" method="post">
+            <form action="/historialinfo?factura={{ factura['factura'].split('#')[1] }}" method="post">
                 <td><select name="motivo">
                     <option value="defectuoso">Defectuoso</option>
                     <option value="equivocado">Equivocado</option>
                     <option value="expectativa">Expectativa</option>
                 </select></td>
-                <td><input type="submit" name="comprar" value="Devolver"></td>
+                <input type="hidden" name="id" value="{{ product['producto'] }}">
+                <td><input type="submit" name="devolver" value="Devolver"></td>
             </form>
         </tr>
     {% endfor %}

@@ -26,8 +26,9 @@ agent_ports = {'GestorProductosAgent': 9001,
                'VendedorAgent':9010,
                
                'GestorEnviosAgent':9011,
-               'RegistroServicioExternoAgent':9012,
+               'GestorDevolucionesAgent': 9012,
                'TesoreroAgent':9013,
+
 
                'Transportista1Agent': 9015,
                'Transportista2Agent': 9016,

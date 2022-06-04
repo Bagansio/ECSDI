@@ -11,3 +11,4 @@ DBHistorial = '../data/DBHistorial.owl'
 DBServicioExterno = '../data/DBServicioExterno.owl'
 DBServicioExternoDEBUG = "ECSDI/data/DBServicioExterno.owl"
 DBCentrosLogisticos = '../data/DBCentrosLogisticos.owl'
+DBDevoluciones = '../data/DBDevoluciones.owl'

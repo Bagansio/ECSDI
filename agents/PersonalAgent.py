@@ -107,6 +107,8 @@ DirectoryAgent = Agent('DirectoryAgent',
                        'http://%s:%d/Register' % (dhostname, dport),
                        'http://%s:%d/Stop' % (dhostname, dport))
 
+GestorDevolucionesAgent = None
+
 MostradorAgent = None
 
 VendedorAgent = None
@@ -469,14 +471,21 @@ def comprar_iface():
     return render_template('comprar.html', query=productos, cities=ciudades.keys())
 
 
-@app.route("/historialinfo", methods=['GET'])
+@app.route("/historialinfo", methods=['GET','POST'])
 def historial_info_iface():
+
+    global GestorDevolucionesAgent
+    global DirectoryAgent
+    global PersonalAgent
+    global mss_cnt
 
     if not 'usuario' in session:
         return redirect('login')
 
     formFactura = ECSDI[request.args.get('factura')]
+    error = ""
 
+    form = request.form
     historial = obtener_historial(session['usuario'])
     productos = obtener_productos()
     print(formFactura)
@@ -493,7 +502,50 @@ def historial_info_iface():
                 if prod == str(producto['producto']):
                     prodinfo.append(producto)
 
-    return render_template('historialinfo.html', factura=factura, prods=prodinfo)
+    if 'devolver' in form:
+        gm = Graph()
+        gm.bind('foaf', FOAF)
+        gm.bind('dso', DSO)
+        gm.bind("default", ECSDI)
+        reg_obj = agn['PeticionDevolucion-' + str(mss_cnt)]
+        gm.add((reg_obj, RDF.type, ECSDI.PeticionDevolucion))
+        gm.add((reg_obj, ECSDI.Usuario,  URIRef(session['usuario'])))
+        gm.add((reg_obj, ECSDI.Motivo, Literal(form['motivo'], datatype=XSD.string)))
+        print(form)
+        for p in prodinfo:
+            if str(p['producto']) == form['id']:
+                gm.add((reg_obj, ECSDI.Producto, URIRef(p['producto'])))
+                gm.add((p['producto'], ECSDI.Precio, p['precio']))
+                gm.add((p['producto'], ECSDI.Externo, p['externo']))
+                gm.add((p['producto'], ECSDI.Peso, p['peso']))
+
+        gm.add((reg_obj, ECSDI.Factura, factura['factura']))
+        gm.add((factura['factura'], RDF.type, ECSDI.Factura))
+        gm.add((factura['factura'], ECSDI.Tarjeta, factura['tarjeta']))
+        gm.add((factura['factura'], ECSDI.Ciudad, factura['ciudad']))
+        gm.add((factura['factura'], ECSDI.Fecha, Literal(agents.get_date(2), datatype=XSD.date)))
+
+        if GestorDevolucionesAgent is None:
+            GestorDevolucionesAgent = agents.get_agent(DSO.GestorDevolucionesAgent, PersonalAgent, DirectoryAgent, mss_cnt)
+
+        gr = send_message(
+            build_message(gm, perf=ACL.request,
+                          sender=PersonalAgent.uri,
+                          receiver=GestorDevolucionesAgent.uri,
+                          content=reg_obj,
+                          msgcnt=mss_cnt),
+            GestorDevolucionesAgent.address)
+        mss_cnt += 1
+
+        estado = list(gr.triples((None, ECSDI.Estado, None)))
+        if len(estado) > 0 and str(estado[0][2]) == 'Rechazada':
+            error = "El plazo ha expirado"
+
+
+        agents.print_graph(gr)
+
+
+    return render_template('historialinfo.html', factura=factura, prods=prodinfo, error=error)
 
 @app.route("/historial", methods=['GET', 'POST'])
 def historial_iface():
