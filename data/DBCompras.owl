@@ -13,6 +13,7 @@ default:Factura3184dbd6-c1bb-478e-96ae-c0266f8337c5 a default:Factura ;
     default:Transportistas "Propio"^^xsd:string ;
     default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
 
+
 default:Factura6472e0de-7afb-4ca6-b75b-8160856da43a a default:Factura ;
     default:Ciudad "Sabadell"^^xsd:string ;
     default:Direccion "Casa"^^xsd:string ;
@@ -36,4 +37,3 @@ default:Factura82defc40-5977-4d82-8ea7-abed98b90c72 a default:Factura ;
     default:Tarjeta "3333"^^xsd:int ;
     default:Transportistas "Seul"^^xsd:string ;
     default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
-

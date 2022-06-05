@@ -67,8 +67,19 @@ HECHO POR:
        donde se mostrara el historial de compras del usuario, buscar la compra con los datos previos y darle al boton: 
        <img src="agents/static/icons/info.png" widht=35 height=35></img>
       
-       Allí observar que el precio total han sido 2.5€ junto al resto de datos
+       Allí observar que el precio total han sido 2.5€, transportistas Propio junto al resto de datos
        Observar en el TesoreroAgent el cobro y que se ha pagado a "Cola-Coca"
+      
+   1. Añadir el producto Ordenador de Marca IVM y Patata de Marca Cola, ir a la pestaña "Compra" y agregar el atributo 
+       Tarjeta = 2222 , Prioridad = En un Dia, Direccion = Avenida Segunda y Ciudad = Reus
+      
+        Factura correcta con información parcial. Transcurrido unos segundos, ir a la pestaña "Compras"
+       donde se mostrara el historial de compras del usuario, buscar la compra con los datos previos y darle al boton: 
+       <img src="agents/static/icons/info.png" widht=35 height=35></img>
+      
+       Allí observar que el precio total han sido 900.25€, transportistas DHV y junto al resto de datos
+       Observar en el TesoreroAgent el cobro y que se ha pagado a "Cola-Coca" 
+       
       
 #### 3) Devolver:
     
