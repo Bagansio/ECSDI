@@ -355,8 +355,11 @@ def procesarDevolucion(content, gm):
     fecha = str(gm.value(subject=factura_suj, predicate=ECSDI.Fecha)).split('-')
     fecha = datetime.date(int(fecha[0]), int(fecha[1]), int(fecha[2]))
     hoy = datetime.date.today()
+    print(fecha)
+    print(hoy)
     if motivo == 'expectativa':
         plazoMax = fecha + datetime.timedelta(days=15)
+        print(plazoMax)
         if hoy > plazoMax:
             logger.info("Devolucion rechazada por plazo máximo")
             gr.add((reg_obj, ECSDI.Estado, Literal('Rechazada', datatype=XSD.string)))

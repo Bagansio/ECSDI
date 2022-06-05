@@ -219,8 +219,6 @@ def retornarImporte(content, gm):
 
     externo = gm.value(subject=producto, predicate=ECSDI.Externo)
 
-    agents.print_graph(gm)
-    print(externo)
 
     if externo is not None and externo != 'None':
         try:

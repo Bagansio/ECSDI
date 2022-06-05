@@ -1,2 +1,11 @@
 @prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+default:Devolucion-86d577a6-0c2d-45dd-8831-cf7aee5eeb80 a default:Devolucion ;
+    default:Factura default:Factura3184dbd6-c1bb-478e-96ae-c0266f8337c5 ;
+    default:Fecha "2022-06-06"^^xsd:date ;
+    default:Motivo "defectuoso"^^xsd:string ;
+    default:Producto default:Productob1ef49fa-4a64-448a-bbf4-484faf6d4743 ;
+    default:Transportista "Propio"^^xsd:string ;
+    default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
+

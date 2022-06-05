@@ -1,2 +1,39 @@
 @prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+default:Factura3184dbd6-c1bb-478e-96ae-c0266f8337c5 a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "Casa"^^xsd:string ;
+    default:Fecha "2022-06-14"^^xsd:date ;
+    default:FormadaPor default:Productob1ef49fa-4a64-448a-bbf4-484faf6d4743 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "2.5"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "2222"^^xsd:int ;
+    default:Transportistas "Propio"^^xsd:string ;
+    default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
+
+default:Factura6472e0de-7afb-4ca6-b75b-8160856da43a a default:Factura ;
+    default:Ciudad "Sabadell"^^xsd:string ;
+    default:Direccion "Casa"^^xsd:string ;
+    default:Fecha "2022-06-10"^^xsd:date ;
+    default:FormadaPor default:Producto28bfb418-2fef-459d-bc1e-f5db1e3b0c77 ;
+    default:PrecioEnvio "0.53"^^xsd:float ;
+    default:PrecioProductos "60.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "4444"^^xsd:int ;
+    default:Transportistas "Seul"^^xsd:string ;
+    default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
+
+default:Factura82defc40-5977-4d82-8ea7-abed98b90c72 a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "Casa"^^xsd:string ;
+    default:Fecha "2022-05-05"^^xsd:date ;
+    default:FormadaPor default:Producto763305d6-ef43-422e-a4c9-9b5d1b080805 ;
+    default:PrecioEnvio "32.5"^^xsd:float ;
+    default:PrecioProductos "50.0"^^xsd:float ;
+    default:Prioridad "1"^^xsd:int ;
+    default:Tarjeta "3333"^^xsd:int ;
+    default:Transportistas "Seul"^^xsd:string ;
+    default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
+

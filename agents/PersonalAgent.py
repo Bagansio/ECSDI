@@ -586,7 +586,7 @@ def historial_info_iface():
         gm.add((factura['factura'], RDF.type, ECSDI.Factura))
         gm.add((factura['factura'], ECSDI.Tarjeta, factura['tarjeta']))
         gm.add((factura['factura'], ECSDI.Ciudad, factura['ciudad']))
-        gm.add((factura['factura'], ECSDI.Fecha, Literal(agents.get_date(2), datatype=XSD.date)))
+        gm.add((factura['factura'], ECSDI.Fecha, factura['fecha']))
 
         if GestorDevolucionesAgent is None:
             GestorDevolucionesAgent = agents.get_agent(DSO.GestorDevolucionesAgent, PersonalAgent, DirectoryAgent, mss_cnt)

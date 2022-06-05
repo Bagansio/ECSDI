@@ -44,6 +44,8 @@ HECHO POR:
 
 ## Juegos de pruebas:
 
+
+
 #### 1) Busqueda de productos:
 
    1. Buscar sin filtro -> Retorna todos los productos de la base de datos.
@@ -64,4 +66,28 @@ HECHO POR:
        Factura correcta con información parcial. Transcurrido unos segundos, ir a la pestaña "Compras"
        donde se mostrara el historial de compras del usuario, buscar la compra con los datos previos y darle al boton: 
        <img src="agents/static/icons/info.png" widht=35 height=35></img>
-        
+      
+       Allí observar que el precio total han sido 2.5€ junto al resto de datos
+       Observar en el TesoreroAgent el cobro y que se ha pagado a "Cola-Coca"
+      
+#### 3) Devolver:
+    
+   1. Ir a la pestaña "Compras", darle al icono:  <img src="agents/static/icons/info.png" widht=35 height=35></img>
+
+       Seleccionar la compra con direccion = Casa y tarjeta = 2222. Una vez cargada la pagina, pulsar el boton Devolver.
+
+       Comprobar que muestra que el producto ya se ha devuelto previamente
+
+   2. Ir a la pestaña "Compras", darle al icono:  <img src="agents/static/icons/info.png" widht=35 height=35></img>
+
+       Seleccionar la compra con direccion = Casa y tarjeta = 3333. Una vez cargada la pagina, pulsar el boton Devolver.
+
+       Comprobar que muestra que el plazo ha expirado
+
+   3. Ir a la pestaña "Compras", darle al icono:  <img src="agents/static/icons/info.png" widht=35 height=35></img>
+
+        Seleccionar la compra con direccion = Casa y tarjeta = 4444. Una vez cargada la pagina, pulsar el boton Devolver.
+
+        Comprobar que muestra que esta aceptada y procesando. Transcurrido unos segundos, ir a la pestaña "Devoluciones",
+        observar que hay una nueva devolucion añadida y el tesorero ha devuelto el dinero
+      
