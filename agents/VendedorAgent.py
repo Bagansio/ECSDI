@@ -77,6 +77,7 @@ else:
 if args.open:
     hostname = '0.0.0.0'
     hostaddr = gethostname()
+    hostaddr = "192.168.18.10"
 else:
     hostaddr = hostname = socket.gethostname()
 
@@ -236,7 +237,8 @@ def enviarVenta(content, gm, factura_suj, prioridad, precio_prod):
 
         compras.serialize(destination=db.DBCompras, format='turtle')
 
-        agents.print_graph(gm)
+
+
 
         tarjeta = list(gm.triples((None, ECSDI.Tarjeta, None)))[0][2]
         usuario = list(gm.triples((None, ECSDI.Usuario, None)))[0][2]
@@ -319,8 +321,6 @@ def historial(content, gm):
 
     historial = compras.query(query)
 
-    for a in historial:
-        print(a)
     # Creamos la respuesta
     grafoFactura = Graph()
     grafoFactura.bind('default', ECSDI)

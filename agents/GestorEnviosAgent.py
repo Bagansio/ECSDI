@@ -79,6 +79,7 @@ else:
 if args.open:
     hostname = '0.0.0.0'
     hostaddr = gethostname()
+    hostaddr = "192.168.18.10"
 else:
     hostaddr = hostname = socket.gethostname()
 
@@ -217,7 +218,7 @@ def solicitarEnvio(content, gm):
 
         externo = gm.value(subject=producto, predicate=ECSDI.Externo)
 
-        if externo is not None:
+        if externo is not None and str(externo) != 'None':
             query = """
                 prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
                 prefix xsd:<http://www.w3.org/2001/XMLSchema#>

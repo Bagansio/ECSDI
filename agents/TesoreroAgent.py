@@ -66,6 +66,7 @@ else:
 if args.open:
     hostname = '0.0.0.0'
     hostaddr = gethostname()
+    hostaddr = '192.168.18.10'
 else:
     hostaddr = hostname = socket.gethostname()
 
@@ -118,6 +119,8 @@ cola1 = Queue()
 
 def pagarCompra(content, gm):    
     global GestorServicioExternoAgent
+    global TesoreroAgent
+    global DirectoryAgent
     global mss_cnt
 
     logger.info("Efectuando cobro")
@@ -140,26 +143,26 @@ def pagarCompra(content, gm):
                 logger.info("Obtiendo el agente Gestor Servicio Externo")
                 GestorServicioExternoAgent = agents.get_agent(DSO.GestorServicioExternoAgent, TesoreroAgent, DirectoryAgent, mss_cnt)
 
-                logger.info("Cobrando al usuario " +str(usuarioNombre)+ " con la tarjeta acabada en " +str(tarjeta[-4:])+ " un total de " +str(precio)+"€ por los productos" )
-                
-                graph_message = Graph()
-                graph_message.bind('foaf', FOAF)
-                graph_message.bind('dso', DSO)
-                graph_message.bind("default", ECSDI)
+        logger.info("Cobrando al usuario " +str(usuarioNombre)+ " con la tarjeta acabada en " +str(tarjeta[-4:])+ " un total de " +str(precio)+"€ por los productos" )
 
-                reg_obj = ECSDI['ObtenerVendedores' + str(mss_cnt)]
-                graph_message.add((reg_obj, RDF.type, ECSDI.ObtenerVendedores))
+        graph_message = Graph()
+        graph_message.bind('foaf', FOAF)
+        graph_message.bind('dso', DSO)
+        graph_message.bind("default", ECSDI)
 
-                # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
-                grafoVendedores = send_message(
-                    build_message(graph_message, perf=ACL.request,
-                                sender=TesoreroAgent.uri,
-                                receiver=GestorServicioExternoAgent.uri,
-                                content=reg_obj,
-                                msgcnt=mss_cnt),
-                    GestorServicioExternoAgent.address)
+        reg_obj = ECSDI['ObtenerVendedores' + str(mss_cnt)]
+        graph_message.add((reg_obj, RDF.type, ECSDI.ObtenerVendedores))
 
-                mss_cnt += 1
+        # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+        grafoVendedores = send_message(
+            build_message(graph_message, perf=ACL.request,
+                        sender=TesoreroAgent.uri,
+                        receiver=GestorServicioExternoAgent.uri,
+                        content=reg_obj,
+                        msgcnt=mss_cnt),
+            GestorServicioExternoAgent.address)
+
+        mss_cnt += 1
 
     except Exception as e:
         print(e)
@@ -187,12 +190,12 @@ def pagarCompra(content, gm):
             query += """?nombre = '""" + externo +"""'"""
             query += """)}""" 
 
-        graph_query = grafoVendedores.query(query)
+            graph_query = grafoVendedores.query(query)
 
 
-        for vendedor in graph_query:
-            tarjeta = vendedor['tarjeta']
-            logger.info("Pagando al vendedor externo " + vendedor['nombre'] + " con tarjeta acabada en " + tarjeta[-4:])
+            for vendedor in graph_query:
+                tarjeta = vendedor['tarjeta']
+                logger.info("Pagando al vendedor externo " + vendedor['nombre'] + " con tarjeta acabada en " + tarjeta[-4:])
 
     logger.info("Cobro finalizado")
 
@@ -202,7 +205,11 @@ def pagarCompra(content, gm):
 
 def retornarImporte(content, gm):
     global GestorServicioExternoAgent
+    global TesoreroAgent
+    global DirectoryAgent
     global mss_cnt
+
+
     tarjeta = gm.value(subject=content, predicate=ECSDI.Tarjeta)
     precio = gm.value(subject=content, predicate=ECSDI.Precio)
     producto = gm.value(subject=content, predicate=ECSDI.Producto)
@@ -212,32 +219,35 @@ def retornarImporte(content, gm):
 
     externo = gm.value(subject=producto, predicate=ECSDI.Externo)
 
-    if externo != 'None':
+    agents.print_graph(gm)
+    print(externo)
+
+    if externo is not None and externo != 'None':
         try:
             if GestorServicioExternoAgent is None:
                 logger.info("Obtiendo el agente Gestor Servicio Externo")
                 GestorServicioExternoAgent = agents.get_agent(DSO.GestorServicioExternoAgent, TesoreroAgent, DirectoryAgent, mss_cnt)
-                logger.info("Pidiendole " +str(precio)+"€ al vendedor externo " +str(externo)+  " con la tarjeta acabada en " +str(tarjeta[-4:])+ " por el reembolso del producto.")
+            logger.info("Pidiendole " +str(precio)+"€ al vendedor externo " +str(externo)+  " con la tarjeta acabada en " +str(tarjeta[-4:])+ " por el reembolso del producto.")
 
 
-                graph_message = Graph()
-                graph_message.bind('foaf', FOAF)
-                graph_message.bind('dso', DSO)
-                graph_message.bind("default", ECSDI)
+            graph_message = Graph()
+            graph_message.bind('foaf', FOAF)
+            graph_message.bind('dso', DSO)
+            graph_message.bind("default", ECSDI)
 
-                reg_obj = ECSDI['ObtenerVendedores' + str(mss_cnt)]
-                graph_message.add((reg_obj, RDF.type, ECSDI.ObtenerVendedores))
+            reg_obj = ECSDI['ObtenerVendedores' + str(mss_cnt)]
+            graph_message.add((reg_obj, RDF.type, ECSDI.ObtenerVendedores))
 
-                # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
-                grafoVendedores = send_message(
-                    build_message(graph_message, perf=ACL.request,
-                                sender=TesoreroAgent.uri,
-                                receiver=GestorServicioExternoAgent.uri,
-                                content=reg_obj,
-                                msgcnt=mss_cnt),
-                    GestorServicioExternoAgent.address)
+            # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+            grafoVendedores = send_message(
+                build_message(graph_message, perf=ACL.request,
+                            sender=TesoreroAgent.uri,
+                            receiver=GestorServicioExternoAgent.uri,
+                            content=reg_obj,
+                            msgcnt=mss_cnt),
+                GestorServicioExternoAgent.address)
 
-                mss_cnt += 1
+            mss_cnt += 1
 
         except Exception as e:
             print(e)

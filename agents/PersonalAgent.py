@@ -21,7 +21,7 @@ import argparse
 import threading
 import uuid
 
-from flask import Flask, request, render_template, session, redirect, Response
+from flask import Flask, request, render_template, session, redirect, Response, flash
 from rdflib import Graph, Namespace, Literal, URIRef, XSD
 from rdflib.namespace import FOAF, RDF
 from utils import db, agents
@@ -66,6 +66,7 @@ else:
 if args.open:
     hostname = '0.0.0.0'
     hostaddr = gethostname()
+    hostaddr = '192.168.18.10'
 else:
     hostaddr = hostname = socket.gethostname()
 
@@ -185,6 +186,56 @@ def obtener_productos(form = None):
 
     return gr.query(query)
 
+
+def obtener_historial_devolucion(usuario):
+    global PersonalAgent
+    global VendedorAgent
+    global DirectoryAgent
+    global GestorDevolucionesAgent
+    global mss_cnt
+
+    if GestorDevolucionesAgent is None:
+        GestorDevolucionesAgent = agents.get_agent(DSO.GestorDevolucionesAgent, PersonalAgent, DirectoryAgent, mss_cnt)
+
+    gmess = Graph()
+    # Construimos el mensaje de registro
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    gmess.bind("default", ECSDI)
+    id = str(uuid.uuid4())
+    reg_obj = agn['PeticionHistorial-' + str(id)]
+    gmess.add((reg_obj, RDF.type, ECSDI.PeticionHistorial))
+    gmess.add((reg_obj, ECSDI.Usuario, URIRef(usuario)))
+    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+
+    gr = send_message(
+        build_message(gmess, perf=ACL.request,
+                      sender=PersonalAgent.uri,
+                      receiver=GestorDevolucionesAgent.uri,
+                      content=reg_obj,
+                      msgcnt=mss_cnt),
+        GestorDevolucionesAgent.address)
+
+    mss_cnt += 1
+    query = """
+                prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+                prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+                prefix owl:<http://www.w3.org/2002/07/owl#>
+                SELECT DISTINCT ?devolucion ?factura ?fecha ?producto ?transportista ?usuario ?motivo
+                    where {
+                    {?devolucion rdf:type default:Devolucion } .
+                    ?devolucion default:Factura ?factura .
+                    ?devolucion default:Fecha ?fecha .
+                    ?devolucion default:Producto ?producto .
+                    ?devolucion default:Transportista ?transportista .
+                    ?devolucion default:Usuario ?usuario .
+                    ?devolucion default:Motivo ?motivo . }"""
+
+    res = gr.query(query)
+
+    return res
+
 def obtener_historial(usuario):
 
 
@@ -241,14 +292,12 @@ def obtener_historial(usuario):
                 ?factura default:Usuario ?usuario . 
                 ?factura default:Transportistas ?trans .
                 ?factura default:Fecha ?fecha .
-                }
+                } GROUP BY ?factura
             """
     
 
     res = gr.query(query)
 
-    for a in res:
-        print(a)
     return res
 
 
@@ -474,7 +523,7 @@ def comprar_iface():
 
             total = None
 
-            for s, o in gr.subject_objects(ECSDI.PrecioTotal):
+            for s, o in gr.subject_objects(ECSDI.PrecioProductos):
                 total = o
 
             session['cart'] = []
@@ -498,11 +547,11 @@ def historial_info_iface():
 
     formFactura = ECSDI[request.args.get('factura')]
     error = ""
-
+    success= ""
     form = request.form
     historial = obtener_historial(session['usuario'])
     productos = obtener_productos()
-    print(formFactura)
+
     factura = None
     prodinfo = []
     for compra in historial:
@@ -525,7 +574,7 @@ def historial_info_iface():
         gm.add((reg_obj, RDF.type, ECSDI.PeticionDevolucion))
         gm.add((reg_obj, ECSDI.Usuario,  URIRef(session['usuario'])))
         gm.add((reg_obj, ECSDI.Motivo, Literal(form['motivo'], datatype=XSD.string)))
-        print(form)
+
         for p in prodinfo:
             if str(p['producto']) == form['id']:
                 gm.add((reg_obj, ECSDI.Producto, URIRef(p['producto'])))
@@ -552,14 +601,16 @@ def historial_info_iface():
         mss_cnt += 1
 
         estado = list(gr.triples((None, ECSDI.Estado, None)))
-        if len(estado) > 0 and str(estado[0][2]) == 'Rechazada':
-            error = "El plazo ha expirado"
+        if len(estado) > 0:
+            if str(estado[0][2]) == 'Rechazada':
+                error = "El plazo ha expirado"
+            elif str(estado[0][2]) == 'Duplicada':
+                error = "EL producto ya se ha devuelto previamente"
+        else:
+            success="Aceptada y procesando"
 
 
-        agents.print_graph(gr)
-
-
-    return render_template('historialinfo.html', factura=factura, prods=prodinfo, error=error)
+    return render_template('historialinfo.html', factura=factura, prods=prodinfo, error=error, success=success)
 
 @app.route("/historial", methods=['GET', 'POST'])
 def historial_iface():
@@ -572,10 +623,20 @@ def historial_iface():
 
     historial = obtener_historial(session['usuario'])
 
-    for h in historial:
-        print(h['productos'])
     return render_template('historial.html', query=historial)
 
+@app.route("/historialdevos", methods=['GET', 'POST'])
+def historialdevos_iface():
+
+
+
+    if not 'usuario' in session:
+        return redirect('login')
+
+
+    historial = obtener_historial_devolucion(session['usuario'])
+
+    return render_template('historialdevos.html', query=historial)
 
 
 

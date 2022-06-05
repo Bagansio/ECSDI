@@ -5,6 +5,14 @@ default:Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1 a default:Usuario ;
     default:Nombre "a"^^xsd:string ;
     default:Password "a"^^xsd:string .
 
+default:Usuario1d244c41-5670-41d2-8ff7-96172edbbc24 a default:Usuario ;
+    default:Nombre "pepe"^^xsd:string ;
+    default:Password "pepe"^^xsd:string .
+
+default:Usuario5feff6e2-3005-4b81-b840-8c389eaf9eef a default:Usuario ;
+    default:Nombre "hp"^^xsd:string ;
+    default:Password "hp"^^xsd:string .
+
 default:Usuario845dfb89-f090-4939-ba18-da5e8bd2d29e a default:Usuario ;
     default:Nombre "p"^^xsd:string ;
     default:Password "p"^^xsd:string .

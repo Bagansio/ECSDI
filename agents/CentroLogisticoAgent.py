@@ -162,7 +162,7 @@ def negociar(content, gm):
     global mss_cnt
     global dsgraph
 
-    agents.print_graph(gm)
+
     # Obtenemos los productos y calculamos el peso total
     peso = 0
     for producto in gm.objects(subject=content, predicate=ECSDI.Lote):

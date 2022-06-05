@@ -78,6 +78,7 @@ else:
 if args.open:
     hostname = '0.0.0.0'
     hostaddr = gethostname()
+    hostaddr = "192.168.18.10"
 else:
     hostaddr = hostname = socket.gethostname()
 
@@ -125,12 +126,121 @@ GestorEnviosAgent = None
 
 TesoreroAgent = None
 
+GestorProductosAgent = None
+
 # Global dsgraph triplestore
 dsgraph = Graph()
 
 # Cola de comunicacion entre procesos
 cola1 = Queue()
 
+
+def historial(content, gm):
+
+    global GestorProductosAgent
+    global DirectoryAgent
+    global mss_cnt
+    global GestorDevolucionesAgent
+
+    logger.info('Peticion de historial de devoluciones')
+
+    usuario = gm.value(subject=content, predicate=ECSDI.Usuario)
+
+    ontologyFile = open(db.DBDevoluciones)
+    devos = Graph()
+    devos.parse(ontologyFile, format='turtle')
+    devos.bind("default", ECSDI)
+
+    query = """
+            prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+            prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+            prefix owl:<http://www.w3.org/2002/07/owl#>
+            SELECT DISTINCT ?devolucion ?factura ?fecha ?producto ?transportista ?usuario ?motivo
+                where {
+                {?devolucion rdf:type default:Devolucion } .
+                ?devolucion default:Factura ?factura .
+                ?devolucion default:Fecha ?fecha .
+                ?devolucion default:Producto ?producto .
+                ?devolucion default:Transportista ?transportista .
+                ?devolucion default:Usuario ?usuario .
+                ?devolucion default:Motivo ?motivo . 
+                
+                FILTER (?usuario = '""" + str(usuario) + """')}"""
+
+
+    historial = devos.query(query)
+
+    # Creamos la respuesta
+    grafoFactura = Graph()
+    grafoFactura.bind('default', ECSDI)
+    sujeto = ECSDI['Historial-' + str(uuid.uuid4())]
+    grafoFactura.add((sujeto, RDF.type, ECSDI.Historial))  # NO SE SI HAY Historial EN LA ONTO
+
+    if GestorProductosAgent is None:
+        GestorProductosAgent = agents.get_agent(DSO.GestorProductosAgent, GestorDevolucionesAgent, DirectoryAgent, mss_cnt)
+
+    graph_message = Graph()
+    graph_message.bind('foaf', FOAF)
+    graph_message.bind('dso', DSO)
+    graph_message.bind("default", ECSDI)
+    reg_obj = ECSDI['PeticionProductos' + str(mss_cnt)]
+    graph_message.add((reg_obj, RDF.type, ECSDI.PeticionProductos))
+
+    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+    graph = send_message(
+        build_message(graph_message, perf=ACL.request,
+                      sender=GestorDevolucionesAgent.uri,
+                      receiver=GestorProductosAgent.uri,
+                      content=reg_obj,
+                      msgcnt=mss_cnt),
+        GestorProductosAgent.address)
+
+    mss_cnt += 1
+
+
+    query = """
+        prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+        prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+        prefix owl:<http://www.w3.org/2002/07/owl#>
+        SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria ?descripcion ?externo ?valoracion
+            where {
+            {?producto rdf:type default:Producto } .
+            ?producto default:Nombre ?nombre .
+            ?producto default:Precio ?precio .
+            ?producto default:Marca ?marca .
+            ?producto default:Peso ?peso .
+            ?producto default:Categoria ?categoria .
+            ?producto default:Descripcion ?descripcion .
+            ?producto default:Externo ?externo .
+            ?producto default:Valoracion ?valoracion .
+
+            FILTER("""
+
+    for compra in historial:
+
+        query_aux = query + """str(?producto) = '""" + str(compra['producto']) + """')}"""
+
+        res = graph.query(query_aux)
+
+        producto = compra['producto']
+
+        for element in res:
+            producto = element['nombre']
+
+        grafoFactura.add((sujeto, ECSDI.Factura, compra['devolucion']))
+        grafoFactura.add((compra['devolucion'], RDF.type, ECSDI.Devolucion))
+        grafoFactura.add((compra['devolucion'], ECSDI.Factura, compra['factura']))
+        grafoFactura.add((compra['devolucion'], ECSDI.Fecha, compra['fecha']))
+        grafoFactura.add((compra['devolucion'], ECSDI.Producto, producto))
+        grafoFactura.add((compra['devolucion'], ECSDI.Transportista, compra['transportista']))
+        grafoFactura.add((compra['devolucion'], ECSDI.Usuario, compra['usuario']))
+        grafoFactura.add((compra['devolucion'], ECSDI.Motivo, compra['motivo']))
+
+    logger.info("Retornando el historial")
+
+    return grafoFactura
 
 def pedirReintegro(grafo, content):
 
@@ -142,20 +252,22 @@ def pedirReintegro(grafo, content):
     global mss_cnt
 
     if TesoreroAgent is None:
-        TesoreroAgent = agents.get_agent(DSO.TesoreroAgent, VendedorAgent, DirectoryAgent, mss_cnt)
+        TesoreroAgent = agents.get_agent(DSO.TesoreroAgent, GestorDevolucionesAgent, DirectoryAgent, mss_cnt)
 
     logger.info("Trata de enviar peticion reintegro a Tesorero Agent")
     gr = send_message(
         build_message(grafo, perf=ACL.request,
-                        sender=VendedorAgent.uri,
+                        sender=GestorDevolucionesAgent.uri,
                         receiver=TesoreroAgent.uri,
                         content=content,
                         msgcnt=mss_cnt),
         TesoreroAgent.address)
 
+
+
     logger.info("Petición de reintegro realizada")
 
-def solicitarEnvio(grafo, content, factura, producto, usuario):
+def solicitarEnvio(grafo, content, factura, producto, usuario, motivo):
     global TesoreroAgent
     global VendedorAgent
     global GestorDevolucionesAgent
@@ -167,12 +279,11 @@ def solicitarEnvio(grafo, content, factura, producto, usuario):
     try:
 
         if GestorEnviosAgent is None:
-            GestorEnviosAgent = agents.get_agent(DSO.TesoreroAgent, VendedorAgent, DirectoryAgent, mss_cnt)
-
+            GestorEnviosAgent = agents.get_agent(DSO.GestorEnviosAgent, GestorDevolucionesAgent, DirectoryAgent, mss_cnt)
 
         gr = send_message(
             build_message(grafo, perf=ACL.request,
-                            sender=VendedorAgent.uri,
+                            sender=GestorDevolucionesAgent.uri,
                             receiver=GestorEnviosAgent.uri,
                             content=content,
                             msgcnt=mss_cnt),
@@ -180,29 +291,30 @@ def solicitarEnvio(grafo, content, factura, producto, usuario):
 
         ontologyFile = open(db.DBDevoluciones)
         devos = Graph()
+
         devos.parse(ontologyFile, format='turtle')
+        devos.bind("default", ECSDI)
 
         content = list(gr.triples((None, ECSDI.Precio, None)))[0][0]
-        transportistas = list(gr.triples((content, ECSDI.Nombre, None)))[0]
+        transportistas = 'Propio'
+        aux = list(gr.triples((content, ECSDI.Nombre, None)))
+        if len(aux) > 0:
+            transportistas = str(aux[0][2])
+
         fecha = gr.value(subject=content, predicate=ECSDI.Fecha)
 
-        graph = Graph()
-
-        graph_aux = Graph()
-        graph_aux.bind('foaf', FOAF)
-        graph_aux.bind('dso', DSO)
-        graph_aux.bind("default", ECSDI)
+        if str(fecha) == 'None':
+            fecha = Literal(str(datetime.date.today() + datetime.timedelta(days=3)), datatype=XSD.string)
 
         item = ECSDI['Devolucion-' + str(uuid.uuid4())]
 
-        graph_aux.add((item, RDF.type, ECSDI.Devolucion))
-        graph_aux.add((item, ECSDI.Factura, factura))
-        graph_aux.add((item, ECSDI.Usuario, usuario))
-        graph_aux.add((item, ECSDI.Producto, producto))
-        graph_aux.add((item, ECSDI.Transportista, transportistas))
-        graph_aux.add((item, ECSDI.Fecha, fecha))
-
-        devos += graph_aux
+        devos.add((item, RDF.type, ECSDI.Devolucion))
+        devos.add((item, ECSDI.Factura, factura))
+        devos.add((item, ECSDI.Usuario, Literal(usuario, datatype=XSD.string)))
+        devos.add((item, ECSDI.Producto, producto))
+        devos.add((item, ECSDI.Transportista, Literal(transportistas, datatype=XSD.string)))
+        devos.add((item, ECSDI.Fecha, fecha))
+        devos.add((item, ECSDI.Motivo, Literal(motivo,  datatype=XSD.string)))
 
         devos.serialize(destination=db.DBDevoluciones, format='turtle')
         logger.info("Petición de Envio realizada")
@@ -222,7 +334,7 @@ def procesarDevolucion(content, gm):
 
     gr = Graph()
     gr.bind("default", ECSDI)
-    agents.print_graph(gm)
+
 
     ontologyFile = open(db.DBDevoluciones)
     devos = Graph()
@@ -254,7 +366,8 @@ def procesarDevolucion(content, gm):
     devo = list(devos.triples((None, ECSDI.Factura, factura_suj)))
 
     if len(devo) > 0:
-        if len(list(devos.triples((devo, ECSDI.Producto, None)))) > 0:
+        prod_devo = list(devos.triples((devo[0][0], ECSDI.Producto, prod_suj)))
+        if len(prod_devo) > 0:
             logger.info("Devolucion ya realizada previamente")
             gr.add((reg_obj, ECSDI.Estado, Literal('Duplicada', datatype=XSD.string)))
             return gr
@@ -281,22 +394,22 @@ def procesarDevolucion(content, gm):
     graph_tes.bind('foaf', FOAF)
     graph_tes.bind('dso', DSO)
     graph_tes.bind("default", ECSDI)
-    item = ECSDI['PagarCompra-' + str(uuid.uuid4())]
-    graph_tes.add((item, RDF.type, ECSDI.PagarCompra))
+    item = ECSDI['RetornarImporte-' + str(uuid.uuid4())]
+    graph_tes.add((item, RDF.type, ECSDI.RetornarImporte))
     graph_tes.add((item, ECSDI.Tarjeta, tarjeta))
     graph_tes.add((item, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
     graph_tes.add((item, ECSDI.Usuario, usuario))
     graph_tes.add((item, ECSDI.Contiene, factura_suj))
     graph_tes.add((prod_suj, ECSDI.Peso, Literal(float(peso), datatype=XSD.float)))
     graph_tes.add((prod_suj, ECSDI.Externo, Literal(str(externo), datatype=XSD.string)))
-    graph_tes.add((factura_suj, ECSDI.Productos, URIRef(prod_suj)))
+    graph_tes.add((item, ECSDI.Producto, URIRef(prod_suj)))
 
 
     thread = threading.Thread(target=pedirReintegro, args=(graph_tes, item))
     thread.start()
 
 
-    thread = Thread(target=solicitarEnvio(), args=(graph_message, reg_obj, factura_suj, prod_suj, usuario), )
+    thread = Thread(target=solicitarEnvio, args=(graph_message, reg_obj, factura_suj, prod_suj, usuario, motivo) )
     thread.start()
 
     return gr
@@ -367,6 +480,13 @@ def comunicacion():
                         gm.remove((item, None, None))
 
                     response = procesarDevolucion(content, gm) #retornamos la fecha y el transportista
+
+                if accion == ECSDI.PeticionHistorial:
+
+                    for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                        gm.remove((item, None, None))
+
+                    response = historial(content, gm)
 
                 gr = build_message(response,
                                ACL['inform'],
