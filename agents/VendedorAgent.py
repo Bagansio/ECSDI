@@ -118,6 +118,7 @@ DirectoryAgent = Agent('DirectoryAgent',
 
 GestorProductosAgent = None
 GestorEnviosAgent = None
+TesoreroAgent = None
 
 
 # Global dsgraph triplestore
@@ -145,9 +146,10 @@ def RegistrarVenta(grafoFactura):
 
 
 
-def enviarVenta(content, gm, factura_suj, prioridad):
+def enviarVenta(content, gm, factura_suj, prioridad, precio_prod):
     global GestorEnviosAgent
     global DirectoryAgent
+    global TesoreroAgent
     global mss_cnt
 
     ciudad = gm.value(subject=content, predicate=ECSDI.Ciudad)
@@ -234,7 +236,49 @@ def enviarVenta(content, gm, factura_suj, prioridad):
 
         compras.serialize(destination=db.DBCompras, format='turtle')
 
-        logger.info("Petición de envio realizada")
+        agents.print_graph(gm)
+
+        tarjeta = list(gm.triples((None, ECSDI.Tarjeta, None)))[0][2]
+        usuario = list(gm.triples((None, ECSDI.Usuario, None)))[0][2]
+        graph_tes = Graph()
+        graph_tes.bind('foaf', FOAF)
+        graph_tes.bind('dso', DSO)
+        graph_tes.bind("default", ECSDI)
+        item = ECSDI['PagarCompra-' + str(uuid.uuid4())]
+        graph_tes.add((item, RDF.type, ECSDI.PagarCompra))
+        graph_tes.add((item, ECSDI.Tarjeta, tarjeta))
+        graph_tes.add((item, ECSDI.Precio, Literal(precio+precio_trans+precio_prod, datatype=XSD.float)))
+        graph_tes.add((item, ECSDI.Usuario, usuario))
+        graph_tes.add((item, ECSDI.Contiene, factura_suj))
+        for producto in gm.objects(subject=compra, predicate=ECSDI.Muestra):
+            logger.info("producto: " + str(producto))
+            
+            product_suj = producto
+
+            peso = gm.value(subject=product_suj, predicate=ECSDI.Peso)
+            externo = gm.value(subject=product_suj, predicate=ECSDI.Externo)
+
+            logger.info("IMPRIME PESO Y EXTERNO" + str(peso) + ' '+ str(externo))
+            
+
+            graph_tes.add((product_suj, ECSDI.Peso, Literal(float(peso), datatype=XSD.float)))
+            graph_tes.add((product_suj, ECSDI.Externo, Literal(str(externo), datatype=XSD.string)))
+            graph_tes.add((factura_suj, ECSDI.Productos, URIRef(product_suj)))
+        
+        if TesoreroAgent is None:
+            logger.info("Obtenemos Tesorero Agent")
+            TesoreroAgent = agents.get_agent(DSO.TesoreroAgent, VendedorAgent, DirectoryAgent, mss_cnt)
+
+        logger.info("Trata de enviar peticion cobro a Tesorero Agent")
+        graph = send_message(
+            build_message(graph_tes, perf=ACL.request,
+                            sender=VendedorAgent.uri,
+                            receiver=TesoreroAgent.uri,
+                            content=item,
+                            msgcnt=mss_cnt),
+            TesoreroAgent.address)
+        
+        logger.info("Petición de envio y cobro realizada")
         return graph
 
     except Exception as e:
@@ -256,7 +300,8 @@ def historial(content, gm):
             prefix xsd:<http://www.w3.org/2001/XMLSchema#>
             prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
             prefix owl:<http://www.w3.org/2002/07/owl#>
-            SELECT DISTINCT ?factura ?ciudad ?direccion ?formada ?precioEnvio ?precioProductos ?prioridad ?tarjeta ?usuario 
+            SELECT DISTINCT ?factura ?ciudad ?direccion ?formada ?trans ?fecha ?precioEnvio ?precioProductos
+                            ?prioridad ?tarjeta ?usuario 
                 where {
                 {?factura rdf:type default:Factura } .
                 ?factura default:Ciudad ?ciudad .
@@ -266,12 +311,16 @@ def historial(content, gm):
                 ?factura default:PrecioProductos ?precioProductos .
                 ?factura default:Prioridad ?prioridad .
                 ?factura default:Tarjeta ?tarjeta .
-                ?factura default:Usuario ?usuario .
-                FILTER (?usuario = '""" + str(usuario) + """')}
-                """
+                ?factura default:Usuario ?usuario . 
+                ?factura default:Transportistas ?trans .
+                ?factura default:Fecha ?fecha .
+                
+                FILTER (?usuario = '""" + str(usuario) + """')}"""
 
     historial = compras.query(query)
 
+    for a in historial:
+        print(a)
     # Creamos la respuesta
     grafoFactura = Graph()
     grafoFactura.bind('default', ECSDI)
@@ -284,11 +333,13 @@ def historial(content, gm):
         grafoFactura.add((compra['factura'], ECSDI.Ciudad, compra['ciudad']))
         grafoFactura.add((compra['factura'], ECSDI.Direccion, compra['direccion']))
         grafoFactura.add((compra['factura'], ECSDI.FormadaPor, compra['formada']))
-        #grafoFactura.add((compra['factura'], ECSDI.PrecioEnvio, compra['precioEnvio']))
+        grafoFactura.add((compra['factura'], ECSDI.PrecioEnvio, compra['precioEnvio']))
         grafoFactura.add((compra['factura'], ECSDI.PrecioProductos, compra['precioProductos']))
         grafoFactura.add((compra['factura'], ECSDI.Prioridad, compra['prioridad']))
         grafoFactura.add((compra['factura'], ECSDI.Tarjeta, compra['tarjeta']))
         grafoFactura.add((compra['factura'], ECSDI.Usuario, compra['usuario']))
+        grafoFactura.add((compra['factura'], ECSDI.Transportistas, compra['trans']))
+        grafoFactura.add((compra['factura'], ECSDI.Fecha, compra['fecha']))
 
     logger.info("Retornando el historial")
     return grafoFactura
@@ -348,7 +399,7 @@ def vender(content, gm):
     thread.start()
     
     #IMPLEMENTAR ENVIAR VENTA (FALTAN LOS AGENTES ENVIADORES)
-    thread = Thread(target=enviarVenta, args=(content, gm, sujeto, prioridad))
+    thread = Thread(target=enviarVenta, args=(content, gm, sujeto, prioridad,precio))
     thread.start()
 
     logger.info("Retornando la factura")

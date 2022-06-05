@@ -216,13 +216,19 @@ def obtener_historial(usuario):
                       msgcnt=mss_cnt),
         VendedorAgent.address)
 
+    
+
     mss_cnt += 1
     query = """
             prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             prefix xsd:<http://www.w3.org/2001/XMLSchema#>
             prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
             prefix owl:<http://www.w3.org/2002/07/owl#>
-            SELECT DISTINCT ?factura ?ciudad ?direccion (GROUP_CONCAT(?formada;SEPARATOR=",") AS ?productos) ?precioEnvio ?precioProductos ?prioridad ?tarjeta ?usuario 
+            SELECT DISTINCT ?factura ?ciudad ?direccion 
+                            (GROUP_CONCAT(?formada;SEPARATOR=",") AS ?productos) 
+                            (GROUP_CONCAT(distinct ?trans;SEPARATOR=",") AS ?transportistas)
+                            ?fecha ?precioEnvio ?precioProductos ?prioridad 
+                            ?tarjeta ?usuario 
                 where {
                 {?factura rdf:type default:Factura } .
                 ?factura default:Ciudad ?ciudad .
@@ -232,10 +238,18 @@ def obtener_historial(usuario):
                 ?factura default:PrecioProductos ?precioProductos .
                 ?factura default:Prioridad ?prioridad .
                 ?factura default:Tarjeta ?tarjeta .
-                ?factura default:Usuario ?usuario . }
-            GROUP BY ?factura"""
+                ?factura default:Usuario ?usuario . 
+                ?factura default:Transportistas ?trans .
+                ?factura default:Fecha ?fecha .
+                }
+            """
+    
 
-    return gr.query(query)
+    res = gr.query(query)
+
+    for a in res:
+        print(a)
+    return res
 
 
 def buscar_productos(graph, form, suj):

@@ -17,7 +17,8 @@
                 <th>Direccion</th>
                 <th>Prioridad</th>
                 <th>Tarjeta</th>
-
+                <th>Fecha Entrega</th>
+                <th>Transportistas</th>
                 <th>Precio Envio</th>
                 <th>Precio Productos</th>
                 <th>Precio Total</th>
@@ -27,6 +28,8 @@
                 <td>{{ factura['direccion'] }}</td>
                 <td>{{ factura['prioridad'] }}</td>
                 <td>{{ factura['tarjeta'] }}</td>
+                <td>{{ factura['fecha'] }}</td>
+                <td>{{ factura['transportistas'] }}</td>
                 <td>{{ factura['precioEnvio'] }}€</td>
                 <td>{{ factura['precioProductos'] }}€</td>
                 <td>{{  factura['precioProductos'] +  factura['precioEnvio'] }}€</td>

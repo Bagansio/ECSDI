@@ -129,11 +129,12 @@ def pagarCompra(content, gm):
     #print(str(precio))
     compra = gm.value(subject=content, predicate=ECSDI.Contiene)
     
-    usuarioNombre = gm.value(subject=content, predicate=ECSDI.Nombre)
+    usuarioNombre = gm.value(subject=content, predicate=ECSDI.Usuario)
     """ Cuando no se esta haciendo el juego de prueba hacer esto:"""
     #usuario = gm.value(subject=content, predicate=ECSDI.Usuario)
     #usuarioNombre = gm.value(subject=usuario, predicate=ECSDI.Nombre)
 
+    grafoVendedores = Graph()
     try:
         if GestorServicioExternoAgent is None:
                 logger.info("Obtiendo el agente Gestor Servicio Externo")
@@ -168,8 +169,8 @@ def pagarCompra(content, gm):
     
     for producto in gm.objects(subject=compra, predicate=ECSDI.Productos):
         
-        externo = gm.value(subject=producto, predicate=ECSDI.Externo)
-        if externo is not None:
+        externo = str(gm.value(subject=producto, predicate=ECSDI.Externo))
+        if externo != 'None':
             query = """
                 prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
                 prefix xsd:<http://www.w3.org/2001/XMLSchema#>
@@ -205,13 +206,13 @@ def retornarImporte(content, gm):
     tarjeta = gm.value(subject=content, predicate=ECSDI.Tarjeta)
     precio = gm.value(subject=content, predicate=ECSDI.Precio)
     producto = gm.value(subject=content, predicate=ECSDI.Producto)
-    usuarioNombre = gm.value(subject=content, predicate=ECSDI.Nombre)
+    usuarioNombre = gm.value(subject=content, predicate=ECSDI.Usuario)
 
     logger.info("Efectuando devolución")
 
     externo = gm.value(subject=producto, predicate=ECSDI.Externo)
 
-    if externo is not "None":
+    if externo != 'None':
         try:
             if GestorServicioExternoAgent is None:
                 logger.info("Obtiendo el agente Gestor Servicio Externo")
@@ -276,7 +277,7 @@ def register_message():
     gmess.add((reg_obj, DSO.Uri, TesoreroAgent.uri))
     gmess.add((reg_obj, FOAF.name, Literal(TesoreroAgent.name)))
     gmess.add((reg_obj, DSO.Address, Literal(TesoreroAgent.address)))
-    gmess.add((reg_obj, DSO.AgentType, DSO.MostradorAgent))
+    gmess.add((reg_obj, DSO.AgentType, DSO.TesoreroAgent))
 
     # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
     gr = send_message(
@@ -495,7 +496,7 @@ def comunicacion():
         else:
             # Extraemos el objeto del contenido que ha de ser una accion de la ontologia de acciones del agente
             # de registro
-            result_productos = Graph()
+            result = Graph()
             # Averiguamos el tipo de la accion
             if 'content' in msgdic:
 
