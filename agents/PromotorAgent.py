@@ -18,11 +18,16 @@ sys.path.append(str(path_root))
 from multiprocessing import Process, Queue
 import logging
 import argparse
+import threading
+import uuid
 
-from flask import Flask, request
-from rdflib import Graph, Namespace, Literal
+from flask import Flask, request,render_template
+from rdflib import Graph, Namespace, Literal, URIRef, XSD
 from rdflib.namespace import FOAF, RDF
+from utils import db,agents
+import random
 
+from AgentUtil.OntoNamespaces import ECSDI
 from AgentUtil.ACL import ACL
 from AgentUtil.FlaskServer import shutdown_server
 from AgentUtil.ACLMessages import build_message, send_message, get_message_properties
@@ -31,6 +36,7 @@ from AgentUtil.Logging import config_logger
 from AgentUtil.DSO import DSO
 from AgentUtil.Util import gethostname
 import socket
+from threading import Thread
 
 
 __author__ = 'Bagansio'
@@ -62,6 +68,7 @@ else:
 if args.open:
     hostname = '0.0.0.0'
     hostaddr = gethostname()
+    hostaddr = "192.168.18.10"
 else:
     hostaddr = hostname = socket.gethostname()
 
@@ -101,11 +108,84 @@ DirectoryAgent = Agent('DirectoryAgent',
                        'http://%s:%d/Register' % (dhostname, dport),
                        'http://%s:%d/Stop' % (dhostname, dport))
 
+GestorProductosAgent = None
+
 # Global dsgraph triplestore
 dsgraph = Graph()
 
 # Cola de comunicacion entre procesos
 cola1 = Queue()
+
+
+def recomendar(content, gm):
+    global mss_cnt
+    global DirectoryAgent
+    global PromotorAgent
+    global GestorProductosAgent
+
+    if GestorProductosAgent is None:
+        GestorProductosAgent = agents.get_agent(DSO.GestorProductosAgent, PromotorAgent, DirectoryAgent, mss_cnt)
+
+    graph_message = Graph()
+    graph_message.bind('foaf', FOAF)
+    graph_message.bind('dso', DSO)
+    graph_message.bind("default", ECSDI)
+    reg_obj = ECSDI['PeticionProductos' + str(mss_cnt)]
+    graph_message.add((reg_obj, RDF.type, ECSDI.PeticionProductos))
+
+    # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
+    graph = send_message(
+        build_message(graph_message, perf=ACL.request,
+                      sender=PromotorAgent.uri,
+                      receiver=GestorProductosAgent.uri,
+                      content=reg_obj,
+                      msgcnt=mss_cnt),
+        GestorProductosAgent.address)
+
+    mss_cnt += 1
+
+    query = """
+        prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+        prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+        prefix owl:<http://www.w3.org/2002/07/owl#>
+        SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria ?descripcion ?externo ?valoracion
+            where {
+            {?producto rdf:type default:Producto } .
+            ?producto default:Nombre ?nombre .
+            ?producto default:Precio ?precio .
+            ?producto default:Marca ?marca .
+            ?producto default:Peso ?peso .
+            ?producto default:Categoria ?categoria .
+            ?producto default:Descripcion ?descripcion .
+            ?producto default:Externo ?externo .
+            ?producto default:Valoracion ?valoracion . }"""
+
+    productos = graph.query(query)
+
+    recomendacion = random.choice(list(productos))
+
+    gm = Graph()
+    gm.bind("ECSDI", ECSDI)  # posible cambio
+    sujetoRespuesta = ECSDI['RespuestaDeRecomendacion' + str(uuid.uuid4())]
+
+    # mss_cnt += 1
+    gm.add((sujetoRespuesta, RDF.type, ECSDI.RespuestaRecomendacion))
+    gm.add((sujetoRespuesta, ECSDI.Producto, recomendacion['producto']))
+    gm.add((recomendacion['producto'], RDF.type, ECSDI.Producto))
+    gm.add((recomendacion['producto'], ECSDI.Nombre, recomendacion['nombre']))
+    gm.add((recomendacion['producto'], ECSDI.Precio, recomendacion['precio']))
+    gm.add((recomendacion['producto'], ECSDI.Marca, recomendacion['marca']))
+    gm.add((recomendacion['producto'], ECSDI.Peso, recomendacion['peso']))
+    gm.add((recomendacion['producto'], ECSDI.Categoria, recomendacion['categoria']))
+    gm.add((recomendacion['producto'], ECSDI.Externo, recomendacion['externo']))
+    gm.add((recomendacion['producto'], ECSDI.Valoracion, recomendacion['valoracion']))
+    gm.add((recomendacion['producto'], ECSDI.Descripcion, recomendacion['descripcion']))
+
+    return gm
+
+
+
 
 
 def register_message():
@@ -132,7 +212,7 @@ def register_message():
     gmess.add((reg_obj, DSO.Uri, PromotorAgent.uri))
     gmess.add((reg_obj, FOAF.name, Literal(PromotorAgent.name)))
     gmess.add((reg_obj, DSO.Address, Literal(PromotorAgent.address)))
-    gmess.add((reg_obj, DSO.AgentType, DSO.HotelsAgent))
+    gmess.add((reg_obj, DSO.AgentType, DSO.PromotorAgent))
 
     # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
     gr = send_message(
@@ -208,15 +288,21 @@ def comunicacion():
         else:
             # Extraemos el objeto del contenido que ha de ser una accion de la ontologia de acciones del agente
             # de registro
-
+            response = Graph()
             # Averiguamos el tipo de la accion
             if 'content' in msgdic:
                 content = msgdic['content']
                 accion = gm.value(subject=content, predicate=RDF.type)
 
+                for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                    gm.remove((item, None, None))
+
+                if accion == ECSDI.RecomendarProducto:
+                    response = recomendar(content, gm)
+
             # Aqui realizariamos lo que pide la accion
             # Por ahora simplemente retornamos un Inform-done
-            gr = build_message(Graph(),
+            gr = build_message(response,
                                ACL['inform'],
                                sender=PromotorAgent.uri,
                                msgcnt=mss_cnt,

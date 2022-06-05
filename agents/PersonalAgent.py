@@ -20,6 +20,7 @@ import logging
 import argparse
 import threading
 import uuid
+import random
 
 from flask import Flask, request, render_template, session, redirect, Response, flash
 from rdflib import Graph, Namespace, Literal, URIRef, XSD
@@ -114,6 +115,8 @@ MostradorAgent = None
 
 VendedorAgent = None
 
+PromotorAgent = None
+
 # Global dsgraph triplestore
 dsgraph = Graph()
 
@@ -122,6 +125,61 @@ cola1 = Queue()
 
 
 # Agent Utils
+
+
+def recomendar_producto():
+    global mss_cnt
+    global MostradorAgent
+    global DirectoryAgent
+    global PromotorAgent
+    global PersonalAgent
+
+    if PromotorAgent is None:
+        logger.info('Buscando al agente Promotor')
+        PromotorAgent = agents.get_agent(DSO.PromotorAgent, PersonalAgent, DirectoryAgent, mss_cnt)
+        mss_cnt += 1
+
+    gmess = Graph()
+    # Construimos el mensaje de registro
+    gmess.bind('foaf', FOAF)
+    gmess.bind('dso', DSO)
+    gmess.bind("default", ECSDI)
+    reg_obj = agn['RecomendarProducto-' + str(mss_cnt)]
+    gmess.add((reg_obj, RDF.type, ECSDI.RecomendarProducto))
+
+    gr = send_message(
+        build_message(gmess, perf=ACL.request,
+                      sender=PersonalAgent.uri,
+                      receiver=PromotorAgent.uri,
+                      content=reg_obj,
+                      msgcnt=mss_cnt),
+        PromotorAgent.address)
+    mss_cnt += 1
+
+    agents.print_graph(gr)
+    query = """
+                prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+                prefix default:<http://www.owl-ontologies.com/ECSDIPractica#>
+                prefix owl:<http://www.w3.org/2002/07/owl#>
+                SELECT ?producto ?nombre ?precio ?marca ?peso ?categoria ?descripcion ?externo ?valoracion
+                    where {
+                    {?producto rdf:type default:Producto } .
+                    ?producto default:Nombre ?nombre .
+                    ?producto default:Precio ?precio .
+                    ?producto default:Marca ?marca .
+                    ?producto default:Peso ?peso .
+                    ?producto default:Categoria ?categoria .
+                    ?producto default:Descripcion ?descripcion .
+                    ?producto default:Externo ?externo .
+                    ?producto default:Valoracion ?valoracion . }"""
+
+    graph_query = gr.query(query)
+
+    for a in graph_query:
+        print(a)
+
+    return list(graph_query)[0]
 
 
 def obtener_productos(form = None):
@@ -441,9 +499,16 @@ def browser_iface():
     Permite la comunicacion con el agente via un navegador
     via un formulario
     """
-
+    global PromotorAgent
     graph_query = obtener_productos(request.form)
-    return render_template('main.html', query=graph_query)
+
+    recomendar = random.random() < 0.3
+    recomendacion = {}
+    if recomendar:
+        recomendacion = recomendar_producto()
+
+
+    return render_template('main.html', query=graph_query, recomendar=recomendar, recomendacion= recomendacion)
 
 @app.route("/comprar", methods=['GET', 'POST'])
 def comprar_iface():

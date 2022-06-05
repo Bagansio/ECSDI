@@ -7,6 +7,9 @@
 </head>
 <body>
     {% include 'navbar.html' %}
+
+
+
     <form action="/iface" method="post">
     <table>
         <tr>
@@ -25,10 +28,25 @@
             <td><input type="number" step="0.01" min="0" name="precioMinimo" placeholder="PrecioMin..."/></td>
             <td><input type="submit" name="search" value="Buscar"></td>
         </tr>
+
+         {% if recomendar %}
+            <tr>
+                <td><b>TE RECOMENDAMOS:</b></td>
+            </tr>
+            <tr>
+                <td>{{ recomendacion['nombre'] }}</td>
+                <td>{{ recomendacion['marca'] }}</td>
+                <td>{{ recomendacion['categoria'] }}</td>
+                <td>{{ recomendacion['descripcion'] }}</td>
+                <td>{{ recomendacion['precio'] }}€</td>
+                <td><img id={{ recomendacion['producto'] }} class="purchase" src="{{ url_for('static',filename='icons/purchase.png') }}" alt="comprar"/></td>
+            </tr>
+        {% endif %}
     </table>
 
     </form>
 
+    <br/>
 
     <table id="products">
         <tr>
@@ -38,6 +56,7 @@
             <th>Descripcion</th>
             <th>Precio</th>
         </tr>
+
     {% for product in query %}
         <tr>
             <td>{{ product['nombre'] }}</td>

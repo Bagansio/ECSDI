@@ -52,7 +52,7 @@ HECHO POR:
    2. Buscar por nombre = Agua -> Retorna un producto llamado Agua.
    3. Buscar por precio máximo = 100 -> Retorna los productos con un precio inferior o igual a 100.
    4. Buscar por precio mínimo = 100 -> Retorna los productos con un precio superior o igual a 100.
-   5. Bucar por precio máximo = 25 y mínimo = 20 y Marca = Pull -> Retorna los productos entre ese 
+   5. Buscar por precio máximo = 25 y mínimo = 20 y Marca = Pull -> Retorna los productos entre ese 
        rango de precio y contengan la marca Pull.
        
 #### 2) Compra:
@@ -102,3 +102,6 @@ HECHO POR:
         Comprobar que muestra que esta aceptada y procesando. Transcurrido unos segundos, ir a la pestaña "Devoluciones",
         observar que hay una nueva devolucion añadida y el tesorero ha devuelto el dinero
       
+#### 4) Recomendar:
+    
+   1. Recargar varias veces la página y ver que los productos recomendados no son los mismos.
