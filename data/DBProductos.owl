@@ -1,36 +1,123 @@
 @prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a a default:Producto ;
-    default:Categoria "Clothes"^^xsd:string ;
-    default:Descripcion "Ninguna"^^xsd:string ;
+default:Producto0732d52b-9989-4dde-ac7d-dc18154b273e a default:Producto ;
+    default:Categoria "Informatica"^^xsd:string ;
+    default:Descripcion "Calcula datos"^^xsd:string ;
+    default:Disponible true ;
+    default:Externo "None"^^xsd:string ;
+    default:Marca "IVM"^^xsd:string ;
+    default:Nombre "Ordenador"^^xsd:string ;
+    default:Peso "5.0"^^xsd:float ;
+    default:Precio "890.0"^^xsd:float ;
+    default:Valoracion "-1"^^xsd:int .
+
+default:Producto28bfb418-2fef-459d-bc1e-f5db1e3b0c77 a default:Producto ;
+    default:Categoria "Ropa"^^xsd:string ;
+    default:Descripcion "Para vestir"^^xsd:string ;
     default:Disponible true ;
     default:Externo "None"^^xsd:string ;
     default:Marca "Pull"^^xsd:string ;
-    default:Nombre "ProductoPlataforma"^^xsd:string ;
-    default:Peso "0.25"^^xsd:float ;
-    default:Precio "10.0"^^xsd:float ;
+    default:Nombre "Camiseta"^^xsd:string ;
+    default:Peso "0.5"^^xsd:float ;
+    default:Precio "60.0"^^xsd:float ;
+    default:Valoracion "-1"^^xsd:int .
+
+default:Producto3087ffc8-2859-41f6-b5f7-67ca9cf3d7f2 a default:Producto ;
+    default:Categoria "Informatica"^^xsd:string ;
+    default:Descripcion "Simple"^^xsd:string ;
+    default:Disponible true ;
+    default:Externo "None"^^xsd:string ;
+    default:Marca "Manzana"^^xsd:string ;
+    default:Nombre "Ordenador"^^xsd:string ;
+    default:Peso "3.0"^^xsd:float ;
+    default:Precio "1100.0"^^xsd:float ;
+    default:Valoracion "-1"^^xsd:int .
+
+default:Producto3e668918-c284-4441-90ec-346951ad3cfc a default:Producto ;
+    default:Categoria "Mueble"^^xsd:string ;
+    default:Descripcion "Para poner mas cosas"^^xsd:string ;
+    default:Disponible true ;
+    default:Externo "None"^^xsd:string ;
+    default:Marca "IKI"^^xsd:string ;
+    default:Nombre "Mesa"^^xsd:string ;
+    default:Peso "36.0"^^xsd:float ;
+    default:Precio "132.0"^^xsd:float ;
+    default:Valoracion "-1"^^xsd:int .
+
+default:Producto763305d6-ef43-422e-a4c9-9b5d1b080805 a default:Producto ;
+    default:Categoria "Mueble"^^xsd:string ;
+    default:Descripcion "Para poner cosas"^^xsd:string ;
+    default:Disponible true ;
+    default:Externo "None"^^xsd:string ;
+    default:Marca "Hacendado"^^xsd:string ;
+    default:Nombre "Mesa"^^xsd:string ;
+    default:Peso "30.0"^^xsd:float ;
+    default:Precio "50.0"^^xsd:float ;
+    default:Valoracion "-1"^^xsd:int .
+
+default:Producto791a94bf-4e10-45ad-99b0-ede6abdb5b5f a default:Producto ;
+    default:Categoria "Comestible"^^xsd:string ;
+    default:Descripcion "Agua rica"^^xsd:string ;
+    default:Disponible true ;
+    default:Externo "Nesle"^^xsd:string ;
+    default:Marca "Viladrou"^^xsd:string ;
+    default:Nombre "Agua"^^xsd:string ;
+    default:Peso "1.0"^^xsd:float ;
+    default:Precio "2.7"^^xsd:float ;
+    default:Valoracion "-1"^^xsd:int .
+
+default:Producto7f4c7dd0-6a14-443b-b74d-c748b5c0e473 a default:Producto ;
+    default:Categoria "Ropa"^^xsd:string ;
+    default:Descripcion "Para vestir bien"^^xsd:string ;
+    default:Disponible true ;
+    default:Externo "None"^^xsd:string ;
+    default:Marca "Pull"^^xsd:string ;
+    default:Nombre "Pantalon"^^xsd:string ;
+    default:Peso "1.0"^^xsd:float ;
+    default:Precio "25.99"^^xsd:float ;
+    default:Valoracion "-1"^^xsd:int .
+
+default:Productob1baf2a0-4848-4993-85e5-eaf338f9f2a8 a default:Producto ;
+    default:Categoria "Comestible"^^xsd:string ;
+    default:Descripcion "Patatita"^^xsd:string ;
+    default:Disponible true ;
+    default:Externo "Cola-Coca"^^xsd:string ;
+    default:Marca "Cola"^^xsd:string ;
+    default:Nombre "Patata"^^xsd:string ;
+    default:Peso "3.0"^^xsd:float ;
+    default:Precio "3.0"^^xsd:float ;
+    default:Valoracion "-1"^^xsd:int .
+
+default:Productob1ef49fa-4a64-448a-bbf4-484faf6d4743 a default:Producto ;
+    default:Categoria "Comestible"^^xsd:string ;
+    default:Descripcion "Si tienes sed bebe"^^xsd:string ;
+    default:Disponible true ;
+    default:Externo "Cola-Coca"^^xsd:string ;
+    default:Marca "FuenteBonita"^^xsd:string ;
+    default:Nombre "Agua"^^xsd:string ;
+    default:Peso "1.0"^^xsd:float ;
+    default:Precio "2.5"^^xsd:float ;
     default:Valoracion "-1"^^xsd:int .
 
 default:Productob2771f40-577a-4867-831f-39bf6c7e6812 a default:Producto ;
     default:Categoria "Souvenir"^^xsd:string ;
     default:Descripcion "The body of the rifle is painted olive and adorned with an image of a dragon spitting fire. The body of the dragon is adorned with Celtic ornaments."^^xsd:string ;
     default:Disponible true ;
-    default:Externo "Cristian"^^xsd:string ;
+    default:Externo "None"^^xsd:string ;
     default:Marca "Valve"^^xsd:string ;
     default:Nombre "DragonLore"^^xsd:string ;
     default:Peso "7.0"^^xsd:float ;
     default:Precio "1500.0"^^xsd:float ;
     default:Valoracion "-1"^^xsd:int .
 
-default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 a default:Producto ;
-    default:Categoria "Clothes"^^xsd:string ;
-    default:Descripcion "Ninguna"^^xsd:string ;
+default:Productofd6477e1-06c5-4d6a-91fb-c9987e701421 a default:Producto ;
+    default:Categoria "Comestible"^^xsd:string ;
+    default:Descripcion "Simple pero rico"^^xsd:string ;
     default:Disponible true ;
-    default:Externo "Alex"^^xsd:string ;
-    default:Marca "Pull"^^xsd:string ;
-    default:Nombre "productoVendedorExterno"^^xsd:string ;
-    default:Peso "0.25"^^xsd:float ;
-    default:Precio "10.0"^^xsd:float ;
+    default:Externo "None"^^xsd:string ;
+    default:Marca "Hacendado"^^xsd:string ;
+    default:Nombre "Agua"^^xsd:string ;
+    default:Peso "1.0"^^xsd:float ;
+    default:Precio "3.0"^^xsd:float ;
     default:Valoracion "-1"^^xsd:int .
-

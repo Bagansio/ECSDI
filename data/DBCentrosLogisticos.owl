@@ -5,21 +5,30 @@ default:CentroLogistico1 a default:CentroLogistico ;
     default:Nombre "CentroLogisticoAgent1"^^xsd:string ;
     default:PosicionX "6"^^xsd:int ;
     default:PosicionY "4"^^xsd:int ;
-    default:Almacena default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
-        default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
-        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 .
+    default:Almacena default:Productob2771f40-577a-4867-831f-39bf6c7e6812 , 
+                     default:Producto0732d52b-9989-4dde-ac7d-dc18154b273e ,
+                     default:Producto3087ffc8-2859-41f6-b5f7-67ca9cf3d7f2 ,
+                     default:Producto7f4c7dd0-6a14-443b-b74d-c748b5c0e473 ,
+                     default:Productob2771f40-577a-4867-831f-39bf6c7e6812 . 
 
 default:CentroLogistico2 a default:CentroLogistico ;
     default:Nombre "CentroLogisticoAgent2"^^xsd:string ;
     default:PosicionX "7"^^xsd:int ;
     default:PosicionY "1"^^xsd:int ;
-    default:Almacena default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
-        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 .
+    default:Almacena default:Producto28bfb418-2fef-459d-bc1e-f5db1e3b0c77 ,
+                     default:Producto3e668918-c284-4441-90ec-346951ad3cfc ,
+                     default:Producto763305d6-ef43-422e-a4c9-9b5d1b080805 ,
+                     default:Producto791a94bf-4e10-45ad-99b0-ede6abdb5b5f ,
+                     default:Productob2771f40-577a-4867-831f-39bf6c7e6812 ,
+                     default:Productofd6477e1-06c5-4d6a-91fb-c9987e701421 .
 
 default:CentroLogistico3 a default:CentroLogistico ;
     default:Nombre "CentroLogisticoAgent3"^^xsd:string ;
     default:PosicionX "2"^^xsd:int ;
     default:PosicionY "7"^^xsd:int ;
-    default:Almacena default:Producto6f58ffd5-3f61-4c4f-8187-c326b695ff4a,
-        default:Productob2771f40-577a-4867-831f-39bf6c7e6812 .
+    default:Almacena default:Productob2771f40-577a-4867-831f-39bf6c7e6812 , 
+                     default:Producto763305d6-ef43-422e-a4c9-9b5d1b080805 ,
+                     default:Producto7f4c7dd0-6a14-443b-b74d-c748b5c0e473 ,
+                     default:Productofd6477e1-06c5-4d6a-91fb-c9987e701421 .
+
     

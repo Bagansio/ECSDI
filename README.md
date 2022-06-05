@@ -46,10 +46,22 @@ HECHO POR:
 
 #### 1) Busqueda de productos:
 
-    1. Buscar sin filtro -> Retorna todos los productos de la base de datos.
-    2. Buscar por nombre = Agua -> Retorna un producto llamado Agua.
-    3. Buscar por precio máximo = 100 -> Retorna los productos con un precio inferior o igual a 100.
-    4. Buscar por precio mínimo = 100 -> Retorna los productos con un precio superior o igual a 100.
-    5. Bucar por precio máximo = 25 y mínimo = 20 y Marca = Pull -> Retorna los productos entre ese 
+   1. Buscar sin filtro -> Retorna todos los productos de la base de datos.
+   2. Buscar por nombre = Agua -> Retorna un producto llamado Agua.
+   3. Buscar por precio máximo = 100 -> Retorna los productos con un precio inferior o igual a 100.
+   4. Buscar por precio mínimo = 100 -> Retorna los productos con un precio superior o igual a 100.
+   5. Bucar por precio máximo = 25 y mínimo = 20 y Marca = Pull -> Retorna los productos entre ese 
        rango de precio y contengan la marca Pull.
-
+       
+#### 2) Compra:
+   
+   Para añadir productos al carrito hay que pulsar al boton:
+   <img src="agents/static/icons/purchase.png" widht=35 height=35></img>
+   
+   1. Añadir el producto Agua de Marca FuenteBonita, ir a la pestaña "Compra" y agregar el atributo 
+       Tarjeta = 2222 , Prioridad = Cuando Llegue, Direccion = Avenida Primera y Ciudad = Barcelona
+       
+       Factura correcta con información parcial. Transcurrido unos segundos, ir a la pestaña "Compras"
+       donde se mostrara el historial de compras del usuario, buscar la compra con los datos previos y darle al boton: 
+       <img src="agents/static/icons/info.png" widht=35 height=35></img>
+        
