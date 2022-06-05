@@ -9,6 +9,14 @@ default:Devolucion-3ccd827f-91bd-4c12-b22e-3ad1c3df6fed a default:Devolucion ;
     default:Transportista "Seul"^^xsd:string ;
     default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuarioba7cdf7b-8b17-4e7f-a09b-03fd1615aff8"^^xsd:string .
 
+default:Devolucion-4077c45b-012b-4e60-842f-b0e374aad165 a default:Devolucion ;
+    default:Factura default:Facturadc37302d-26eb-4d43-bccc-e0cbba5af4e1 ;
+    default:Fecha "2022-06-06"^^xsd:date ;
+    default:Motivo "expectativa"^^xsd:string ;
+    default:Producto default:Productob2771f40-577a-4867-831f-39bf6c7e6812 ;
+    default:Transportista "Propio"^^xsd:string ;
+    default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
+
 default:Devolucion-79ff9d21-2998-4487-97ac-9bdac07767b7 a default:Devolucion ;
     default:Factura default:Facturad3884282-50fc-46c5-91c8-2d2a94da4f03 ;
     default:Fecha "2022-06-06"^^xsd:date ;
@@ -24,6 +32,14 @@ default:Devolucion-a78caa02-b12e-4997-aa5d-a2025b35a250 a default:Devolucion ;
     default:Producto default:Productob2771f40-577a-4867-831f-39bf6c7e6812 ;
     default:Transportista "Propio"^^xsd:string ;
     default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuarioba7cdf7b-8b17-4e7f-a09b-03fd1615aff8"^^xsd:string .
+
+default:Devolucion-ae0243d9-9c89-4f85-96ef-76985180e2f7 a default:Devolucion ;
+    default:Factura default:Factura81717677-56ed-41ae-a570-95df3aa8caa1 ;
+    default:Fecha "2022-06-06"^^xsd:date ;
+    default:Motivo "equivocado"^^xsd:string ;
+    default:Producto default:Productob2771f40-577a-4867-831f-39bf6c7e6812 ;
+    default:Transportista "Propio"^^xsd:string ;
+    default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
 
 default:Devolucion-d235194e-c1fa-479f-8652-97483dfbef8d a default:Devolucion ;
     default:Factura default:Facturab268590a-0412-490f-bc16-4458a579af26 ;

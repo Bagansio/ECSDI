@@ -54,6 +54,18 @@ default:Factura4a18d302-c593-4fee-b2ed-0e49ab9e8cbd a default:Factura ;
     default:Transportistas "Seul"^^xsd:string ;
     default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
 
+default:Factura81717677-56ed-41ae-a570-95df3aa8caa1 a default:Factura ;
+    default:Ciudad "Tarragona"^^xsd:string ;
+    default:Direccion "Casa artur"^^xsd:string ;
+    default:Fecha "2022-06-15"^^xsd:date ;
+    default:FormadaPor default:Productob2771f40-577a-4867-831f-39bf6c7e6812 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1500.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "44444"^^xsd:int ;
+    default:Transportistas "Propio"^^xsd:string ;
+    default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuario11daf7d8-6087-437b-b8e6-dcb3c68beeb1"^^xsd:string .
+
 default:Facturab268590a-0412-490f-bc16-4458a579af26 a default:Factura ;
     default:Ciudad "Girona"^^xsd:string ;
     default:Direccion "141241241"^^xsd:string ;
