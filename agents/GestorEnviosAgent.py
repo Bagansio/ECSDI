@@ -471,7 +471,7 @@ def comunicacion():
                             gm.remove((item, None, None))
 
                         print(len(gm))
-                        response = solicitarDevolucion(content, gm) #retornamos la fecha y el transportista
+                        response = solicitarEnvio(content, gm) #retornamos la fecha y el transportista
 
 
                 gr = build_message(response,
