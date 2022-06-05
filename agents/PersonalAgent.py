@@ -156,7 +156,7 @@ def recomendar_producto():
         PromotorAgent.address)
     mss_cnt += 1
 
-    agents.print_graph(gr)
+
     query = """
                 prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
                 prefix xsd:<http://www.w3.org/2001/XMLSchema#>

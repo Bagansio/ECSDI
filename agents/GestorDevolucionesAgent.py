@@ -78,7 +78,7 @@ else:
 if args.open:
     hostname = '0.0.0.0'
     hostaddr = gethostname()
-    hostaddr = "192.168.18.10"
+
 else:
     hostaddr = hostname = socket.gethostname()
 
