@@ -18,7 +18,7 @@
             </tr>
         {% for devo in query %}
             <tr id="{{devo['devolucion']}}">
-                <td>{{ devo['factura'] }}</td>
+                <td>{{ devo['factura'].split('#')[1]  }}</td>
                 <td>{{ devo['producto'] }}</td>
                 <td>{{ devo['motivo'] }}</td>
                 <td>{{ devo['fecha'] }}</td>

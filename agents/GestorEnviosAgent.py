@@ -154,6 +154,7 @@ def solicitarEnvio(content, gm):
     global mss_cnt
 
 
+    propio = True
     if CentrosLogisticosAgents is None:
         CentrosLogisticosAgents = obtenerCentrosLogiticos()
 
@@ -195,6 +196,9 @@ def solicitarEnvio(content, gm):
     mss_cnt += 1
 
     reg_obj1 = ECSDI['PrepararEnvio' + str(uuid.uuid4())]
+
+    prioridad = int(gm.value(subject=content, predicate=ECSDI.Prioridad))
+
     grafo1 = crearGrafo(content,gm, reg_obj1)
 
     reg_obj2 = ECSDI['PrepararEnvio' + str(uuid.uuid4())]
@@ -242,9 +246,11 @@ def solicitarEnvio(content, gm):
                 if str(vendedor['transportepropio']) == 'true':
              #       logger.info("SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE SOYTRUE ")
                     TransportePropio = True
+
             #logger.info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         
         if TransportePropio is False:
+            propio = False
             Contiene = False
             print ('Producto1: ' + str(producto))
             for centro in centrosMasCercanos:
@@ -317,9 +323,14 @@ def solicitarEnvio(content, gm):
     reg_obj = ECSDI['RespuestaEnvio' + str(mss_cnt)]
     gr.add((reg_obj, RDF.type, ECSDI.RespuestaEnvio))
     gr.add((reg_obj, ECSDI.Precio, Literal(precio_transporte, datatype=XSD.float)))
-    gr.add((reg_obj, ECSDI.Fecha, Literal(date, datatype=XSD.date)))
-    for transporte in transportistas:
-        gr.add((reg_obj, ECSDI.Nombre, Literal(transporte, datatype=XSD.string)))
+
+    if propio:
+        gr.add((reg_obj, ECSDI.Fecha, Literal(str(agents.get_date(prioridad)), datatype=XSD.date)))
+        gr.add((reg_obj, ECSDI.Nombre, Literal('Propio', datatype=XSD.string)))
+    else:
+        gr.add((reg_obj, ECSDI.Fecha, Literal(date, datatype=XSD.date)))
+        for transporte in transportistas:
+            gr.add((reg_obj, ECSDI.Nombre, Literal(transporte, datatype=XSD.string)))
 
     return gr
 

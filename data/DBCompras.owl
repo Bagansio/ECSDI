@@ -1,6 +1,19 @@
 @prefix default: <http://www.owl-ontologies.com/ECSDIPractica#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+default:Factura17dd4885-12c6-4337-aa22-ccfdf659a809 a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "4564545"^^xsd:string ;
+    default:Fecha "2022-06-09"^^xsd:date ;
+    default:FormadaPor default:Productob2771f40-577a-4867-831f-39bf6c7e6812,
+        default:Productof7bf38de-6ee5-45bd-91b1-48c2e0494cc4 ;
+    default:PrecioEnvio "1.26"^^xsd:float ;
+    default:PrecioProductos "1510.0"^^xsd:float ;
+    default:Prioridad "1"^^xsd:int ;
+    default:Tarjeta "74654654"^^xsd:int ;
+    default:Transportistas "Seul"^^xsd:string ;
+    default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuarioba7cdf7b-8b17-4e7f-a09b-03fd1615aff8"^^xsd:string .
+
 default:Factura2bbe0902-1967-4799-9f90-58589bdf9c89 a default:Factura ;
     default:Ciudad "Barcelona"^^xsd:string ;
     default:Direccion "klklhllk"^^xsd:string ;
@@ -64,6 +77,18 @@ default:Facturab3490ace-b050-43aa-a0ad-fe75941e8ee2 a default:Factura ;
     default:Prioridad "1"^^xsd:int ;
     default:Tarjeta "9999999"^^xsd:int ;
     default:Transportistas "Seul"^^xsd:string ;
+    default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuarioba7cdf7b-8b17-4e7f-a09b-03fd1615aff8"^^xsd:string .
+
+default:Facturab397b0d1-2bf7-4a22-89e0-0c6f16828c09 a default:Factura ;
+    default:Ciudad "Barcelona"^^xsd:string ;
+    default:Direccion "3"^^xsd:string ;
+    default:Fecha "2022-06-12"^^xsd:date ;
+    default:FormadaPor default:Productob2771f40-577a-4867-831f-39bf6c7e6812 ;
+    default:PrecioEnvio "0.0"^^xsd:float ;
+    default:PrecioProductos "1500.0"^^xsd:float ;
+    default:Prioridad "0"^^xsd:int ;
+    default:Tarjeta "111113"^^xsd:int ;
+    default:Transportistas "Propio"^^xsd:string ;
     default:Usuario "http://www.owl-ontologies.com/ECSDIPractica#Usuarioba7cdf7b-8b17-4e7f-a09b-03fd1615aff8"^^xsd:string .
 
 default:Facturac64fd58a-9249-490f-ac37-d031668b4758 a default:Factura ;
