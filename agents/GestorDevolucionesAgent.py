@@ -253,8 +253,8 @@ def procesarDevolucion(content, gm):
 
     devo = list(devos.triples((None, ECSDI.Factura, factura_suj)))
 
-    if devo > 0:
-        if list(devos.triples((devo, ECSDI.Producto, None))) > 0:
+    if len(devo) > 0:
+        if len(list(devos.triples((devo, ECSDI.Producto, None)))) > 0:
             logger.info("Devolucion ya realizada previamente")
             gr.add((reg_obj, ECSDI.Estado, Literal('Duplicada', datatype=XSD.string)))
             return gr
