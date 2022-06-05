@@ -48,7 +48,7 @@ from threading import Thread
 
 
 
-__author__ = 'Artur, Cristian'
+__author__ = 'Alex, Artur, Cristian'
 
 # Definimos los parametros de la linea de comandos
 parser = argparse.ArgumentParser()
@@ -145,7 +145,7 @@ def RegistrarVenta(grafoFactura):
 
 
 
-def enviarVenta(content, gm):
+def enviarVenta(content, gm, factura_suj, prioridad):
     global GestorEnviosAgent
     global DirectoryAgent
     global mss_cnt
@@ -208,7 +208,32 @@ def enviarVenta(content, gm):
                             msgcnt=mss_cnt),
             GestorEnviosAgent.address)
 
+
+
         mss_cnt += 1
+
+        ontologyFile = open(db.DBCompras)
+        compras = Graph()
+        compras.parse(ontologyFile, format='turtle')
+
+        content = list(graph.triples((None, ECSDI.Precio, None)))[0][0]
+        precio = float(graph.value(subject=content, predicate=ECSDI.Precio))
+        transportistas = list(graph.triples((content, ECSDI.Nombre, None)))
+        fecha = graph.value(subject=content, predicate=ECSDI.Fecha)
+
+        
+        precio_trans = float(prioridad)#float(graph.value(subject=factura_suj, predicate=ECSDI.Prioridad))
+        compras.add((factura_suj, ECSDI.PrecioEnvio, Literal(precio+precio_trans, datatype=XSD.float)))
+        compras.add((factura_suj, ECSDI.Fecha, Literal(fecha, datatype=XSD.date)))
+
+        for trans in transportistas:
+            compras.add((factura_suj, ECSDI.Transportistas, trans[2]))
+
+        for item in compras.subjects(RDF.type, ACL.FipaAclMessage):
+            compras.remove((item, None, None))
+
+        compras.serialize(destination=db.DBCompras, format='turtle')
+
         logger.info("Petición de envio realizada")
         return graph
 
@@ -259,7 +284,7 @@ def historial(content, gm):
         grafoFactura.add((compra['factura'], ECSDI.Ciudad, compra['ciudad']))
         grafoFactura.add((compra['factura'], ECSDI.Direccion, compra['direccion']))
         grafoFactura.add((compra['factura'], ECSDI.FormadaPor, compra['formada']))
-        grafoFactura.add((compra['factura'], ECSDI.PrecioEnvio, compra['precioEnvio']))
+        #grafoFactura.add((compra['factura'], ECSDI.PrecioEnvio, compra['precioEnvio']))
         grafoFactura.add((compra['factura'], ECSDI.PrecioProductos, compra['precioProductos']))
         grafoFactura.add((compra['factura'], ECSDI.Prioridad, compra['prioridad']))
         grafoFactura.add((compra['factura'], ECSDI.Tarjeta, compra['tarjeta']))
@@ -316,14 +341,14 @@ def vender(content, gm):
 
     # Añadimos el precio productos y precio envío
     grafoFactura.add((sujeto, ECSDI.PrecioProductos, Literal(precio, datatype=XSD.float))) #Revisar si hay preciototal en la onto
-    grafoFactura.add((sujeto, ECSDI.PrecioEnvio, Literal(float(prioridad), datatype=XSD.float)))
+    #grafoFactura.add((sujeto, ECSDI.PrecioEnvio, Literal(float(prioridad), datatype=XSD.float)))
 
     # Llamamos a registrarVenda
     thread = threading.Thread(target=RegistrarVenta, args=(grafoFactura,))
     thread.start()
     
     #IMPLEMENTAR ENVIAR VENTA (FALTAN LOS AGENTES ENVIADORES)
-    thread = Thread(target=enviarVenta, args=(content, gm))
+    thread = Thread(target=enviarVenta, args=(content, gm, sujeto, prioridad))
     thread.start()
 
     logger.info("Retornando la factura")

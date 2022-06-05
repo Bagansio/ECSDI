@@ -51,6 +51,9 @@ parser.add_argument('--dhost', help="Host del agente de directorio")
 parser.add_argument('--dport', type=int,
                     help="Puerto de comunicacion del agente de directorio")
 
+parser.add_argument('--centro', type=int,
+                    help="Id del Centro Logistico")
+
 # Logging
 logger = config_logger(level=1)
 
@@ -100,8 +103,8 @@ TransportistaAgent = Agent('Transportista1Agent',
                            'http://%s:%d/Stop' % (hostaddr, port))
 
 # Directory agent address
-DirectoryAgent = Agent('CentroLogisticoAgent',
-                       agn.CentroLogisticoAgent,
+DirectoryAgent = Agent('CentroLogisticoAgent' + str(args.centro),
+                       agn['CentroLogisticoAgent' + str(args.centro)],
                        'http://%s:%d/Register' % (dhostname, dport),
                        'http://%s:%d/Stop' % (dhostname, dport))
 

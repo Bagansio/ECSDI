@@ -29,6 +29,7 @@ import logging
 import argparse
 import threading
 import uuid
+import datetime
 
 from flask import Flask, request,render_template
 from rdflib import Graph, Namespace, Literal, URIRef, XSD
@@ -158,20 +159,17 @@ def solicitarEnvio(content, gm):
     logger.info("SolicitarEnvio")
     
     ciudad = gm.value(subject=content, predicate=ECSDI.Ciudad)
-    logger.info("CIUDAD: "+ciudad)
+    
 
     centrosMasCercanos = centrosMasProximos(str(ciudad))
 
-    for c in centrosMasCercanos:
-        logger.info("Centro: " +str(c))
+    
 
     centrosLogisticos = obtenerCentrosLogiticos()
 
-    for key in centrosLogisticos:
-        print(str(key))
-
+    
     compra = gm.value(subject=content, predicate = ECSDI.Contiene) 
-    logger.info("COMPRA: " +str(compra))
+    
 
     if GestorServicioExternoAgent is None:
         logger.info('Buscando al agente GestorServicioExternoAgent')
@@ -249,7 +247,7 @@ def solicitarEnvio(content, gm):
             Contiene = False
             print ('Producto1: ' + str(producto))
             for centro in centrosMasCercanos:
-                logger.info("CENTRO: " + centro)
+                #logger.info("CENTRO: " + centro)
 
                 cent = centrosLogisticos[str(centro)]
                 productos = cent['almacena']
@@ -257,7 +255,7 @@ def solicitarEnvio(content, gm):
 
                 for p in productos:
                     if producto == p:
-                        logger.info("p = "+ str(p) + "producto = " + str(producto))
+                        #logger.info("p = "+ str(p) + "producto = " + str(producto))
 
                         Contiene = True
                         break
@@ -272,10 +270,10 @@ def solicitarEnvio(content, gm):
 
                     break
                 
-                    
+    precio_transporte = 0.
+    date = None
+    transportistas = set()
     for key,centro in productosCentroLogistico.items():
-        id = key.split("CentroLogisticoAgent")[1]
-        logger.info("ID: " + id)
 
         logger.info("COMPROBANDO EL CENTRO: " +str(key))
 
@@ -286,11 +284,8 @@ def solicitarEnvio(content, gm):
             
             
             logger.info("CONTENT= " +centro[1])
-            agents.print_graph(centro[0])
             
-            print(CentrosLogisticosAgents)
-            print(key)
-            print(CentrosLogisticosAgents[key])
+            
 
                 # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
             grafoVendedores = send_message(
@@ -303,14 +298,29 @@ def solicitarEnvio(content, gm):
 
             mss_cnt += 1        
             
-            
+            content = list(grafoVendedores.triples((None, ECSDI.Precio, None)))[0][0]
 
-    logger.info("Previo al for")
-    #for centro in centrosMasCercanos:
-        #print (centro)
+            precio_transporte += float(grafoVendedores.value(subject=content, predicate=ECSDI.Precio))
+            transportistas.add(str(grafoVendedores.value(subject=content, predicate=ECSDI.Nombre)))
+            fecha = str(grafoVendedores.value(subject=content, predicate=ECSDI.Fecha)).split('-')
+            fecha = datetime.date(int(fecha[0]), int(fecha[1]), int(fecha[2]))
+            if date is None:
+                date = fecha
+            elif fecha > date:
+                date = fecha
 
-    r = Graph()
-    return r
+    gr = Graph()
+    gr.bind('foaf', FOAF)
+    gr.bind('dso', DSO)
+    gr.bind("default", ECSDI)
+    reg_obj = ECSDI['RespuestaEnvio' + str(mss_cnt)]
+    gr.add((reg_obj, RDF.type, ECSDI.RespuestaEnvio))
+    gr.add((reg_obj, ECSDI.Precio, Literal(precio_transporte, datatype=XSD.float)))
+    gr.add((reg_obj, ECSDI.Fecha, Literal(date, datatype=XSD.date)))
+    for transporte in transportistas:
+        gr.add((reg_obj, ECSDI.Nombre, Literal(transporte, datatype=XSD.string)))
+
+    return gr
 
 
 

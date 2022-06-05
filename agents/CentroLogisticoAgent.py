@@ -228,7 +228,7 @@ def negociar(content, gm):
 
     date = agents.get_date(int(prioridad))
 
-    gr = Graph()
+    
     gmess.bind('foaf', FOAF)
     gmess.bind('dso', DSO)
     gmess.bind("default", ECSDI)
@@ -238,7 +238,7 @@ def negociar(content, gm):
     gmess.add((reg_obj, ECSDI.Nombre, Literal(transporte, datatype=XSD.string)))
     gmess.add((reg_obj, ECSDI.Fecha, Literal(date, datatype=XSD.date)))
 
-    agents.print_graph(gmess)
+    
     return gmess
 
 
